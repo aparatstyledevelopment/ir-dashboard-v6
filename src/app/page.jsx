@@ -136,41 +136,50 @@ export default function DashboardPage() {
     }
   };
 
+  const navFromDashboard = (to) =>
+    navigate(to, {
+      state: {
+        contextModule: 'dashboard',
+        backTo: '/',
+        backLabel: 'Back to Dashboard',
+      },
+    });
+
   const quickActions = [
     {
       id: 'qa.dash.owners',
       icon: Users,
       label: 'All shareholders',
       sub: '3,498 identified holders',
-      onClick: () => navigate('/shareholders/owners'),
+      onClick: () => navFromDashboard('/shareholders/owners'),
     },
     {
       id: 'qa.dash.contacts',
       icon: Mail,
       label: 'All contacts',
       sub: 'IR CRM database',
-      onClick: () => navigate('/crm/people'),
+      onClick: () => navFromDashboard('/crm/people'),
     },
     {
       id: 'qa.dash.transactions',
       icon: ArrowDownUp,
       label: 'Daily transactions',
       sub: 'Register flow (T+2)',
-      onClick: () => navigate('/shareholders/daily-transactions'),
+      onClick: () => navFromDashboard('/shareholders/daily-transactions'),
     },
     {
       id: 'qa.dash.lockups',
       icon: Lock,
       label: 'Lock-up agreements',
       sub: 'Active lock-ups & expiry',
-      onClick: () => navigate('/shareholders/lockups'),
+      onClick: () => navFromDashboard('/shareholders/lockups'),
     },
     {
       id: 'qa.dash.targets',
       icon: Target,
       label: 'Targeting screener',
       sub: 'AI-prioritized prospects',
-      onClick: () => navigate('/targeting/screener'),
+      onClick: () => navFromDashboard('/targeting/screener'),
     },
   ];
 

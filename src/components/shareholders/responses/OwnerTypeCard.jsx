@@ -1,5 +1,5 @@
 import ResponseCard from '../../dashboard/responses/ResponseCard';
-import BarChart from '../../ui/BarChart';
+import DonutChart from '../../ui/DonutChart';
 import { TYPE_BREAKDOWN } from '../../../data/shareholderTrend';
 import { formatPct } from '../../../utils/formatters';
 
@@ -15,6 +15,7 @@ export default function OwnerTypeCard({
     key: t.type,
     label: t.type,
     value: t.capitalPct,
+    sub: `${t.ownerCount} owners`,
   }));
 
   return (
@@ -64,7 +65,12 @@ export default function OwnerTypeCard({
         <span className="cb-num">11.6%</span>, banks{' '}
         <span className="cb-num">6.1%</span>.
       </p>
-      <BarChart data={data} valueFormatter={formatPct} />
+      <DonutChart
+        data={data}
+        centerValue="5"
+        centerLabel="Types"
+        valueFormatter={formatPct}
+      />
     </ResponseCard>
   );
 }

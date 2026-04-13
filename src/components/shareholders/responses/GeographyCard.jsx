@@ -1,5 +1,5 @@
 import ResponseCard from '../../dashboard/responses/ResponseCard';
-import BarChart from '../../ui/BarChart';
+import DonutChart from '../../ui/DonutChart';
 import { COUNTRY_BREAKDOWN } from '../../../data/shareholderTrend';
 import { formatPct } from '../../../utils/formatters';
 import { flagFor } from '../../../utils/countryFlags';
@@ -63,7 +63,12 @@ export default function GeographyCard({
         at <span className="cb-num">21.7%</span>, almost entirely from one
         strategic holder (Aviva Perfusion).
       </p>
-      <BarChart data={data} valueFormatter={formatPct} />
+      <DonutChart
+        data={data}
+        centerValue="8"
+        centerLabel="Countries"
+        valueFormatter={formatPct}
+      />
     </ResponseCard>
   );
 }

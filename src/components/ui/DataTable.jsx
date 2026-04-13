@@ -7,8 +7,14 @@ export default function DataTable({ columns, rows }) {
           borderCollapse: 'collapse',
           fontSize: '12px',
           letterSpacing: '-0.01em',
+          tableLayout: 'auto',
         }}
       >
+        <colgroup>
+          {columns.map((col, i) => (
+            <col key={i} style={col.width ? { width: col.width } : undefined} />
+          ))}
+        </colgroup>
         <thead>
           <tr>
             {columns.map((col, i) => (
@@ -22,6 +28,7 @@ export default function DataTable({ columns, rows }) {
                   padding: '8px 10px',
                   borderBottom: '1px solid var(--border)',
                   whiteSpace: 'nowrap',
+                  width: col.width,
                 }}
               >
                 {col.header}

@@ -134,41 +134,50 @@ export default function ShareholdersPage() {
     }
   };
 
+  const navFromShareholders = (to) =>
+    navigate(to, {
+      state: {
+        contextModule: 'shareholders',
+        backTo: '/shareholders',
+        backLabel: 'Back to Shareholders',
+      },
+    });
+
   const quickActions = [
     {
       id: 'qa.sh.owners',
       icon: Users,
       label: 'Full register',
       sub: '3,498 identified holders',
-      onClick: () => navigate('/shareholders/owners'),
+      onClick: () => navFromShareholders('/shareholders/owners'),
     },
     {
       id: 'qa.sh.daily',
       icon: ArrowDownUp,
       label: 'Daily transactions',
       sub: 'Last 14 days (T+2)',
-      onClick: () => navigate('/shareholders/daily-transactions'),
+      onClick: () => navFromShareholders('/shareholders/daily-transactions'),
     },
     {
       id: 'qa.sh.lockup',
       icon: Lock,
       label: 'Lock-ups',
       sub: 'Active agreements & expiry',
-      onClick: () => navigate('/shareholders/lockups'),
+      onClick: () => navFromShareholders('/shareholders/lockups'),
     },
     {
       id: 'qa.sh.contacts',
       icon: Mail,
       label: 'CRM contacts',
       sub: 'People at our holder firms',
-      onClick: () => navigate('/crm/people'),
+      onClick: () => navFromShareholders('/crm/people'),
     },
     {
       id: 'qa.sh.targets',
       icon: Target,
       label: 'Targeting screener',
       sub: 'Prospects not yet holding',
-      onClick: () => navigate('/targeting/screener'),
+      onClick: () => navFromShareholders('/targeting/screener'),
     },
     {
       id: 'qa.sh.dash',

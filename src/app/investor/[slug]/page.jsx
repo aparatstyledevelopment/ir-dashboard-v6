@@ -303,7 +303,8 @@ export default function InvestorDetailPage() {
               >
                 <Sparkline
                   data={investor.history}
-                  width={640}
+                  width="100%"
+                  viewWidth={640}
                   height={64}
                   strokeWidth={1.75}
                   color={

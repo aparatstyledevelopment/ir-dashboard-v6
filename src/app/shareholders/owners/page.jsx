@@ -12,6 +12,7 @@ export default function OwnersListPage() {
       key: 'rank',
       align: 'right',
       nowrap: true,
+      width: '48px',
       render: (r) => <span style={{ color: 'var(--text-tertiary)' }}>{r.rank}</span>,
     },
     {
@@ -27,6 +28,7 @@ export default function OwnersListPage() {
       header: 'Country',
       key: 'country',
       align: 'center',
+      width: '72px',
       render: (r) => <span style={{ fontSize: '13px' }}>{flagFor(r.country)}</span>,
     },
     {
@@ -40,6 +42,7 @@ export default function OwnersListPage() {
       header: 'Capital %',
       key: 'capitalPct',
       align: 'right',
+      width: '100px',
       weight: 500,
       render: (r) => formatPct(r.capitalPct),
     },
@@ -47,6 +50,7 @@ export default function OwnersListPage() {
       header: 'Votes %',
       key: 'votesPct',
       align: 'right',
+      width: '100px',
       render: (r) => (
         <span style={{ color: 'var(--text-secondary)' }}>{formatPct(r.votesPct)}</span>
       ),

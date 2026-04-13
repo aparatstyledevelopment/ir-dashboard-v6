@@ -2,6 +2,11 @@ import { Link } from 'react-router-dom';
 import ResponseCard from './ResponseCard';
 import DataTable from '../../ui/DataTable';
 import BarChart from '../../ui/BarChart';
+import DonutChart from '../../ui/DonutChart';
+import ProgressRing from '../../ui/ProgressRing';
+import StackedBar from '../../ui/StackedBar';
+import BubbleCluster from '../../ui/BubbleCluster';
+import WaterfallChart from '../../ui/WaterfallChart';
 import { getCatalogEntry } from '../../../data/responseCatalog';
 import { flagFor } from '../../../utils/countryFlags';
 import { slugify } from '../../../utils/slug';
@@ -57,6 +62,7 @@ function buildColumns(specCols, mode) {
       align: col.align || 'left',
       nowrap: col.nowrap,
       weight: col.weight,
+      width: col.width,
       render,
     };
   });
@@ -72,6 +78,19 @@ function StatBlock({ label, value, sub }) {
   );
 }
 
+function resolveFormatter(name) {
+  switch (name) {
+    case 'pct':
+      return (v) => formatPct(v);
+    case 'eur':
+      return formatCurrencyEUR;
+    case 'int':
+      return (v) => formatNumber(v);
+    default:
+      return (v) => v;
+  }
+}
+
 function Body({ body }) {
   if (!body || body.type === 'narrative') return null;
 
@@ -81,17 +100,90 @@ function Body({ body }) {
   }
 
   if (body.type === 'bars') {
-    const formatter =
-      body.valueFormatter === 'pct'
-        ? formatPct
-        : body.valueFormatter === 'eur'
-        ? formatCurrencyEUR
-        : (v) => v;
     return (
       <BarChart
         data={body.data}
         highlightKey={body.highlightKey}
-        valueFormatter={formatter}
+        valueFormatter={resolveFormatter(body.valueFormatter)}
+      />
+    );
+  }
+
+  if (body.type === 'donut') {
+    return (
+      <DonutChart
+        data={body.data}
+        centerValue={body.centerValue}
+        centerLabel={body.centerLabel}
+        highlightKey={body.highlightKey}
+        valueFormatter={resolveFormatter(body.valueFormatter)}
+      />
+    );
+  }
+
+  if (body.type === 'ring') {
+    return (
+      <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', alignItems: 'center' }}>
+        <ProgressRing
+          value={body.value}
+          max={body.max || 100}
+          label={body.label}
+          sub={body.sub}
+          suffix={body.suffix || ''}
+        />
+        {body.caption && (
+          <p
+            style={{
+              flex: 1,
+              minWidth: '200px',
+              fontSize: '12px',
+              color: 'var(--text-secondary)',
+              lineHeight: 1.6,
+              margin: 0,
+              letterSpacing: '-0.01em',
+            }}
+          >
+            {body.caption}
+          </p>
+        )}
+      </div>
+    );
+  }
+
+  if (body.type === 'stacked') {
+    return (
+      <StackedBar
+        data={body.data}
+        label={body.label}
+        total={body.total}
+        valueFormatter={resolveFormatter(body.valueFormatter)}
+      />
+    );
+  }
+
+  if (body.type === 'bubbles') {
+    return (
+      <BubbleCluster
+        data={body.data}
+        xAxis={body.xAxis}
+        yAxis={body.yAxis}
+        xMax={body.xMax}
+        yMax={body.yMax}
+      />
+    );
+  }
+
+  if (body.type === 'waterfall') {
+    return (
+      <WaterfallChart
+        data={body.data}
+        valueFormatter={(v) =>
+          body.valueFormatter === 'int'
+            ? (v > 0 ? '+' : '') + formatNumber(v)
+            : v > 0
+            ? `+${v}`
+            : String(v)
+        }
       />
     );
   }

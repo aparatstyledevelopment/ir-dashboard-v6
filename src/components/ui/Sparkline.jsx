@@ -6,21 +6,29 @@ const TREND_POINTS = {
   declining: [20, 35, 50, 65, 80],
 };
 
+// Sparkline — small trend chart.
+// `width` is the rendered size (can be a number or "100%").
+// `viewWidth` is the SVG coordinate width used when computing points; it
+// defaults to 640 when `width` is non-numeric so responsive charts still
+// have a reasonable internal resolution.
 export default function Sparkline({
   trend = 'flat',
   data,
   width = 40,
+  viewWidth,
   height = 16,
   strokeWidth = 1.5,
   color = 'var(--text-tertiary)',
   fill = false,
 }) {
+  const vw = viewWidth != null ? viewWidth : typeof width === 'number' ? width : 640;
+
   let svgPoints;
   if (data && data.length > 1) {
     const min = Math.min(...data);
     const max = Math.max(...data);
     const range = max - min || 1;
-    const stepX = width / (data.length - 1);
+    const stepX = vw / (data.length - 1);
     svgPoints = data.map((y, i) => {
       const x = (i * stepX).toFixed(2);
       const normY = ((max - y) / range) * height;
@@ -28,29 +36,24 @@ export default function Sparkline({
     });
   } else {
     const pts = TREND_POINTS[trend] || TREND_POINTS.flat;
-    const stepX = width / (pts.length - 1);
+    const stepX = vw / (pts.length - 1);
     svgPoints = pts.map(
       (y, i) => `${(i * stepX).toFixed(2)},${((y / 100) * height).toFixed(2)}`
     );
   }
 
   const polylinePoints = svgPoints.join(' ');
-  const areaPoints = `0,${height} ${polylinePoints} ${width},${height}`;
+  const areaPoints = `0,${height} ${polylinePoints} ${vw},${height}`;
 
   return (
     <svg
       width={width}
       height={height}
-      viewBox={`0 0 ${width} ${height}`}
-      style={{ display: 'block' }}
+      viewBox={`0 0 ${vw} ${height}`}
+      preserveAspectRatio="none"
+      style={{ display: 'block', maxWidth: '100%' }}
     >
-      {fill && (
-        <polygon
-          points={areaPoints}
-          fill={color}
-          opacity="0.08"
-        />
-      )}
+      {fill && <polygon points={areaPoints} fill={color} opacity="0.08" />}
       <polyline
         points={polylinePoints}
         fill="none"
@@ -58,6 +61,7 @@ export default function Sparkline({
         strokeWidth={strokeWidth}
         strokeLinecap="round"
         strokeLinejoin="round"
+        vectorEffect="non-scaling-stroke"
       />
     </svg>
   );

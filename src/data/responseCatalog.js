@@ -44,15 +44,21 @@ export const RESPONSE_CATALOG = {
   'l2.buyers.last-quarter': {
     title: 'Net Flow vs Last Quarter',
     narrative:
-      'Net of all moves in Q1, the shareholder base added 124 owners. 12 holders increased positions by a combined 116k shares; 8 reduced by 51k. The net effect raised free float by 0.3pp.',
+      'Waterfall of the past 30 days of register activity. 12 buyers added 116k shares; 8 sellers reduced 51k. Net effect: +65k shares into the active register.',
     body: {
-      type: 'metrics',
-      items: [
-        { label: 'Net new owners', value: '+124', sub: 'vs Q4 2025' },
-        { label: 'Buyers', value: '12', sub: '+116k shares' },
-        { label: 'Sellers', value: '8', sub: '−51k shares' },
-        { label: 'Net flow', value: '+65k', sub: 'shares net buy' },
+      type: 'waterfall',
+      data: [
+        { label: 'Start', value: 0 },
+        { label: 'Nordea', value: 45000 },
+        { label: 'Invesco', value: 32100 },
+        { label: 'Handelsbanken', value: 18500 },
+        { label: 'AP4', value: 12000 },
+        { label: 'Others', value: 8500 },
+        { label: 'Aviva', value: -21204 },
+        { label: 'Al Rajhi', value: -15800 },
+        { label: 'Others', value: -13901 },
       ],
+      valueFormatter: 'int',
     },
     source: 'Shareholders → Owner Changes',
   },
@@ -82,13 +88,15 @@ export const RESPONSE_CATALOG = {
     narrative:
       'Funds dominate the top 25 by count, but two large strategic positions (Brännemark and Aviva Perfusion) control nearly half of the disclosed capital.',
     body: {
-      type: 'bars',
+      type: 'donut',
       data: [
         { key: 'individual', label: 'Individual', value: 23.57 },
         { key: 'other', label: 'Other / Strategic', value: 24.09 },
         { key: 'fund', label: 'Fund', value: 15.46 },
         { key: 'pension', label: 'Pension & Insurance', value: 5.10 },
       ],
+      centerValue: '68.2%',
+      centerLabel: 'Top 25',
       valueFormatter: 'pct',
     },
     source: 'Shareholders → Owner Distribution',
@@ -228,16 +236,18 @@ export const RESPONSE_CATALOG = {
   'l2.insider.holdings': {
     title: 'Board & Management Holdings',
     narrative:
-      'Combined board and executive ownership stands at 23.95% of capital, dominated by founder Richard Brännemark. Remaining executives hold less than 0.5% combined.',
+      'Combined board and executive ownership stands at 23.95% of capital, dominated by founder Richard Brännemark (23.19% alone). Remaining executives hold less than 0.8% combined.',
     body: {
-      type: 'kv',
-      items: [
-        { label: 'Richard Brännemark — CEO & Founder', value: '23.19%' },
-        { label: 'Erik Lundström — Board Member', value: '0.38%' },
-        { label: 'Anna Karin Hellström — CFO', value: '0.21%' },
-        { label: 'Other board & exec', value: '0.17%' },
-        { label: 'Combined insider stake', value: '23.95%' },
+      type: 'donut',
+      data: [
+        { key: 'brannemark', label: 'Richard Brännemark (CEO)', value: 23.19 },
+        { key: 'lundstrom', label: 'Erik Lundström (Board)', value: 0.38 },
+        { key: 'hellstrom', label: 'Anna Karin Hellström (CFO)', value: 0.21 },
+        { key: 'other', label: 'Other board & exec', value: 0.17 },
       ],
+      centerValue: '23.95%',
+      centerLabel: 'Insider total',
+      valueFormatter: 'pct',
     },
     source: 'Insider → Board & Management',
   },
@@ -335,17 +345,19 @@ export const RESPONSE_CATALOG = {
   'l2.events.attendees': {
     title: 'Q4 2025 Earnings Call Attendees',
     narrative:
-      '47 unique attendees joined the Q4 2025 call on February 4. 18 sell-side analysts dialed in (representing 12 firms) and 29 buy-side participants from 24 institutions.',
+      '47 unique attendees joined the Q4 2025 call on February 4 — the highest attendance in 6 quarters. 18 sell-side analysts (12 firms) and 29 buy-side participants (24 institutions). 11 questions taken in Q&A.',
     body: {
-      type: 'kv',
-      items: [
-        { label: 'Total dial-ins', value: '47' },
-        { label: 'Sell-side analysts', value: '18' },
-        { label: 'Sell-side firms', value: '12' },
-        { label: 'Buy-side attendees', value: '29' },
-        { label: 'Buy-side institutions', value: '24' },
-        { label: 'Q&A questions taken', value: '11' },
+      type: 'bars',
+      data: [
+        { key: 'q3-24', label: 'Q3 2024', value: 32 },
+        { key: 'q4-24', label: 'Q4 2024', value: 36 },
+        { key: 'q1-25', label: 'Q1 2025', value: 38 },
+        { key: 'q2-25', label: 'Q2 2025', value: 41 },
+        { key: 'q3-25', label: 'Q3 2025', value: 42 },
+        { key: 'q4-25', label: 'Q4 2025', value: 47 },
       ],
+      highlightKey: 'q4-25',
+      valueFormatter: 'int',
     },
     source: 'CRM → Events',
   },
@@ -442,16 +454,19 @@ Object.assign(RESPONSE_CATALOG, {
   'l2.sh.register.history': {
     title: 'Register Snapshot History',
     narrative:
-      'Compare any two register snapshots to see net ownership changes. The system retains 24 monthly snapshots plus the most recent 12 weekly diffs.',
+      'Weekly owner count over the past 6 weeks. Net growth of +38 owners from the March 1 snapshot to today. The system retains 24 monthly snapshots plus the most recent 12 weekly diffs.',
     body: {
-      type: 'list',
-      items: [
-        { left: 'Apr 12 2026', right: 'Latest snapshot · 3,498 owners', sub: '+9 vs prior week' },
-        { left: 'Apr 05 2026', right: '3,489 owners', sub: '+11 vs prior week' },
-        { left: 'Mar 29 2026', right: '3,478 owners', sub: '+8 vs prior week' },
-        { left: 'Mar 22 2026', right: '3,470 owners', sub: '+10 vs prior week' },
-        { left: 'Mar 15 2026', right: '3,460 owners', sub: 'End of month snapshot' },
+      type: 'bars',
+      data: [
+        { key: 'w1', label: 'Mar 08', value: 3465 },
+        { key: 'w2', label: 'Mar 15', value: 3472 },
+        { key: 'w3', label: 'Mar 22', value: 3478 },
+        { key: 'w4', label: 'Mar 29', value: 3486 },
+        { key: 'w5', label: 'Apr 05', value: 3492 },
+        { key: 'w6', label: 'Apr 12', value: 3498 },
       ],
+      highlightKey: 'w6',
+      valueFormatter: 'int',
     },
     source: 'Shareholders → History',
   },
@@ -755,17 +770,16 @@ Object.assign(RESPONSE_CATALOG, {
   'l2.tgt.priority.details': {
     title: 'Score Breakdown — Polar Capital Healthcare',
     narrative:
-      'The AI fit score for Polar Capital Healthcare (92/100) breaks down into: peer overlap (+28), sector fit (+24), mandate alignment (+18), historical behaviour (+14), geography (+8). No negative factors.',
+      'The AI fit score for Polar Capital Healthcare is 92/100. A high-conviction match driven primarily by peer overlap and sector fit. No negative factors.',
     body: {
-      type: 'kv',
-      items: [
-        { label: 'Peer overlap (3 of 5 peers)', value: '+28' },
-        { label: 'Sector fit (healthcare-dedicated)', value: '+24' },
-        { label: 'Mandate alignment (European small-cap)', value: '+18' },
-        { label: 'Historical behaviour (2+ year holds)', value: '+14' },
-        { label: 'Geography (GB fund, our sweet spot)', value: '+8' },
-        { label: 'Total', value: '92/100' },
-      ],
+      type: 'ring',
+      value: 92,
+      max: 100,
+      suffix: '',
+      label: 'Fit score',
+      sub: 'out of 100',
+      caption:
+        'Peer overlap (+28) · Sector fit (+24) · Mandate alignment (+18) · Historical behaviour (+14) · Geography (+8). Total 92/100.',
     },
     source: 'Targeting → Screener',
   },
@@ -822,19 +836,27 @@ Object.assign(RESPONSE_CATALOG, {
   },
 
   'l2.tgt.look.heatmap': {
-    title: 'Peer Overlap Heatmap',
+    title: 'Peer Overlap vs AI Fit Score',
     narrative:
-      'Showing which of our top lookalike candidates hold which peer. Polar Capital and Allianz GI have the most peer overlap, making them the strongest DNA matches.',
+      'Bubble map of candidate targets. X-axis: number of our peers they already hold. Y-axis: AI fit score. Bubble size: AUM. The upper-right cluster is the highest-conviction cohort.',
     body: {
-      type: 'kv',
-      items: [
-        { label: 'Polar Capital Healthcare', value: '3/5 peers' },
-        { label: 'Allianz GI European Equity', value: '2/5 peers' },
-        { label: 'Fidelity Intl Small Cap', value: '1/5 peers' },
-        { label: 'Columbia Threadneedle', value: '1/5 peers' },
-        { label: 'Impax AM Environmental', value: '1/5 peers' },
-        { label: 'Evli Nordic Small Cap', value: '2/5 peers' },
+      type: 'bubbles',
+      data: [
+        { id: 't1', label: 'Polar Capital', x: 3, y: 92, size: 16, priority: 'Hot' },
+        { id: 't2', label: 'Allianz GI', x: 2, y: 88, size: 20, priority: 'Hot' },
+        { id: 't3', label: 'Fidelity', x: 1, y: 86, size: 14, priority: 'Hot' },
+        { id: 't4', label: 'Columbia', x: 1, y: 85, size: 12, priority: 'Hot' },
+        { id: 't5', label: 'Impax', x: 1, y: 83, size: 14, priority: 'Hot' },
+        { id: 't6', label: 'Skagen', x: 0, y: 81, size: 14, priority: 'Hot' },
+        { id: 't7', label: 'AKO', x: 1, y: 76, size: 18, priority: 'Warm' },
+        { id: 't8', label: 'abrdn', x: 2, y: 74, size: 10, priority: 'Warm' },
+        { id: 't9', label: 'T.Rowe', x: 0, y: 72, size: 18, priority: 'Warm' },
+        { id: 't10', label: 'Evli', x: 2, y: 71, size: 8, priority: 'Warm' },
       ],
+      xAxis: { label: '# of peers held' },
+      yAxis: { label: 'AI Fit Score' },
+      xMax: 5,
+      yMax: 100,
     },
     source: 'Targeting → Compare Owners',
   },
@@ -915,17 +937,19 @@ Object.assign(RESPONSE_CATALOG, {
   /* ----- L2 from "Compare our top 5 vs peers" ----- */
 
   'l2.tgt.cmp.overlap': {
-    title: 'Overlap Percentage',
+    title: 'Peer Overlap as a Stack',
     narrative:
-      'Peer-level overlap in our top 25: 62% of our top holders also hold BONESUPPORT, 48% hold Medistim, 40% hold OssDsign, 12% hold QuickCool. No perfect overlap with any single peer.',
+      'Peer-level overlap in our top 25 — what fraction of our top holders also own each of our 4 closest peers. BONESUPPORT is the highest-overlap peer at 62%; QuickCool the lowest at 12%.',
     body: {
-      type: 'kv',
-      items: [
-        { label: 'BONESUPPORT', value: '62% overlap' },
-        { label: 'Medistim', value: '48% overlap' },
-        { label: 'OssDsign', value: '40% overlap' },
-        { label: 'QuickCool', value: '12% overlap' },
+      type: 'stacked',
+      label: 'Share of top-25 holders that also own each peer',
+      data: [
+        { key: 'bone', label: 'BONESUPPORT', value: 62 },
+        { key: 'medi', label: 'Medistim', value: 48 },
+        { key: 'oss', label: 'OssDsign', value: 40 },
+        { key: 'qkc', label: 'QuickCool', value: 12 },
       ],
+      valueFormatter: 'pct',
     },
     source: 'Targeting → Compare Owners',
   },
@@ -1033,15 +1057,17 @@ Object.assign(RESPONSE_CATALOG, {
   'l2.tgt.exit.reason': {
     title: 'Exit Reason Breakdown',
     narrative:
-      'Of 4 exits in the past 12 months: 2 were sector rotations, 1 was a mandate closure, 1 was a PM change. None were thesis changes — this is positive news.',
+      'Of 4 exits in the past 12 months, 2 were sector rotations, 1 a mandate closure, 1 a PM change. None were thesis changes — exit reasons are all mechanical, not fundamental.',
     body: {
-      type: 'kv',
-      items: [
-        { label: 'Sector rotation', value: '2 (50%)' },
-        { label: 'Mandate closure', value: '1 (25%)' },
-        { label: 'PM change', value: '1 (25%)' },
-        { label: 'Thesis change', value: '0 (0%)' },
+      type: 'donut',
+      data: [
+        { key: 'rot', label: 'Sector rotation', value: 50 },
+        { key: 'mandate', label: 'Mandate closure', value: 25 },
+        { key: 'pm', label: 'PM change', value: 25 },
       ],
+      centerValue: '4',
+      centerLabel: 'Exits',
+      valueFormatter: 'pct',
     },
     source: 'Targeting → Compare Owners',
   },

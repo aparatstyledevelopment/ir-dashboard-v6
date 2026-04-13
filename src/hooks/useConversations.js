@@ -1,26 +1,47 @@
 // Conversation state for ALL modules, hoisted to the root layout so it
-// survives navigation between sibling routes (e.g. Dashboard → Investor
-// detail → back to Dashboard).
+// survives navigation between sibling routes. Each module holds an
+// ordered list of sessions, plus an active session id. All chip / chat
+// actions operate on the active session of the active module.
 //
-// useConversations() lives in <RootLayout> and is exposed via outlet
-// context. Each module page calls useModuleConversation('dashboard') /
-// 'shareholders' / etc. and gets back a slot-bound API.
-//
-// Each slot tracks: messages, isTyping, spentChips, attachments
-// (cards the user has added to their next chat-input message).
+// Slot shape:
+//   {
+//     activeSessionId: 's-3',
+//     sessionOrder: ['s-3', 's-2', 's-1'],           // newest first
+//     sessions: {
+//       's-3': {
+//         id, title, createdAt,
+//         messages: [], isTyping: false,
+//         spentChips: Set, attachments: [],
+//       },
+//     },
+//   }
 
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 
-let idCounter = 0;
-const nextId = () => `m-${++idCounter}-${Date.now()}`;
+let messageCounter = 0;
+let sessionCounter = 0;
+const nextId = () => `m-${++messageCounter}-${Date.now()}`;
+const nextSessionId = () => `s-${++sessionCounter}-${Date.now()}`;
 
-function emptySlot() {
+function emptySession(title = 'New chat') {
   return {
+    id: nextSessionId(),
+    title,
+    createdAt: Date.now(),
     messages: [],
     isTyping: false,
     spentChips: new Set(),
     attachments: [],
+  };
+}
+
+function emptySlot() {
+  const s = emptySession();
+  return {
+    activeSessionId: s.id,
+    sessionOrder: [s.id],
+    sessions: { [s.id]: s },
   };
 }
 
@@ -46,41 +67,59 @@ export function useModuleConversation(moduleId) {
   }
   const { slots, updateSlot } = conversations;
   const slot = slots[moduleId] || emptySlot();
+  const session = slot.sessions[slot.activeSessionId] || emptySession();
+
+  // Helper: update the active session of the current slot.
+  const updateActiveSession = useCallback(
+    (updater) => {
+      updateSlot(moduleId, (c) => {
+        const cur = c.sessions[c.activeSessionId];
+        const next = updater(cur);
+        return {
+          ...c,
+          sessions: { ...c.sessions, [c.activeSessionId]: next },
+        };
+      });
+    },
+    [moduleId, updateSlot]
+  );
 
   const sendChipQuery = useCallback(
     (chipId, responseType, label) => {
-      updateSlot(moduleId, (c) => ({
-        ...c,
-        spentChips: new Set([...c.spentChips, chipId]),
+      updateActiveSession((s) => ({
+        ...s,
+        title: s.title === 'New chat' && label ? label : s.title,
+        spentChips: new Set([...s.spentChips, chipId]),
         isTyping: true,
       }));
       setTimeout(() => {
-        updateSlot(moduleId, (c) => ({
-          ...c,
+        updateActiveSession((s) => ({
+          ...s,
           isTyping: false,
           messages: [
-            ...c.messages,
+            ...s.messages,
             { id: nextId(), kind: 'response', responseType, label },
           ],
         }));
       }, 800);
     },
-    [moduleId, updateSlot]
+    [updateActiveSession]
   );
 
   const sendCatalogQuery = useCallback(
     (catalogId, label) => {
-      updateSlot(moduleId, (c) => ({
-        ...c,
-        spentChips: new Set([...c.spentChips, catalogId]),
+      updateActiveSession((s) => ({
+        ...s,
+        title: s.title === 'New chat' && label ? label : s.title,
+        spentChips: new Set([...s.spentChips, catalogId]),
         isTyping: true,
       }));
       setTimeout(() => {
-        updateSlot(moduleId, (c) => ({
-          ...c,
+        updateActiveSession((s) => ({
+          ...s,
           isTyping: false,
           messages: [
-            ...c.messages,
+            ...s.messages,
             {
               id: nextId(),
               kind: 'response',
@@ -92,20 +131,24 @@ export function useModuleConversation(moduleId) {
         }));
       }, 800);
     },
-    [moduleId, updateSlot]
+    [updateActiveSession]
   );
 
   const sendTextQuery = useCallback(
     (text) => {
       const trimmed = (text || '').trim();
-      // Read the latest attachments at submit time via functional update.
-      updateSlot(moduleId, (c) => {
-        const attached = c.attachments || [];
-        if (!trimmed && attached.length === 0) return c;
+      updateActiveSession((s) => {
+        const attached = s.attachments || [];
+        if (!trimmed && attached.length === 0) return s;
+        const nextTitle =
+          s.title === 'New chat'
+            ? trimmed.slice(0, 42) || `${attached.length} cards`
+            : s.title;
         return {
-          ...c,
+          ...s,
+          title: nextTitle,
           messages: [
-            ...c.messages,
+            ...s.messages,
             {
               id: nextId(),
               kind: 'user',
@@ -118,17 +161,16 @@ export function useModuleConversation(moduleId) {
         };
       });
       setTimeout(() => {
-        updateSlot(moduleId, (c) => {
-          // The most recent user message holds the attachments we want to echo back.
-          const lastUser = [...c.messages]
+        updateActiveSession((s) => {
+          const lastUser = [...s.messages]
             .reverse()
             .find((m) => m.kind === 'user');
           const attached = lastUser?.attachments || [];
           return {
-            ...c,
+            ...s,
             isTyping: false,
             messages: [
-              ...c.messages,
+              ...s.messages,
               {
                 id: nextId(),
                 kind: 'response',
@@ -141,53 +183,120 @@ export function useModuleConversation(moduleId) {
         });
       }, 800);
     },
-    [moduleId, updateSlot]
+    [updateActiveSession]
   );
 
   const attachCard = useCallback(
     (ref) => {
-      // Return { ok, reason } so the caller can toast a helpful message.
-      const current = slot.attachments;
+      const current = session.attachments;
       if (current.find((a) => a.id === ref.id)) {
         return { ok: true, reason: 'already-attached' };
       }
       if (current.length >= 5) {
         return { ok: false, reason: 'limit-reached' };
       }
-      updateSlot(moduleId, (c) => {
-        if (c.attachments.find((a) => a.id === ref.id)) return c;
-        if (c.attachments.length >= 5) return c;
-        return { ...c, attachments: [...c.attachments, ref] };
+      updateActiveSession((s) => {
+        if (s.attachments.find((a) => a.id === ref.id)) return s;
+        if (s.attachments.length >= 5) return s;
+        return { ...s, attachments: [...s.attachments, ref] };
       });
       return { ok: true, reason: 'attached' };
     },
-    [slot.attachments, moduleId, updateSlot]
+    [session.attachments, updateActiveSession]
   );
 
   const removeAttachment = useCallback(
     (refId) => {
-      updateSlot(moduleId, (c) => ({
-        ...c,
-        attachments: c.attachments.filter((a) => a.id !== refId),
+      updateActiveSession((s) => ({
+        ...s,
+        attachments: s.attachments.filter((a) => a.id !== refId),
       }));
+    },
+    [updateActiveSession]
+  );
+
+  const isAttached = useCallback(
+    (refId) => session.attachments.some((a) => a.id === refId),
+    [session.attachments]
+  );
+
+  const isChipSpent = useCallback(
+    (chipId) => session.spentChips.has(chipId),
+    [session.spentChips]
+  );
+
+  // ----- Session management API -----
+
+  const sessionList = useMemo(
+    () =>
+      slot.sessionOrder
+        .map((id) => slot.sessions[id])
+        .filter(Boolean)
+        .map((s) => ({
+          id: s.id,
+          title: s.title,
+          createdAt: s.createdAt,
+          messageCount: s.messages.length,
+          isActive: s.id === slot.activeSessionId,
+        })),
+    [slot.sessionOrder, slot.sessions, slot.activeSessionId]
+  );
+
+  const createSession = useCallback(() => {
+    const s = emptySession();
+    updateSlot(moduleId, (c) => ({
+      ...c,
+      activeSessionId: s.id,
+      sessionOrder: [s.id, ...c.sessionOrder],
+      sessions: { ...c.sessions, [s.id]: s },
+    }));
+    return s.id;
+  }, [moduleId, updateSlot]);
+
+  const switchSession = useCallback(
+    (id) => {
+      updateSlot(moduleId, (c) =>
+        c.sessions[id] ? { ...c, activeSessionId: id } : c
+      );
     },
     [moduleId, updateSlot]
   );
 
-  const isAttached = useCallback(
-    (refId) => slot.attachments.some((a) => a.id === refId),
-    [slot.attachments]
-  );
-
-  const isChipSpent = useCallback(
-    (chipId) => slot.spentChips.has(chipId),
-    [slot.spentChips]
+  const deleteSession = useCallback(
+    (id) => {
+      updateSlot(moduleId, (c) => {
+        if (!c.sessions[id]) return c;
+        const nextSessions = { ...c.sessions };
+        delete nextSessions[id];
+        const nextOrder = c.sessionOrder.filter((sid) => sid !== id);
+        // Ensure at least one session exists.
+        if (nextOrder.length === 0) {
+          const fresh = emptySession();
+          return {
+            activeSessionId: fresh.id,
+            sessionOrder: [fresh.id],
+            sessions: { [fresh.id]: fresh },
+          };
+        }
+        const nextActive =
+          c.activeSessionId === id ? nextOrder[0] : c.activeSessionId;
+        return {
+          ...c,
+          activeSessionId: nextActive,
+          sessionOrder: nextOrder,
+          sessions: nextSessions,
+        };
+      });
+    },
+    [moduleId, updateSlot]
   );
 
   return {
-    messages: slot.messages,
-    isTyping: slot.isTyping,
-    attachments: slot.attachments,
+    // Active session data
+    messages: session.messages,
+    isTyping: session.isTyping,
+    attachments: session.attachments,
+    // Active session actions
     sendChipQuery,
     sendCatalogQuery,
     sendTextQuery,
@@ -195,5 +304,11 @@ export function useModuleConversation(moduleId) {
     attachCard,
     removeAttachment,
     isAttached,
+    // Session management
+    sessionList,
+    activeSessionId: slot.activeSessionId,
+    createSession,
+    switchSession,
+    deleteSession,
   };
 }

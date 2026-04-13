@@ -16,9 +16,17 @@ export default function TopBar({ onOpenDrawer }) {
         justifyContent: 'space-between',
         padding: '0 16px',
         flexShrink: 0,
+        gap: '14px',
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          flexShrink: 0,
+        }}
+      >
         <button
           type="button"
           onClick={onOpenDrawer}
@@ -38,7 +46,9 @@ export default function TopBar({ onOpenDrawer }) {
           }}
           className="tabular"
         >
-          <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{COMPANY.ticker}</span>
+          <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
+            {COMPANY.ticker}
+          </span>
           <span style={{ color: 'var(--text-tertiary)' }}>·</span>
           <span style={{ color: 'var(--text-secondary)' }}>
             {COMPANY.price.toFixed(2)} {COMPANY.currency}
@@ -64,26 +74,40 @@ export default function TopBar({ onOpenDrawer }) {
         </div>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-        <button type="button" aria-label="Search" className="cb-icon-btn">
-          <Search size={16} strokeWidth={1.75} />
-        </button>
-        <div
+      <div
+        className="cb-topbar-search"
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          flex: 1,
+          maxWidth: '420px',
+          background: 'var(--bg)',
+          border: '1px solid var(--border)',
+          borderRadius: '999px',
+          padding: '6px 14px',
+        }}
+      >
+        <Search
+          size={14}
+          strokeWidth={1.75}
+          style={{ color: 'var(--text-tertiary)', flexShrink: 0 }}
+        />
+        <input
+          type="text"
+          placeholder="Search owners, contacts, reports…"
+          aria-label="Search the platform"
           style={{
-            width: '28px',
-            height: '28px',
-            borderRadius: '50%',
-            border: '1px solid var(--border)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '10px',
-            fontWeight: 600,
+            flex: 1,
+            border: 'none',
+            background: 'transparent',
+            outline: 'none',
+            fontSize: '12px',
             color: 'var(--text-primary)',
+            letterSpacing: '-0.01em',
+            minWidth: 0,
           }}
-        >
-          MF
-        </div>
+        />
       </div>
     </header>
   );

@@ -1,13 +1,13 @@
 import { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Search } from 'lucide-react';
 import DataTable from '../ui/DataTable';
 
 export default function ListScreen({
   title,
   subtitle,
-  backTo = '/',
-  backLabel = 'Back to Dashboard',
+  backTo: backToProp,
+  backLabel: backLabelProp,
   searchPlaceholder = 'Search…',
   searchFields = [],
   columns,
@@ -16,7 +16,26 @@ export default function ListScreen({
   toolbarExtras,
   children,
 }) {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [query, setQuery] = useState('');
+
+  // Prefer explicit props, then location.state, then fallbacks.
+  const backTo = backToProp || location.state?.backTo || '/';
+  const backLabel =
+    backLabelProp || location.state?.backLabel || 'Back to Dashboard';
+
+  const handleBack = () => {
+    if (location.state?.backTo) {
+      navigate(location.state.backTo);
+    } else if (backToProp) {
+      navigate(backToProp);
+    } else if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate('/');
+    }
+  };
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -34,10 +53,20 @@ export default function ListScreen({
     <main className="cb-screen">
       <div className="cb-screen-scroll">
         <div className="cb-screen-inner">
-          <Link to={backTo} className="cb-screen-back">
+          <button
+            type="button"
+            onClick={handleBack}
+            className="cb-screen-back"
+            style={{
+              background: 'transparent',
+              border: 'none',
+              padding: 0,
+              cursor: 'pointer',
+            }}
+          >
             <ArrowLeft size={12} strokeWidth={2} />
             {backLabel}
-          </Link>
+          </button>
 
           <header className="cb-screen-header">
             <h1>{title}</h1>
@@ -47,7 +76,11 @@ export default function ListScreen({
           <div className="cb-screen-toolbar">
             {searchFields.length > 0 && (
               <div className="cb-screen-search">
-                <Search size={13} strokeWidth={1.75} style={{ color: 'var(--text-tertiary)' }} />
+                <Search
+                  size={13}
+                  strokeWidth={1.75}
+                  style={{ color: 'var(--text-tertiary)' }}
+                />
                 <input
                   type="text"
                   value={query}

@@ -1,4 +1,7 @@
 import ResponseCard from './ResponseCard';
+import DataTable from '../../ui/DataTable';
+import { INSIDER_TRANSACTIONS } from '../../../data/insiderTransactions';
+import { formatDateShort, formatSignedInt, formatPrice } from '../../../utils/formatters';
 
 export default function InsiderActivityCard({
   onFollowUp,
@@ -43,15 +46,73 @@ export default function InsiderActivityCard({
           fontSize: '13px',
           color: 'var(--text-secondary)',
           lineHeight: 1.6,
-          margin: 0,
+          margin: '0 0 14px',
           letterSpacing: '-0.01em',
         }}
       >
-        No new PDMR transactions have been reported for Integrum in the past 14 days. The most
-        recent filing was on March 28, when board member Erik Lundström acquired 2,500 shares at
-        15.20 SEK through a market purchase. Total insider ownership stands at 23.19% of capital,
-        dominated by Richard Brännemark's 23.19% stake.
+        No new PDMR transactions in the past 14 days. Total insider ownership
+        is <span className="cb-num">23.95%</span> of capital, dominated by{' '}
+        <span className="cb-strong">Richard Brännemark</span>{' '}
+        (<span className="cb-num">23.19%</span>). Showing the 3 most recent
+        filings below.
       </p>
+      <DataTable
+        columns={[
+          {
+            header: 'Date',
+            key: 'date',
+            nowrap: true,
+            width: '72px',
+            render: (r) => formatDateShort(r.date),
+          },
+          { header: 'Person', key: 'person' },
+          {
+            header: 'Role',
+            key: 'role',
+            render: (r) => (
+              <span style={{ color: 'var(--text-secondary)', fontSize: '11px' }}>
+                {r.role}
+              </span>
+            ),
+          },
+          {
+            header: 'Type',
+            key: 'type',
+            render: (r) => (
+              <span
+                style={{
+                  color:
+                    r.type === 'Acquisition'
+                      ? 'var(--positive)'
+                      : 'var(--negative)',
+                  fontSize: '11px',
+                  fontWeight: 600,
+                }}
+              >
+                {r.type === 'Acquisition' ? '▲ BUY' : '▼ SELL'}
+              </span>
+            ),
+          },
+          {
+            header: 'Shares',
+            key: 'shares',
+            align: 'right',
+            nowrap: true,
+            render: (r) =>
+              formatSignedInt(
+                r.type === 'Acquisition' ? r.shares : -r.shares
+              ),
+          },
+          {
+            header: 'Price',
+            key: 'price',
+            align: 'right',
+            nowrap: true,
+            render: (r) => formatPrice(r.price, 'SEK'),
+          },
+        ]}
+        rows={INSIDER_TRANSACTIONS}
+      />
     </ResponseCard>
   );
 }

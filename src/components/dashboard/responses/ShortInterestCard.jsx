@@ -1,4 +1,6 @@
 import ResponseCard from './ResponseCard';
+import BarChart from '../../ui/BarChart';
+import { formatPct } from '../../../utils/formatters';
 
 export default function ShortInterestCard({
   onFollowUp,
@@ -43,15 +45,28 @@ export default function ShortInterestCard({
           fontSize: '13px',
           color: 'var(--text-secondary)',
           lineHeight: 1.6,
-          margin: 0,
+          margin: '0 0 14px',
           letterSpacing: '-0.01em',
         }}
       >
-        Short interest in INTEG B currently stands at 2.1% of capital, down from 2.8% three
-        months ago. One disclosed short holder remains on the register: Marshall Wace LLP with a
-        0.62% position, unchanged since February. Securities lending activity has been stable
-        with no unusual spikes in borrowing demand.
+        Short interest in INTEG B currently stands at{' '}
+        <span className="cb-num">2.1%</span> of capital,{' '}
+        <span className="cb-pos">down from 2.8% three months ago</span>. One
+        disclosed short holder remains on the register:{' '}
+        <span className="cb-strong">Marshall Wace LLP</span> with a{' '}
+        <span className="cb-num">0.62%</span> position, unchanged since
+        February.
       </p>
+      <BarChart
+        data={[
+          { key: 'm6', label: '6 months ago', value: 3.2 },
+          { key: 'm3', label: '3 months ago', value: 2.8 },
+          { key: 'm1', label: '1 month ago', value: 2.3 },
+          { key: 'now', label: 'Now', value: 2.1 },
+        ]}
+        highlightKey="now"
+        valueFormatter={formatPct}
+      />
     </ResponseCard>
   );
 }

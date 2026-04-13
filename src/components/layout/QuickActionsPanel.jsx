@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronRight, Sparkles } from 'lucide-react';
+import { ChevronRight, LayoutGrid } from 'lucide-react';
 
 function QuickActionList({ actions, onItemClick }) {
   return (
@@ -64,7 +64,7 @@ export default function QuickActionsPanel({
         aria-label="Open quick actions"
         onClick={() => setSheetOpen(true)}
       >
-        <Sparkles size={18} strokeWidth={1.75} />
+        <LayoutGrid size={18} strokeWidth={1.75} />
       </button>
 
       {sheetOpen && (

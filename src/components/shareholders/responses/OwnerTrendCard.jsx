@@ -74,7 +74,8 @@ export default function OwnerTrendCard({
       >
         <Sparkline
           data={OWNER_TREND_12M.ownerCount}
-          width={640}
+          width="100%"
+          viewWidth={640}
           height={68}
           strokeWidth={1.75}
           color="var(--text-primary)"

@@ -127,13 +127,22 @@ export default function TargetingPage() {
     }
   };
 
+  const navFromTargeting = (to) =>
+    navigate(to, {
+      state: {
+        contextModule: 'targeting',
+        backTo: '/targeting',
+        backLabel: 'Back to Targeting',
+      },
+    });
+
   const quickActions = [
     {
       id: 'qa.tgt.screener',
       icon: Target,
       label: 'Target screener',
       sub: 'All prioritized candidates',
-      onClick: () => navigate('/targeting/screener'),
+      onClick: () => navFromTargeting('/targeting/screener'),
     },
     {
       id: 'qa.tgt.compare',
@@ -148,14 +157,14 @@ export default function TargetingPage() {
       icon: Users,
       label: 'Current shareholders',
       sub: 'Our full register',
-      onClick: () => navigate('/shareholders/owners'),
+      onClick: () => navFromTargeting('/shareholders/owners'),
     },
     {
       id: 'qa.tgt.contacts',
       icon: Mail,
       label: 'CRM contacts',
       sub: 'Tracked people at target firms',
-      onClick: () => navigate('/crm/people'),
+      onClick: () => navFromTargeting('/crm/people'),
     },
     {
       id: 'qa.tgt.dash',
@@ -177,7 +186,7 @@ export default function TargetingPage() {
     >
       <QuickActionsPanel
         title="Targeting quick actions"
-        subtitle="Jump to a main screen"
+        subtitle="Jump to a key view"
         actions={quickActions}
       />
 

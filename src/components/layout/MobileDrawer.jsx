@@ -122,7 +122,9 @@ export default function MobileDrawer({ open, onClose }) {
                   alignItems: 'center',
                   gap: '12px',
                   padding: '11px 16px',
-                  borderLeft: isActive ? '2px solid var(--text-primary)' : '2px solid transparent',
+                  borderLeft: isActive
+                    ? '2px solid var(--text-primary)'
+                    : '2px solid transparent',
                   color: isActive ? 'var(--text-primary)' : 'var(--text-tertiary)',
                   fontSize: '13px',
                   fontWeight: isActive ? 600 : 400,
@@ -131,7 +133,23 @@ export default function MobileDrawer({ open, onClose }) {
                 })}
               >
                 <Icon size={16} strokeWidth={1.75} />
-                <span>{m.label}</span>
+                <span style={{ flex: 1 }}>{m.label}</span>
+                {!m.active && (
+                  <span
+                    style={{
+                      fontSize: '9px',
+                      fontWeight: 500,
+                      letterSpacing: '0.05em',
+                      textTransform: 'uppercase',
+                      color: 'var(--text-tertiary)',
+                      border: '1px solid var(--border)',
+                      padding: '1px 6px',
+                      borderRadius: '999px',
+                    }}
+                  >
+                    Soon
+                  </span>
+                )}
               </NavLink>
             );
           })}

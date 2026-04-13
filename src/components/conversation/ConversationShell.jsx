@@ -59,9 +59,10 @@ export default function ConversationShell({
       style={{
         flex: 1,
         overflowY: 'auto',
-        // Extra bottom padding so the last message can scroll above the
-        // absolute-positioned chat box overlay (~112px tall).
-        padding: '24px 16px 136px',
+        // Bottom padding matches the chat-box overlay height so the last
+        // message scrolls right up to the chat box and the area above the
+        // chat box is never empty.
+        padding: '24px 16px 92px',
       }}
     >
       <div

@@ -21,8 +21,12 @@ export default function RootLayout() {
         background: 'var(--bg)',
       }}
     >
-      <Sidebar />
-      <MobileDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
+      <Sidebar conversations={conversations} />
+      <MobileDrawer
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        conversations={conversations}
+      />
 
       <div
         style={{
