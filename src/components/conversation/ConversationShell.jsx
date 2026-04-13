@@ -45,16 +45,18 @@ export default function ConversationShell({
   messages,
   isTyping,
   renderResponse,
+  chatInputSlot,
 }) {
   const scrollRef = useRef(null);
   const endRef = useRef(null);
+  const overlayRef = useRef(null);
   const prevMessageCount = useRef(messages.length);
   const [showJumpDown, setShowJumpDown] = useState(false);
-  const SCROLL_THRESHOLD = 120; // px from bottom within which we consider "at bottom"
+  const [overlayHeight, setOverlayHeight] = useState(64);
+  const SCROLL_THRESHOLD = 120;
 
-  // Scroll to bottom only when a new message is appended or typing starts.
-  // We deliberately skip the first render so navigating back to the page
-  // keeps the previous scroll position instead of jumping to the latest card.
+  // Scroll to bottom only when a new message arrives or typing starts.
+  // First render never auto-scrolls so navigating back preserves position.
   useEffect(() => {
     const isFirstRun = prevMessageCount.current === messages.length && !isTyping;
     if (isFirstRun) {
@@ -67,7 +69,7 @@ export default function ConversationShell({
     prevMessageCount.current = messages.length;
   }, [messages.length, isTyping]);
 
-  // Track scroll position to show / hide the go-to-bottom FAB.
+  // Show / hide the jump-to-bottom FAB.
   useLayoutEffect(() => {
     const el = scrollRef.current;
     if (!el) return undefined;
@@ -79,6 +81,22 @@ export default function ConversationShell({
     handleScroll();
     el.addEventListener('scroll', handleScroll, { passive: true });
     return () => el.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Track the chat overlay's live height. When attachments appear the
+  // pill grows; we use this to set the conversation's bottom padding so
+  // the last message always sits exactly at the chat box top edge.
+  useLayoutEffect(() => {
+    const el = overlayRef.current;
+    if (!el || typeof ResizeObserver === 'undefined') return undefined;
+    const ro = new ResizeObserver((entries) => {
+      const rect = entries[0]?.contentRect;
+      if (rect) {
+        setOverlayHeight(Math.max(48, Math.round(rect.height)));
+      }
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
   }, []);
 
   const jumpToBottom = () => {
@@ -93,10 +111,9 @@ export default function ConversationShell({
         style={{
           flex: 1,
           overflowY: 'auto',
-          // Matches the chat overlay height exactly so the last message
-          // sits right against the top of the chat box — no empty gap, no
-          // content hidden below the chat box.
-          padding: '24px 16px 82px',
+          // Bottom padding tracks the chat overlay's live height so the
+          // last message stops exactly at the chat box top.
+          padding: `24px 16px ${overlayHeight}px`,
         }}
       >
         <div
@@ -140,9 +157,16 @@ export default function ConversationShell({
           onClick={jumpToBottom}
           aria-label="Jump to latest"
           title="Jump to latest"
+          style={{ bottom: `${overlayHeight + 14}px` }}
         >
           <ChevronDown size={16} strokeWidth={2} />
         </button>
+      )}
+
+      {chatInputSlot && (
+        <div className="cb-chat-overlay" ref={overlayRef}>
+          <div className="cb-chat-overlay-inner">{chatInputSlot}</div>
+        </div>
       )}
     </>
   );

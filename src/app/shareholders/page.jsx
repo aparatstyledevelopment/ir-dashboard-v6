@@ -3,27 +3,32 @@ import { Users, ArrowDownUp, Lock, ArrowUpDown } from 'lucide-react';
 import { useModuleConversation } from '../../hooks/useConversations';
 import { createChatSubmitHandler } from '../../utils/slashCommands';
 import ConversationShell from '../../components/conversation/ConversationShell';
+import { renderAnyResponse } from '../../components/conversation/renderResponse';
 import QuickActionsPanel from '../../components/layout/QuickActionsPanel';
 import ChatInput from '../../components/dashboard/ChatInput';
 import ShareholdersBriefing from '../../components/shareholders/ShareholdersBriefing';
 import ShareholdersChips from '../../components/shareholders/ShareholdersChips';
-import RegisterCard from '../../components/shareholders/responses/RegisterCard';
-import OwnerTrendCard from '../../components/shareholders/responses/OwnerTrendCard';
-import GeographyCard from '../../components/shareholders/responses/GeographyCard';
-import OwnerTypeCard from '../../components/shareholders/responses/OwnerTypeCard';
-import DailyTransactionsCard from '../../components/shareholders/responses/DailyTransactionsCard';
-import LockUpsCard from '../../components/shareholders/responses/LockUpsCard';
-import GenericResponseCard from '../../components/dashboard/responses/GenericResponseCard';
-import DynamicResponseCard from '../../components/dashboard/responses/DynamicResponseCard';
 import { getCatalogEntry } from '../../data/responseCatalog';
 
 const RESPONSE_TITLES = {
+  ownership: 'Ownership Changes — Last 30 Days',
+  topHolders: 'Top 25 Shareholders',
+  liquidity: 'Liquidity Analysis vs Peers',
+  insider: 'Insider & PDMR Activity',
+  short: 'Short Interest Overview',
+  events: 'Upcoming IR Calendar',
   'sh.register': 'Shareholder Register',
   'sh.trend': 'Owner Count — 12 Months',
   'sh.geo': 'Holders by Country',
   'sh.type': 'Holders by Type',
   'sh.daily': 'Recent Register Transactions',
   'sh.lockup': 'Lock-up Agreements',
+  'tgt.priority': 'Prioritized Targets',
+  'tgt.lookalike': 'Lookalike Holders',
+  'tgt.peergaps': 'Peer Gap Analysis',
+  'tgt.compare': 'Compare Owners',
+  'tgt.longonly': 'Long-only Missing',
+  'tgt.exits': 'Recently Exited',
 };
 
 function getMessageTitle(message) {
@@ -56,18 +61,7 @@ export default function ShareholdersPage() {
     isAttached,
   } = useModuleConversation('shareholders');
 
-  const SH_L1_TYPES = [
-    'sh.register',
-    'sh.trend',
-    'sh.geo',
-    'sh.type',
-    'sh.daily',
-    'sh.lockup',
-  ];
-
   const handleChatSubmit = createChatSubmitHandler({
-    l1Types: SH_L1_TYPES,
-    moduleName: 'Shareholders',
     sendTextQuery,
     sendBulkResponses,
     clearActiveSession,
@@ -120,34 +114,7 @@ export default function ShareholdersPage() {
       onAttach: attachable ? () => handleAttach(ref) : undefined,
       isAttached: attachable ? isAttached(message.id) : false,
     };
-    switch (message.responseType) {
-      case 'sh.register':
-        return <RegisterCard {...cardProps} />;
-      case 'sh.trend':
-        return <OwnerTrendCard {...cardProps} />;
-      case 'sh.geo':
-        return <GeographyCard {...cardProps} />;
-      case 'sh.type':
-        return <OwnerTypeCard {...cardProps} />;
-      case 'sh.daily':
-        return <DailyTransactionsCard {...cardProps} />;
-      case 'sh.lockup':
-        return <LockUpsCard {...cardProps} />;
-      case 'generic':
-        return (
-          <GenericResponseCard
-            query={message.query}
-            attachments={message.attachments}
-            {...cardProps}
-          />
-        );
-      case 'catalog':
-        return (
-          <DynamicResponseCard catalogId={message.catalogId} {...cardProps} />
-        );
-      default:
-        return null;
-    }
+    return renderAnyResponse(message, cardProps);
   };
 
   const navFromShareholders = (to) =>
@@ -226,16 +193,14 @@ export default function ShareholdersPage() {
           messages={messages}
           isTyping={isTyping}
           renderResponse={renderResponse}
-        />
-        <div className="cb-chat-overlay">
-          <div className="cb-chat-overlay-inner">
+          chatInputSlot={
             <ChatInput
               onSubmit={handleChatSubmit}
               attachments={attachments}
               onRemoveAttachment={removeAttachment}
             />
-          </div>
-        </div>
+          }
+        />
       </div>
     </main>
   );

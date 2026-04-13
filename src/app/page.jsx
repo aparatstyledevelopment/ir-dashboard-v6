@@ -9,18 +9,14 @@ import {
 import { useModuleConversation } from '../hooks/useConversations';
 import { createChatSubmitHandler } from '../utils/slashCommands';
 import ConversationShell from '../components/conversation/ConversationShell';
+import {
+  renderAnyResponse,
+  DASHBOARD_L1_TYPES,
+} from '../components/conversation/renderResponse';
 import QuickActionsPanel from '../components/layout/QuickActionsPanel';
 import ChatInput from '../components/dashboard/ChatInput';
 import MorningBriefing from '../components/dashboard/MorningBriefing';
 import SmartChips from '../components/dashboard/SmartChips';
-import OwnershipChangesCard from '../components/dashboard/responses/OwnershipChangesCard';
-import TopHoldersCard from '../components/dashboard/responses/TopHoldersCard';
-import LiquidityComparisonCard from '../components/dashboard/responses/LiquidityComparisonCard';
-import InsiderActivityCard from '../components/dashboard/responses/InsiderActivityCard';
-import ShortInterestCard from '../components/dashboard/responses/ShortInterestCard';
-import UpcomingEventsCard from '../components/dashboard/responses/UpcomingEventsCard';
-import GenericResponseCard from '../components/dashboard/responses/GenericResponseCard';
-import DynamicResponseCard from '../components/dashboard/responses/DynamicResponseCard';
 import { getCatalogEntry } from '../data/responseCatalog';
 
 const RESPONSE_TITLES = {
@@ -30,6 +26,18 @@ const RESPONSE_TITLES = {
   insider: 'Insider & PDMR Activity',
   short: 'Short Interest Overview',
   events: 'Upcoming IR Calendar',
+  'sh.register': 'Shareholder Register',
+  'sh.trend': 'Owner Count — 12 Months',
+  'sh.geo': 'Holders by Country',
+  'sh.type': 'Holders by Type',
+  'sh.daily': 'Recent Register Transactions',
+  'sh.lockup': 'Lock-up Agreements',
+  'tgt.priority': 'Prioritized Targets',
+  'tgt.lookalike': 'Lookalike Holders',
+  'tgt.peergaps': 'Peer Gap Analysis',
+  'tgt.compare': 'Compare Owners',
+  'tgt.longonly': 'Long-only Missing',
+  'tgt.exits': 'Recently Exited',
 };
 
 function getMessageTitle(message) {
@@ -62,24 +70,15 @@ export default function DashboardPage() {
     isAttached,
   } = useModuleConversation('dashboard');
 
-  const DASHBOARD_L1_TYPES = [
-    'ownership',
-    'topHolders',
-    'liquidity',
-    'insider',
-    'short',
-    'events',
-  ];
-
   const handleChatSubmit = createChatSubmitHandler({
-    l1Types: DASHBOARD_L1_TYPES,
-    moduleName: 'Dashboard',
     sendTextQuery,
     sendBulkResponses,
     clearActiveSession,
     createSession,
     showToast,
   });
+  // DASHBOARD_L1_TYPES still imported for future use.
+  void DASHBOARD_L1_TYPES;
 
   const handleChipSelect = (chip) => {
     sendChipQuery(chip.id, chip.responseType, chip.label);
@@ -126,37 +125,7 @@ export default function DashboardPage() {
       onAttach: attachable ? () => handleAttach(ref) : undefined,
       isAttached: attachable ? isAttached(message.id) : false,
     };
-    switch (message.responseType) {
-      case 'ownership':
-        return <OwnershipChangesCard {...cardProps} />;
-      case 'topHolders':
-        return <TopHoldersCard {...cardProps} />;
-      case 'liquidity':
-        return <LiquidityComparisonCard {...cardProps} />;
-      case 'insider':
-        return <InsiderActivityCard {...cardProps} />;
-      case 'short':
-        return <ShortInterestCard {...cardProps} />;
-      case 'events':
-        return <UpcomingEventsCard {...cardProps} />;
-      case 'generic':
-        return (
-          <GenericResponseCard
-            query={message.query}
-            attachments={message.attachments}
-            {...cardProps}
-          />
-        );
-      case 'catalog':
-        return (
-          <DynamicResponseCard
-            catalogId={message.catalogId}
-            {...cardProps}
-          />
-        );
-      default:
-        return null;
-    }
+    return renderAnyResponse(message, cardProps);
   };
 
   const navFromDashboard = (to) =>
@@ -242,16 +211,14 @@ export default function DashboardPage() {
           messages={messages}
           isTyping={isTyping}
           renderResponse={renderResponse}
-        />
-        <div className="cb-chat-overlay">
-          <div className="cb-chat-overlay-inner">
+          chatInputSlot={
             <ChatInput
               onSubmit={handleChatSubmit}
               attachments={attachments}
               onRemoveAttachment={removeAttachment}
             />
-          </div>
-        </div>
+          }
+        />
       </div>
     </main>
   );

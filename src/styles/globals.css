@@ -71,7 +71,10 @@ textarea {
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    /* No transform in `to` — leaving it as the default `none` so the
+     * element doesn't keep a residual `matrix(1,0,0,1,0,0)` transform
+     * that would create a containing block and break
+     * `position: fixed` descendants. */
   }
 }
 
@@ -133,10 +136,12 @@ textarea {
   padding-right: 6px;
 }
 
-/* Go-to-bottom FAB — anchored just above the chat box overlay */
+/* Go-to-bottom FAB — anchored just above the chat box overlay.
+ * The 22px right offset matches the chat box overlay's right edge
+ * (6px overlay-right + 16px overlay-padding). */
 .cb-jump-bottom {
   position: absolute;
-  right: 20px;
+  right: 22px;
   bottom: 100px;
   width: 34px;
   height: 34px;
@@ -185,6 +190,11 @@ textarea {
   flex-shrink: 0;
   transition: all 140ms ease;
   padding: 0;
+}
+/* The lucide Share2 glyph sits slightly to the right of its box;
+ * nudge it back left so it looks centered in the circular button. */
+.cb-share-btn svg {
+  transform: translateX(-1px);
 }
 .cb-share-btn:hover {
   border-color: var(--text-primary);
@@ -271,53 +281,58 @@ textarea {
   letter-spacing: -0.01em;
 }
 
-.cb-share-backdrop {
-  display: none;
+/* Mobile share sheet — rendered via a React portal to document.body so
+ * it escapes any ancestor containing block (transformed cards etc.). */
+.cb-share-portal {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  pointer-events: none;
 }
-
-@media (max-width: 639px) {
-  .cb-share-menu {
-    position: fixed;
-    top: auto;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    width: 100%;
-    border-radius: 12px 12px 0 0;
-    border-bottom: none;
-    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.18);
-    z-index: 95;
-    animation: shareSheetIn 220ms ease-out both;
+.cb-share-portal > * {
+  pointer-events: auto;
+}
+.cb-share-portal .cb-share-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1;
+}
+.cb-share-portal .cb-share-menu {
+  position: absolute;
+  top: auto;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  max-width: 100%;
+  border-radius: 14px 14px 0 0;
+  border-bottom: none;
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.18);
+  z-index: 2;
+  animation: shareSheetIn 220ms ease-out both;
+}
+@keyframes shareSheetIn {
+  from {
+    transform: translateY(100%);
   }
-  @keyframes shareSheetIn {
-    from {
-      transform: translateY(100%);
-    }
-    to {
-      transform: translateY(0);
-    }
+  to {
+    transform: translateY(0);
   }
-  .cb-share-sheet-handle {
-    display: block;
-    width: 36px;
-    height: 4px;
-    background: var(--border);
-    border-radius: 2px;
-    margin: 10px auto 4px;
-  }
-  .cb-share-item {
-    padding: 14px 18px;
-  }
-  .cb-share-item-label {
-    font-size: 13px;
-  }
-  .cb-share-backdrop {
-    display: block;
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.4);
-    z-index: 94;
-  }
+}
+.cb-share-portal .cb-share-sheet-handle {
+  display: block;
+  width: 36px;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  margin: 10px auto 4px;
+}
+.cb-share-portal .cb-share-item {
+  padding: 14px 18px;
+}
+.cb-share-portal .cb-share-item-label {
+  font-size: 13px;
 }
 
 .cb-attach-btn {
@@ -503,11 +518,13 @@ textarea {
   margin-top: 2px;
 }
 
-/* Floating action button for mobile-only quick actions */
+/* Floating action button for mobile-only quick actions.
+ * right: 22px matches the chat box overlay's visible right edge
+ * (6px overlay-right + 16px overlay-padding). */
 .cb-qa-fab {
   position: fixed;
-  bottom: 88px;
-  right: 16px;
+  bottom: 96px;
+  right: 22px;
   width: 46px;
   height: 46px;
   border-radius: 50%;
@@ -896,6 +913,35 @@ textarea {
   letter-spacing: -0.01em;
   width: 100%;
   transition: all 140ms ease;
+  position: relative;
+}
+.cb-sidebar-chat-archive {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-tertiary);
+  padding: 0;
+  z-index: 2;
+}
+.cb-sidebar-chat-item:hover .cb-sidebar-chat-archive {
+  display: flex;
+}
+.cb-sidebar-chat-item:hover .cb-sidebar-chat-time {
+  display: none;
+}
+.cb-sidebar-chat-archive:hover {
+  color: var(--text-primary);
+  border-color: var(--text-primary);
 }
 .cb-sidebar-chat-item:hover {
   background: var(--bar-track);
@@ -1318,7 +1364,6 @@ textarea {
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
   }
 }
 .cb-chip-reveal {
@@ -1413,7 +1458,10 @@ textarea {
   right: 6px; /* match the symmetric scrollbar-gutter on the conversation */
   bottom: 0;
   background: var(--bg);
-  padding: 14px 16px 18px;
+  /* No padding-top on purpose. The chat box pill sits flush against the
+   * clip line so conversation content disappears exactly at the top edge
+   * of the pill, not into empty white space above it. */
+  padding: 0 16px 16px;
   display: flex;
   justify-content: center;
   pointer-events: none;

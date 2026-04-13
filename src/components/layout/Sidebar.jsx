@@ -14,6 +14,7 @@ import {
   Settings,
   Plus,
   MessageSquare,
+  X,
 } from 'lucide-react';
 import { MODULES } from '../../data/modules';
 
@@ -106,6 +107,43 @@ export default function Sidebar({ conversations }) {
     );
   };
 
+  const handleArchiveSession = (id, e) => {
+    e?.stopPropagation();
+    if (!conversations) return;
+    conversations.updateSlot(contextModule, (c) => {
+      if (!c.sessions[id]) return c;
+      const nextSessions = { ...c.sessions };
+      delete nextSessions[id];
+      const nextOrder = c.sessionOrder.filter((sid) => sid !== id);
+      if (nextOrder.length === 0) {
+        // Always keep at least one (empty) session so the slot is
+        // ready for the next message.
+        const fresh = {
+          id: `s-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+          title: 'New chat',
+          createdAt: Date.now(),
+          messages: [],
+          isTyping: false,
+          spentChips: new Set(),
+          attachments: [],
+        };
+        return {
+          activeSessionId: fresh.id,
+          sessionOrder: [fresh.id],
+          sessions: { [fresh.id]: fresh },
+        };
+      }
+      const nextActive =
+        c.activeSessionId === id ? nextOrder[0] : c.activeSessionId;
+      return {
+        ...c,
+        activeSessionId: nextActive,
+        sessionOrder: nextOrder,
+        sessions: nextSessions,
+      };
+    });
+  };
+
   const isModuleWithConversation =
     contextModule === 'dashboard' ||
     contextModule === 'shareholders' ||
@@ -187,13 +225,20 @@ export default function Sidebar({ conversations }) {
           ) : (
             <div className="cb-sidebar-chat-list">
               {populated.slice(0, 6).map((s) => (
-                <button
+                <div
                   key={s.id}
-                  type="button"
                   className={
                     'cb-sidebar-chat-item' + (s.isActive ? ' is-active' : '')
                   }
                   onClick={() => handleSwitchSession(s.id)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handleSwitchSession(s.id);
+                    }
+                  }}
                   title={s.title}
                 >
                   <MessageSquare
@@ -205,7 +250,16 @@ export default function Sidebar({ conversations }) {
                   <span className="cb-sidebar-chat-time">
                     {formatRelative(s.createdAt)}
                   </span>
-                </button>
+                  <button
+                    type="button"
+                    className="cb-sidebar-chat-archive"
+                    onClick={(e) => handleArchiveSession(s.id, e)}
+                    aria-label={`Archive ${s.title}`}
+                    title="Archive"
+                  >
+                    <X size={10} strokeWidth={2.2} />
+                  </button>
+                </div>
               ))}
             </div>
           )}

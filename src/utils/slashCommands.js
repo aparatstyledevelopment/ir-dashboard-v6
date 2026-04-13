@@ -1,12 +1,24 @@
 // Small dispatcher for slash commands shared by every module page.
-// Each module passes its L1 response-types plus a set of actions from
-// useModuleConversation; this returns a handler that inspects the user's
-// typed text and either triggers a command or falls through to the
-// normal text query.
+// /all dispatches EVERY card across the whole system (all L1 cards
+// from Dashboard + Shareholders + Targeting, plus every L2 catalog
+// entry). The shared <renderAnyResponse> helper (see
+// src/components/conversation/renderResponse.jsx) handles any of
+// those response types on any page, so a single conversation can
+// contain cards from any module.
+
+import { ALL_L1_TYPES } from '../components/conversation/renderResponse';
+import { RESPONSE_CATALOG } from '../data/responseCatalog';
+
+function buildAllCards() {
+  const l1 = ALL_L1_TYPES.map((responseType) => ({ responseType }));
+  const l2 = Object.keys(RESPONSE_CATALOG).map((catalogId) => ({
+    responseType: 'catalog',
+    catalogId,
+  }));
+  return [...l1, ...l2];
+}
 
 export function createChatSubmitHandler({
-  l1Types,
-  moduleName,
   sendTextQuery,
   sendBulkResponses,
   clearActiveSession,
@@ -17,10 +29,11 @@ export function createChatSubmitHandler({
     const trimmed = (text || '').trim();
 
     if (trimmed === '/all') {
-      sendBulkResponses(
-        (l1Types || []).map((responseType) => ({ responseType }))
+      const items = buildAllCards();
+      sendBulkResponses(items);
+      showToast?.(
+        `Added ${items.length} cards across every module to this chat.`
       );
-      showToast?.(`Added ${l1Types.length} ${moduleName.toLowerCase()} cards to the chat.`);
       return;
     }
 
@@ -50,7 +63,6 @@ export function createChatSubmitHandler({
       return;
     }
 
-    // Mock-only commands — acknowledge via toast without side effects.
     const MOCK_COMMAND_MESSAGES = {
       '/brief':
         '/brief would rerun the morning briefing from live data in production.',
@@ -68,7 +80,6 @@ export function createChatSubmitHandler({
       return;
     }
 
-    // Fall through to normal text query.
     sendTextQuery(text);
   };
 }

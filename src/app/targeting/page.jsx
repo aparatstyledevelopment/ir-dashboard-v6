@@ -3,21 +3,26 @@ import { Target, GitCompare } from 'lucide-react';
 import { useModuleConversation } from '../../hooks/useConversations';
 import { createChatSubmitHandler } from '../../utils/slashCommands';
 import ConversationShell from '../../components/conversation/ConversationShell';
+import { renderAnyResponse } from '../../components/conversation/renderResponse';
 import QuickActionsPanel from '../../components/layout/QuickActionsPanel';
 import ChatInput from '../../components/dashboard/ChatInput';
 import TargetingBriefing from '../../components/targeting/TargetingBriefing';
 import TargetingChips from '../../components/targeting/TargetingChips';
-import PriorityTargetsCard from '../../components/targeting/responses/PriorityTargetsCard';
-import LookalikeCard from '../../components/targeting/responses/LookalikeCard';
-import PeerGapsCard from '../../components/targeting/responses/PeerGapsCard';
-import CompareOwnersCard from '../../components/targeting/responses/CompareOwnersCard';
-import LongOnlyMissingCard from '../../components/targeting/responses/LongOnlyMissingCard';
-import RecentExitsCard from '../../components/targeting/responses/RecentExitsCard';
-import GenericResponseCard from '../../components/dashboard/responses/GenericResponseCard';
-import DynamicResponseCard from '../../components/dashboard/responses/DynamicResponseCard';
 import { getCatalogEntry } from '../../data/responseCatalog';
 
 const RESPONSE_TITLES = {
+  ownership: 'Ownership Changes — Last 30 Days',
+  topHolders: 'Top 25 Shareholders',
+  liquidity: 'Liquidity Analysis vs Peers',
+  insider: 'Insider & PDMR Activity',
+  short: 'Short Interest Overview',
+  events: 'Upcoming IR Calendar',
+  'sh.register': 'Shareholder Register',
+  'sh.trend': 'Owner Count — 12 Months',
+  'sh.geo': 'Holders by Country',
+  'sh.type': 'Holders by Type',
+  'sh.daily': 'Recent Register Transactions',
+  'sh.lockup': 'Lock-up Agreements',
   'tgt.priority': 'Prioritized Targets',
   'tgt.lookalike': 'Lookalike Holders',
   'tgt.peergaps': 'Peer Gap Analysis',
@@ -56,18 +61,7 @@ export default function TargetingPage() {
     isAttached,
   } = useModuleConversation('targeting');
 
-  const TGT_L1_TYPES = [
-    'tgt.priority',
-    'tgt.lookalike',
-    'tgt.peergaps',
-    'tgt.compare',
-    'tgt.longonly',
-    'tgt.exits',
-  ];
-
   const handleChatSubmit = createChatSubmitHandler({
-    l1Types: TGT_L1_TYPES,
-    moduleName: 'Targeting',
     sendTextQuery,
     sendBulkResponses,
     clearActiveSession,
@@ -120,34 +114,7 @@ export default function TargetingPage() {
       onAttach: attachable ? () => handleAttach(ref) : undefined,
       isAttached: attachable ? isAttached(message.id) : false,
     };
-    switch (message.responseType) {
-      case 'tgt.priority':
-        return <PriorityTargetsCard {...cardProps} />;
-      case 'tgt.lookalike':
-        return <LookalikeCard {...cardProps} />;
-      case 'tgt.peergaps':
-        return <PeerGapsCard {...cardProps} />;
-      case 'tgt.compare':
-        return <CompareOwnersCard {...cardProps} />;
-      case 'tgt.longonly':
-        return <LongOnlyMissingCard {...cardProps} />;
-      case 'tgt.exits':
-        return <RecentExitsCard {...cardProps} />;
-      case 'generic':
-        return (
-          <GenericResponseCard
-            query={message.query}
-            attachments={message.attachments}
-            {...cardProps}
-          />
-        );
-      case 'catalog':
-        return (
-          <DynamicResponseCard catalogId={message.catalogId} {...cardProps} />
-        );
-      default:
-        return null;
-    }
+    return renderAnyResponse(message, cardProps);
   };
 
   const navFromTargeting = (to) =>
@@ -212,16 +179,14 @@ export default function TargetingPage() {
           messages={messages}
           isTyping={isTyping}
           renderResponse={renderResponse}
-        />
-        <div className="cb-chat-overlay">
-          <div className="cb-chat-overlay-inner">
+          chatInputSlot={
             <ChatInput
               onSubmit={handleChatSubmit}
               attachments={attachments}
               onRemoveAttachment={removeAttachment}
             />
-          </div>
-        </div>
+          }
+        />
       </div>
     </main>
   );

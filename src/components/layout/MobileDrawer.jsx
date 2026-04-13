@@ -3,6 +3,7 @@ import {
   X,
   Plus,
   MessageSquare,
+  Trash2,
   LayoutDashboard,
   Users,
   Target,
@@ -105,6 +106,41 @@ export default function MobileDrawer({ open, onClose, conversations }) {
       c.sessions[id] ? { ...c, activeSessionId: id } : c
     );
     onClose?.();
+  };
+
+  const handleArchiveSession = (id, e) => {
+    e?.stopPropagation();
+    if (!conversations) return;
+    conversations.updateSlot(contextModule, (c) => {
+      if (!c.sessions[id]) return c;
+      const nextSessions = { ...c.sessions };
+      delete nextSessions[id];
+      const nextOrder = c.sessionOrder.filter((sid) => sid !== id);
+      if (nextOrder.length === 0) {
+        const fresh = {
+          id: `s-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+          title: 'New chat',
+          createdAt: Date.now(),
+          messages: [],
+          isTyping: false,
+          spentChips: new Set(),
+          attachments: [],
+        };
+        return {
+          activeSessionId: fresh.id,
+          sessionOrder: [fresh.id],
+          sessions: { [fresh.id]: fresh },
+        };
+      }
+      const nextActive =
+        c.activeSessionId === id ? nextOrder[0] : c.activeSessionId;
+      return {
+        ...c,
+        activeSessionId: nextActive,
+        sessionOrder: nextOrder,
+        sessions: nextSessions,
+      };
+    });
   };
 
   if (!open) return null;
@@ -286,14 +322,21 @@ export default function MobileDrawer({ open, onClose, conversations }) {
             ) : (
               <div style={{ flex: 1, overflowY: 'auto' }}>
                 {populated.slice(0, 20).map((s) => (
-                  <button
+                  <div
                     key={s.id}
-                    type="button"
                     className={
                       'cb-sidebar-chat-item' +
                       (s.isActive ? ' is-active' : '')
                     }
+                    role="button"
+                    tabIndex={0}
                     onClick={() => handleSwitchSession(s.id)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleSwitchSession(s.id);
+                      }
+                    }}
                     title={s.title}
                   >
                     <MessageSquare
@@ -305,7 +348,16 @@ export default function MobileDrawer({ open, onClose, conversations }) {
                     <span className="cb-sidebar-chat-time">
                       {formatRelative(s.createdAt)}
                     </span>
-                  </button>
+                    <button
+                      type="button"
+                      className="cb-sidebar-chat-archive"
+                      onClick={(e) => handleArchiveSession(s.id, e)}
+                      aria-label={`Archive ${s.title}`}
+                      title="Archive"
+                    >
+                      <Trash2 size={10} strokeWidth={2} />
+                    </button>
+                  </div>
                 ))}
               </div>
             )}
