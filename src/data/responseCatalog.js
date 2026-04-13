@@ -10,6 +10,7 @@ import { SHORT_INTEREST } from './shortInterest';
 import { UPCOMING_EVENTS } from './upcomingEvents';
 import { DAILY_TRANSACTIONS } from './dailyTransactions';
 import { LOCKUPS, LOCKUP_RELEASES } from './lockups';
+import { TARGETS, PEER_GAPS } from './targets';
 
 // Body type contracts:
 //   { type: 'narrative' }                       → no body
@@ -720,6 +721,344 @@ Object.assign(RESPONSE_CATALOG, {
       })),
     },
     source: 'Shareholders → Lock-ups',
+  },
+});
+
+/* ============================================================ */
+/* Targeting module — L2 catalog (l2.tgt.*)                       */
+/* ============================================================ */
+
+Object.assign(RESPONSE_CATALOG, {
+  /* ----- L2 from "Prioritized targets" ----- */
+
+  'l2.tgt.priority.hot': {
+    title: 'Hot Targets Only',
+    narrative:
+      "Filtering to 'Hot' priority shows 6 candidates — all with AI fit scores of 81+ and an existing relationship to our closest peers. These should move to the top of this quarter's outreach plan.",
+    body: {
+      type: 'table',
+      mode: 'plain',
+      columns: [
+        { header: '#', key: 'rank', align: 'right' },
+        { header: 'Target', key: 'name' },
+        { header: 'Country', key: 'country', align: 'center' },
+        { header: 'Score', key: 'score', align: 'right' },
+      ],
+      rows: TARGETS.filter((t) => t.priority === 'Hot').map((t, i) => ({
+        ...t,
+        rank: i + 1,
+      })),
+    },
+    source: 'Targeting → Screener',
+  },
+
+  'l2.tgt.priority.details': {
+    title: 'Score Breakdown — Polar Capital Healthcare',
+    narrative:
+      'The AI fit score for Polar Capital Healthcare (92/100) breaks down into: peer overlap (+28), sector fit (+24), mandate alignment (+18), historical behaviour (+14), geography (+8). No negative factors.',
+    body: {
+      type: 'kv',
+      items: [
+        { label: 'Peer overlap (3 of 5 peers)', value: '+28' },
+        { label: 'Sector fit (healthcare-dedicated)', value: '+24' },
+        { label: 'Mandate alignment (European small-cap)', value: '+18' },
+        { label: 'Historical behaviour (2+ year holds)', value: '+14' },
+        { label: 'Geography (GB fund, our sweet spot)', value: '+8' },
+        { label: 'Total', value: '92/100' },
+      ],
+    },
+    source: 'Targeting → Screener',
+  },
+
+  'l2.tgt.priority.outreach': {
+    title: 'Draft Outreach Sequence',
+    narrative:
+      'A 4-touch outreach sequence for the top target. Touch 1 is a cold intro via Berenberg (our sell-side relationship). Touch 2–4 escalate over 3 weeks.',
+    body: {
+      type: 'list',
+      items: [
+        {
+          left: 'Touch 1',
+          right: 'Cold intro via Berenberg analyst',
+          sub: 'Sector briefing email with Q4 results attached',
+        },
+        {
+          left: 'Touch 2',
+          right: '1-on-1 call invitation',
+          sub: '2 weeks later, direct from IR',
+        },
+        {
+          left: 'Touch 3',
+          right: 'Site visit offer',
+          sub: 'Stockholm HQ or London meeting',
+        },
+        {
+          left: 'Touch 4',
+          right: 'Investor day invite',
+          sub: 'Next scheduled quarterly call',
+        },
+      ],
+    },
+    source: 'Targeting → Screener',
+  },
+
+  /* ----- L2 from "Lookalike holders" ----- */
+
+  'l2.tgt.look.criteria': {
+    title: 'Lookalike Matching Criteria',
+    narrative:
+      'Lookalike matching uses 5 weighted traits: peer overlap (30%), investment style (25%), holding duration (20%), geographic fit (15%), ESG alignment (10%).',
+    body: {
+      type: 'kv',
+      items: [
+        { label: 'Peer overlap', value: '30% weight' },
+        { label: 'Investment style', value: '25% weight' },
+        { label: 'Typical holding duration', value: '20% weight' },
+        { label: 'Geographic fit', value: '15% weight' },
+        { label: 'ESG alignment', value: '10% weight' },
+      ],
+    },
+    source: 'Targeting → Compare Owners',
+  },
+
+  'l2.tgt.look.heatmap': {
+    title: 'Peer Overlap Heatmap',
+    narrative:
+      'Showing which of our top lookalike candidates hold which peer. Polar Capital and Allianz GI have the most peer overlap, making them the strongest DNA matches.',
+    body: {
+      type: 'kv',
+      items: [
+        { label: 'Polar Capital Healthcare', value: '3/5 peers' },
+        { label: 'Allianz GI European Equity', value: '2/5 peers' },
+        { label: 'Fidelity Intl Small Cap', value: '1/5 peers' },
+        { label: 'Columbia Threadneedle', value: '1/5 peers' },
+        { label: 'Impax AM Environmental', value: '1/5 peers' },
+        { label: 'Evli Nordic Small Cap', value: '2/5 peers' },
+      ],
+    },
+    source: 'Targeting → Compare Owners',
+  },
+
+  'l2.tgt.look.esg': {
+    title: 'ESG-Aligned Lookalikes',
+    narrative:
+      '2 of our top lookalike candidates have a stated ESG tilt that aligns with our sustainability narrative: Impax (environmental markets) and Öhman (Nordic ESG).',
+    body: {
+      type: 'list',
+      items: [
+        {
+          left: 'Impax AM Environmental',
+          right: 'Environmental Markets · £12B AUM',
+          sub: 'Our lifecycle assessment aligns with their screening framework',
+        },
+        {
+          left: 'Öhman Fonder',
+          right: 'Nordic ESG · €11B AUM',
+          sub: 'Already accumulating via the Nordic Equity fund',
+        },
+      ],
+    },
+    source: 'Targeting → Compare Owners',
+  },
+
+  /* ----- L2 from "Peers we're not matching" ----- */
+
+  'l2.tgt.gap.byPeer': {
+    title: 'Peer Gaps Grouped by Peer',
+    narrative:
+      'Holders of our peers, grouped by which peer they own. BONESUPPORT has the widest gap — 18 institutional holders own it that don\'t own us. OssDsign has 12 unique holders, Medistim 10.',
+    body: {
+      type: 'kv',
+      items: [
+        { label: 'BONESUPPORT gap', value: '18 unique holders' },
+        { label: 'OssDsign gap', value: '12 unique holders' },
+        { label: 'Medistim gap', value: '10 unique holders' },
+        { label: 'QuickCool gap', value: '4 unique holders' },
+        { label: 'Total unique peer gap', value: '47 (may overlap)' },
+      ],
+    },
+    source: 'Targeting → Compare Owners',
+  },
+
+  'l2.tgt.gap.multi': {
+    title: 'Holders of 2+ Peers — Prime Targets',
+    narrative:
+      '18 holders own 2 or more of our closest peers without holding INTEG B. These are the highest-conversion peer-gap candidates because they already believe in the thesis — they just haven\'t found us yet.',
+    body: {
+      type: 'table',
+      mode: 'plain',
+      columns: [
+        { header: 'Holder', key: 'holder' },
+        { header: 'Country', key: 'country', align: 'center' },
+        { header: 'Holds peer %', key: 'holdingPct', align: 'right', fmt: 'pct' },
+      ],
+      rows: PEER_GAPS,
+    },
+    source: 'Targeting → Compare Owners',
+  },
+
+  'l2.tgt.gap.contact': {
+    title: 'Start Outreach List',
+    narrative:
+      'Drafted a 12-person outreach list from the top peer-gap candidates. 5 have existing warm intros via our sell-side relationships; 7 require cold approach.',
+    body: {
+      type: 'list',
+      items: [
+        { left: '5 warm intros', right: 'Via Berenberg, Carnegie sell-side', sub: 'Expected response rate ~40%' },
+        { left: '7 cold approaches', right: 'Direct IR contact needed', sub: 'Expected response rate ~12%' },
+        { left: 'Estimated wins', right: '3–4 first meetings', sub: 'Over 8-week engagement window' },
+      ],
+    },
+    source: 'Targeting → Compare Owners',
+  },
+
+  /* ----- L2 from "Compare our top 5 vs peers" ----- */
+
+  'l2.tgt.cmp.overlap': {
+    title: 'Overlap Percentage',
+    narrative:
+      'Peer-level overlap in our top 25: 62% of our top holders also hold BONESUPPORT, 48% hold Medistim, 40% hold OssDsign, 12% hold QuickCool. No perfect overlap with any single peer.',
+    body: {
+      type: 'kv',
+      items: [
+        { label: 'BONESUPPORT', value: '62% overlap' },
+        { label: 'Medistim', value: '48% overlap' },
+        { label: 'OssDsign', value: '40% overlap' },
+        { label: 'QuickCool', value: '12% overlap' },
+      ],
+    },
+    source: 'Targeting → Compare Owners',
+  },
+
+  'l2.tgt.cmp.unique': {
+    title: 'Unique to INTEG B',
+    narrative:
+      'Holders that appear in our register but NOT in any peer register: 6 institutional positions representing 8.2% of capital. These are our "distinctive" holders and worth nurturing.',
+    body: {
+      type: 'list',
+      items: [
+        { left: 'SEB Life International', right: '2.87% of our capital', sub: 'Unit-linked · Luxembourg' },
+        { left: 'Al Rajhi Capital', right: '1.98% of our capital', sub: 'Sharia-compliant · Saudi' },
+        { left: 'Göteborgs Universitet', right: '0.98% of our capital', sub: 'Endowment · Local' },
+        { left: 'Länsförsäkringar', right: '0.87% of our capital', sub: 'Sverige Aktiv fund' },
+        { left: 'Carnegie Fonder', right: '0.76% of our capital', sub: 'Swedish boutique' },
+        { left: '2 smaller holders', right: '~0.4% combined', sub: 'Individual + family office' },
+      ],
+    },
+    source: 'Targeting → Compare Owners',
+  },
+
+  'l2.tgt.cmp.gap': {
+    title: 'Shared by 3+ Peers, Not Us',
+    narrative:
+      '4 holders own at least 3 of our 4 closest peers but not INTEG B. These are the most glaring gaps and should be the top priority for peer-gap outreach.',
+    body: {
+      type: 'list',
+      items: [
+        { left: 'Fjärde AP-fonden', right: 'Holds 4 of 4 peers', sub: '(wait — already holds us at 1.76%)' },
+        { left: 'Polar Capital Healthcare', right: 'Holds 3 of 4 peers', sub: 'Not on our register' },
+        { left: 'Handelsbanken Fonder', right: 'Holds 3 of 4 peers', sub: '(already holds us at 2.34%)' },
+        { left: 'Impax AM Environmental', right: 'Holds 3 of 4 peers', sub: 'Not on our register' },
+      ],
+    },
+    source: 'Targeting → Compare Owners',
+  },
+
+  /* ----- L2 from "Long-only missing" ----- */
+
+  'l2.tgt.lo.esg': {
+    title: 'ESG-Aligned Long-Only Targets',
+    narrative:
+      '3 ESG-tilted long-only funds match our sustainability narrative and are not currently holding INTEG B. All 3 have a demonstrated appetite for small-cap medtech.',
+    body: {
+      type: 'list',
+      items: [
+        { left: 'Impax AM', right: 'Environmental Markets · £12B', sub: 'UK · Hot · Score 83' },
+        { left: 'Columbia Threadneedle', right: 'Responsible Global Equity · $1B', sub: 'US · Warm · Score 72' },
+        { left: 'Skagen Funds', right: 'Skagen Global · €6B', sub: 'Norway · Hot · Score 81' },
+      ],
+    },
+    source: 'Targeting → Screener',
+  },
+
+  'l2.tgt.lo.nordic': {
+    title: 'Nordic Long-Only Mandates',
+    narrative:
+      '4 Nordic long-only funds have structural underweight in Swedish medtech and no current position in INTEG B. Highest fit: Skagen and Evli.',
+    body: {
+      type: 'list',
+      items: [
+        { left: 'Skagen Global', right: 'Norway · €6B · Score 81', sub: 'Nordic value, currently underweight healthcare' },
+        { left: 'Evli Nordic Small Cap', right: 'Finland · €1.2B · Score 71', sub: 'Holds 2 peers' },
+        { left: 'Norron Active', right: 'Sweden · €800M · Score 68', sub: 'Quick to add Nordic healthcare historically' },
+        { left: 'Storebrand ASA', right: 'Norway · €95B · Score 64', sub: 'Nordic equity sleeve' },
+      ],
+    },
+    source: 'Targeting → Screener',
+  },
+
+  'l2.tgt.lo.global': {
+    title: 'Global Small-Cap Mandates',
+    narrative:
+      '5 global small-cap mandates are a structural fit for INTEG B. Largest by AUM: Allianz GI Europe (€48B) and T. Rowe Price International Discovery ($12B).',
+    body: {
+      type: 'list',
+      items: [
+        { left: 'Allianz GI European Equity Growth', right: 'Germany · €48B', sub: 'Score 88' },
+        { left: 'T. Rowe Price International Discovery', right: 'US · $12B', sub: 'Score 72' },
+        { left: 'Fidelity Intl Small Cap', right: 'UK · £3.8B', sub: 'Score 86' },
+        { left: 'Kempen European Small Cap', right: 'Netherlands · €3B', sub: 'Score 69' },
+        { left: 'abrdn World Smaller Companies', right: 'UK · £2.1B', sub: 'Score 74' },
+      ],
+    },
+    source: 'Targeting → Screener',
+  },
+
+  /* ----- L2 from "Recently exited" ----- */
+
+  'l2.tgt.exit.winback': {
+    title: 'Winback Candidates',
+    narrative:
+      '2 of our 4 recent exits are strong winback candidates: Alliance Bernstein (rotated out of sector, may rotate back) and Prudential (PM change, new PM is known to be open to small-cap).',
+    body: {
+      type: 'list',
+      items: [
+        { left: 'Alliance Bernstein', right: 'Intl Growth · Exited Dec 2025', sub: 'Rotation rationale — reversible if sector cycle turns' },
+        { left: 'Prudential International', right: 'Exited Jul 2025', sub: 'PM change — new PM is open to Nordic small-cap' },
+      ],
+    },
+    source: 'Targeting → Compare Owners',
+  },
+
+  'l2.tgt.exit.reason': {
+    title: 'Exit Reason Breakdown',
+    narrative:
+      'Of 4 exits in the past 12 months: 2 were sector rotations, 1 was a mandate closure, 1 was a PM change. None were thesis changes — this is positive news.',
+    body: {
+      type: 'kv',
+      items: [
+        { label: 'Sector rotation', value: '2 (50%)' },
+        { label: 'Mandate closure', value: '1 (25%)' },
+        { label: 'PM change', value: '1 (25%)' },
+        { label: 'Thesis change', value: '0 (0%)' },
+      ],
+    },
+    source: 'Targeting → Compare Owners',
+  },
+
+  'l2.tgt.exit.sequence': {
+    title: 'Winback Outreach Sequence',
+    narrative:
+      'A 3-touch winback sequence. Touch 1 references the change in their portfolio. Touch 2 shares a pipeline update. Touch 3 offers a catch-up call.',
+    body: {
+      type: 'list',
+      items: [
+        { left: 'Touch 1', right: '"We noticed you rotated — here\'s our latest"', sub: 'Pipeline update email' },
+        { left: 'Touch 2', right: '"Peer thesis check-in"', sub: '3 weeks later, with peer comparables' },
+        { left: 'Touch 3', right: 'Direct catch-up call invite', sub: '6 weeks later, from senior IR' },
+      ],
+    },
+    source: 'Targeting → Compare Owners',
   },
 });
 

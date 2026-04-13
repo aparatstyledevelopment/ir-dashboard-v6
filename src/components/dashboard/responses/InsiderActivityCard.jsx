@@ -5,6 +5,8 @@ export default function InsiderActivityCard({
   onSourceOpen,
   onShowToast,
   isChipSpent,
+  onAttach,
+  isAttached,
 }) {
   return (
     <ResponseCard
@@ -33,6 +35,8 @@ export default function InsiderActivityCard({
       onSourceOpen={onSourceOpen}
       onShowToast={onShowToast}
       isChipSpent={isChipSpent}
+      onAttach={onAttach}
+      isAttached={isAttached}
     >
       <p
         style={{

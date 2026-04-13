@@ -5,6 +5,8 @@ export default function ShortInterestCard({
   onSourceOpen,
   onShowToast,
   isChipSpent,
+  onAttach,
+  isAttached,
 }) {
   return (
     <ResponseCard
@@ -33,6 +35,8 @@ export default function ShortInterestCard({
       onSourceOpen={onSourceOpen}
       onShowToast={onShowToast}
       isChipSpent={isChipSpent}
+      onAttach={onAttach}
+      isAttached={isAttached}
     >
       <p
         style={{

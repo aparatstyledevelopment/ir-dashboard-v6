@@ -8,6 +8,8 @@ export default function LiquidityComparisonCard({
   onSourceOpen,
   onShowToast,
   isChipSpent,
+  onAttach,
+  isAttached,
 }) {
   const data = PEER_LIQUIDITY.map((p) => ({
     key: p.ticker,
@@ -42,6 +44,8 @@ export default function LiquidityComparisonCard({
       onSourceOpen={onSourceOpen}
       onShowToast={onShowToast}
       isChipSpent={isChipSpent}
+      onAttach={onAttach}
+      isAttached={isAttached}
     >
       <p
         style={{

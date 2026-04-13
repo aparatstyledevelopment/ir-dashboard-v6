@@ -7,6 +7,8 @@ export default function UpcomingEventsCard({
   onSourceOpen,
   onShowToast,
   isChipSpent,
+  onAttach,
+  isAttached,
 }) {
   return (
     <ResponseCard
@@ -35,6 +37,8 @@ export default function UpcomingEventsCard({
       onSourceOpen={onSourceOpen}
       onShowToast={onShowToast}
       isChipSpent={isChipSpent}
+      onAttach={onAttach}
+      isAttached={isAttached}
     >
       <p
         style={{

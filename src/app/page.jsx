@@ -1,5 +1,11 @@
-import { useOutletContext } from 'react-router-dom';
-import { Users, TrendingUp, BarChart3, Calendar, UserCheck, ArrowDownUp } from 'lucide-react';
+import { useOutletContext, useNavigate } from 'react-router-dom';
+import {
+  Users,
+  ArrowDownUp,
+  Lock,
+  Target,
+  Mail,
+} from 'lucide-react';
 import { useModuleConversation } from '../hooks/useConversations';
 import ConversationShell from '../components/conversation/ConversationShell';
 import QuickActionsPanel from '../components/layout/QuickActionsPanel';
@@ -38,6 +44,7 @@ function getMessageTitle(message) {
 
 export default function DashboardPage() {
   const { showToast } = useOutletContext();
+  const navigate = useNavigate();
   const {
     messages,
     isTyping,
@@ -81,12 +88,20 @@ export default function DashboardPage() {
     isChipSpent,
   };
 
+  const handleAttach = (ref) => {
+    const result = attachCard(ref);
+    if (!result.ok && result.reason === 'limit-reached') {
+      showToast('You can attach up to 5 cards at a time. Remove one first.');
+    }
+  };
+
   const renderResponse = (message) => {
+    const attachable = message.responseType !== 'generic';
     const ref = { id: message.id, title: getMessageTitle(message) };
     const cardProps = {
       ...sharedProps,
-      onAttach: () => attachCard(ref),
-      isAttached: isAttached(message.id),
+      onAttach: attachable ? () => handleAttach(ref) : undefined,
+      isAttached: attachable ? isAttached(message.id) : false,
     };
     switch (message.responseType) {
       case 'ownership':
@@ -123,46 +138,39 @@ export default function DashboardPage() {
 
   const quickActions = [
     {
-      id: 'qa.dash.top25',
+      id: 'qa.dash.owners',
       icon: Users,
-      label: 'Top 25 holders',
-      sub: 'Full list with capital and votes',
-      onClick: () => sendChipQuery('top25', 'topHolders', 'Top 25'),
+      label: 'All shareholders',
+      sub: '3,498 identified holders',
+      onClick: () => navigate('/shareholders/owners'),
     },
     {
-      id: 'qa.dash.buyers',
-      icon: TrendingUp,
-      label: 'Recent buyers & sellers',
-      sub: 'Net flow over last 30 days',
-      onClick: () => sendChipQuery('buyers', 'ownership', 'Buyers'),
+      id: 'qa.dash.contacts',
+      icon: Mail,
+      label: 'All contacts',
+      sub: 'IR CRM database',
+      onClick: () => navigate('/crm/people'),
     },
     {
-      id: 'qa.dash.liquidity',
-      icon: BarChart3,
-      label: 'Liquidity check',
-      sub: 'INTEG B vs Nordic peers',
-      onClick: () => sendChipQuery('liquidity', 'liquidity', 'Liquidity'),
-    },
-    {
-      id: 'qa.dash.insider',
-      icon: UserCheck,
-      label: 'Insider activity',
-      sub: 'Recent PDMR filings',
-      onClick: () => sendChipQuery('insider', 'insider', 'Insider'),
-    },
-    {
-      id: 'qa.dash.short',
+      id: 'qa.dash.transactions',
       icon: ArrowDownUp,
-      label: 'Short interest',
-      sub: 'Disclosed shorts and trend',
-      onClick: () => sendChipQuery('short', 'short', 'Short'),
+      label: 'Daily transactions',
+      sub: 'Register flow (T+2)',
+      onClick: () => navigate('/shareholders/daily-transactions'),
     },
     {
-      id: 'qa.dash.events',
-      icon: Calendar,
-      label: 'IR calendar',
-      sub: 'Next 30 days of events',
-      onClick: () => sendChipQuery('events', 'events', 'Events'),
+      id: 'qa.dash.lockups',
+      icon: Lock,
+      label: 'Lock-up agreements',
+      sub: 'Active lock-ups & expiry',
+      onClick: () => navigate('/shareholders/lockups'),
+    },
+    {
+      id: 'qa.dash.targets',
+      icon: Target,
+      label: 'Targeting screener',
+      sub: 'AI-prioritized prospects',
+      onClick: () => navigate('/targeting/screener'),
     },
   ];
 
@@ -187,6 +195,7 @@ export default function DashboardPage() {
           display: 'flex',
           flexDirection: 'column',
           minWidth: 0,
+          position: 'relative',
         }}
       >
         <ConversationShell
@@ -202,14 +211,8 @@ export default function DashboardPage() {
           isTyping={isTyping}
           renderResponse={renderResponse}
         />
-        <div className="cb-input-gutter" style={{ flexShrink: 0 }}>
-          <div
-            style={{
-              width: '100%',
-              maxWidth: '720px',
-              margin: '0 auto',
-            }}
-          >
+        <div className="cb-chat-overlay">
+          <div className="cb-chat-overlay-inner">
             <ChatInput
               onSubmit={sendTextQuery}
               attachments={attachments}

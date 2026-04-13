@@ -1,35 +1,28 @@
 import { useOutletContext, useNavigate } from 'react-router-dom';
-import {
-  Users,
-  ArrowDownUp,
-  Lock,
-  Target,
-  Mail,
-  LayoutDashboard,
-} from 'lucide-react';
+import { Target, Users, GitCompare, Mail, LayoutDashboard } from 'lucide-react';
 import { useModuleConversation } from '../../hooks/useConversations';
 import ConversationShell from '../../components/conversation/ConversationShell';
 import QuickActionsPanel from '../../components/layout/QuickActionsPanel';
 import ChatInput from '../../components/dashboard/ChatInput';
-import ShareholdersBriefing from '../../components/shareholders/ShareholdersBriefing';
-import ShareholdersChips from '../../components/shareholders/ShareholdersChips';
-import RegisterCard from '../../components/shareholders/responses/RegisterCard';
-import OwnerTrendCard from '../../components/shareholders/responses/OwnerTrendCard';
-import GeographyCard from '../../components/shareholders/responses/GeographyCard';
-import OwnerTypeCard from '../../components/shareholders/responses/OwnerTypeCard';
-import DailyTransactionsCard from '../../components/shareholders/responses/DailyTransactionsCard';
-import LockUpsCard from '../../components/shareholders/responses/LockUpsCard';
+import TargetingBriefing from '../../components/targeting/TargetingBriefing';
+import TargetingChips from '../../components/targeting/TargetingChips';
+import PriorityTargetsCard from '../../components/targeting/responses/PriorityTargetsCard';
+import LookalikeCard from '../../components/targeting/responses/LookalikeCard';
+import PeerGapsCard from '../../components/targeting/responses/PeerGapsCard';
+import CompareOwnersCard from '../../components/targeting/responses/CompareOwnersCard';
+import LongOnlyMissingCard from '../../components/targeting/responses/LongOnlyMissingCard';
+import RecentExitsCard from '../../components/targeting/responses/RecentExitsCard';
 import GenericResponseCard from '../../components/dashboard/responses/GenericResponseCard';
 import DynamicResponseCard from '../../components/dashboard/responses/DynamicResponseCard';
 import { getCatalogEntry } from '../../data/responseCatalog';
 
 const RESPONSE_TITLES = {
-  'sh.register': 'Shareholder Register',
-  'sh.trend': 'Owner Count — 12 Months',
-  'sh.geo': 'Holders by Country',
-  'sh.type': 'Holders by Type',
-  'sh.daily': 'Recent Register Transactions',
-  'sh.lockup': 'Lock-up Agreements',
+  'tgt.priority': 'Prioritized Targets',
+  'tgt.lookalike': 'Lookalike Holders',
+  'tgt.peergaps': 'Peer Gap Analysis',
+  'tgt.compare': 'Compare Owners',
+  'tgt.longonly': 'Long-only Missing',
+  'tgt.exits': 'Recently Exited',
 };
 
 function getMessageTitle(message) {
@@ -43,7 +36,7 @@ function getMessageTitle(message) {
   return RESPONSE_TITLES[message.responseType] || 'Card';
 }
 
-export default function ShareholdersPage() {
+export default function TargetingPage() {
   const { showToast } = useOutletContext();
   const navigate = useNavigate();
   const {
@@ -57,7 +50,7 @@ export default function ShareholdersPage() {
     attachCard,
     removeAttachment,
     isAttached,
-  } = useModuleConversation('shareholders');
+  } = useModuleConversation('targeting');
 
   const handleChipSelect = (chip) => {
     sendChipQuery(chip.id, chip.responseType, chip.label);
@@ -105,18 +98,18 @@ export default function ShareholdersPage() {
       isAttached: attachable ? isAttached(message.id) : false,
     };
     switch (message.responseType) {
-      case 'sh.register':
-        return <RegisterCard {...cardProps} />;
-      case 'sh.trend':
-        return <OwnerTrendCard {...cardProps} />;
-      case 'sh.geo':
-        return <GeographyCard {...cardProps} />;
-      case 'sh.type':
-        return <OwnerTypeCard {...cardProps} />;
-      case 'sh.daily':
-        return <DailyTransactionsCard {...cardProps} />;
-      case 'sh.lockup':
-        return <LockUpsCard {...cardProps} />;
+      case 'tgt.priority':
+        return <PriorityTargetsCard {...cardProps} />;
+      case 'tgt.lookalike':
+        return <LookalikeCard {...cardProps} />;
+      case 'tgt.peergaps':
+        return <PeerGapsCard {...cardProps} />;
+      case 'tgt.compare':
+        return <CompareOwnersCard {...cardProps} />;
+      case 'tgt.longonly':
+        return <LongOnlyMissingCard {...cardProps} />;
+      case 'tgt.exits':
+        return <RecentExitsCard {...cardProps} />;
       case 'generic':
         return (
           <GenericResponseCard
@@ -136,42 +129,36 @@ export default function ShareholdersPage() {
 
   const quickActions = [
     {
-      id: 'qa.sh.owners',
-      icon: Users,
-      label: 'Full register',
-      sub: '3,498 identified holders',
-      onClick: () => navigate('/shareholders/owners'),
-    },
-    {
-      id: 'qa.sh.daily',
-      icon: ArrowDownUp,
-      label: 'Daily transactions',
-      sub: 'Last 14 days (T+2)',
-      onClick: () => navigate('/shareholders/daily-transactions'),
-    },
-    {
-      id: 'qa.sh.lockup',
-      icon: Lock,
-      label: 'Lock-ups',
-      sub: 'Active agreements & expiry',
-      onClick: () => navigate('/shareholders/lockups'),
-    },
-    {
-      id: 'qa.sh.contacts',
-      icon: Mail,
-      label: 'CRM contacts',
-      sub: 'People at our holder firms',
-      onClick: () => navigate('/crm/people'),
-    },
-    {
-      id: 'qa.sh.targets',
+      id: 'qa.tgt.screener',
       icon: Target,
-      label: 'Targeting screener',
-      sub: 'Prospects not yet holding',
+      label: 'Target screener',
+      sub: 'All prioritized candidates',
       onClick: () => navigate('/targeting/screener'),
     },
     {
-      id: 'qa.sh.dash',
+      id: 'qa.tgt.compare',
+      icon: GitCompare,
+      label: 'Compare owners',
+      sub: 'Peer holder overlap matrix',
+      onClick: () =>
+        sendChipQuery('tgt.compare', 'tgt.compare', 'Compare owners'),
+    },
+    {
+      id: 'qa.tgt.owners',
+      icon: Users,
+      label: 'Current shareholders',
+      sub: 'Our full register',
+      onClick: () => navigate('/shareholders/owners'),
+    },
+    {
+      id: 'qa.tgt.contacts',
+      icon: Mail,
+      label: 'CRM contacts',
+      sub: 'Tracked people at target firms',
+      onClick: () => navigate('/crm/people'),
+    },
+    {
+      id: 'qa.tgt.dash',
       icon: LayoutDashboard,
       label: 'Dashboard overview',
       sub: 'Cross-module briefing',
@@ -189,8 +176,8 @@ export default function ShareholdersPage() {
       }}
     >
       <QuickActionsPanel
-        title="Shareholders quick actions"
-        subtitle="Jump to a key view"
+        title="Targeting quick actions"
+        subtitle="Jump to a main screen"
         actions={quickActions}
       />
 
@@ -204,9 +191,9 @@ export default function ShareholdersPage() {
         }}
       >
         <ConversationShell
-          briefing={<ShareholdersBriefing />}
+          briefing={<TargetingBriefing />}
           chips={
-            <ShareholdersChips
+            <TargetingChips
               onSelect={handleChipSelect}
               isChipSpent={isChipSpent}
               onShowToast={showToast}

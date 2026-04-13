@@ -146,12 +146,22 @@ export function useModuleConversation(moduleId) {
 
   const attachCard = useCallback(
     (ref) => {
+      // Return { ok, reason } so the caller can toast a helpful message.
+      const current = slot.attachments;
+      if (current.find((a) => a.id === ref.id)) {
+        return { ok: true, reason: 'already-attached' };
+      }
+      if (current.length >= 5) {
+        return { ok: false, reason: 'limit-reached' };
+      }
       updateSlot(moduleId, (c) => {
         if (c.attachments.find((a) => a.id === ref.id)) return c;
+        if (c.attachments.length >= 5) return c;
         return { ...c, attachments: [...c.attachments, ref] };
       });
+      return { ok: true, reason: 'attached' };
     },
-    [moduleId, updateSlot]
+    [slot.attachments, moduleId, updateSlot]
   );
 
   const removeAttachment = useCallback(

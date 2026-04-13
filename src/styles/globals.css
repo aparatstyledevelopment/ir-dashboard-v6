@@ -376,6 +376,105 @@ textarea {
   margin: 10px auto 4px;
 }
 
+/* ----- List screen shell (Owners, Transactions, Lockups, Targets, Contacts) ----- */
+
+.cb-screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--bg);
+}
+.cb-screen-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px 24px 40px;
+  scrollbar-gutter: stable;
+}
+.cb-screen-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+.cb-screen-back {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  letter-spacing: -0.01em;
+  margin-bottom: 14px;
+  width: fit-content;
+}
+.cb-screen-back:hover {
+  color: var(--text-primary);
+}
+
+.cb-screen-header {
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0;
+}
+.cb-screen-header h1 {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin: 0;
+}
+.cb-screen-header p {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin: 4px 0 0;
+  letter-spacing: -0.01em;
+}
+
+.cb-screen-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 0 14px;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.cb-screen-search {
+  flex: 1;
+  min-width: 220px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 7px 14px;
+}
+.cb-screen-search input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 12px;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+.cb-screen-search input::placeholder {
+  color: var(--text-tertiary);
+}
+.cb-screen-meta {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+}
+
+.cb-screen-empty {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--text-tertiary);
+  font-size: 12px;
+}
+
 /* ----- Responsive helpers (avoid Tailwind responsive classes that
    collide with inline styles) ----- */
 
@@ -758,9 +857,30 @@ textarea {
 /* ----- Magical chat input ----- */
 
 .cb-chat-form {
+  background: transparent;
+  padding: 0;
+}
+
+/* Overlay wrapper: absolute-positioned at the bottom of the conversation
+ * column, with a solid background so content scrolls UNDER the chat box
+ * and is hidden where the chat box sits. */
+.cb-chat-overlay {
+  position: absolute;
+  left: 0;
+  right: 6px; /* match the scrollbar-gutter on the conversation */
+  bottom: 0;
   background: var(--bg);
-  border-top: 1px solid var(--border);
-  padding: 14px 16px 18px;
+  padding: 18px 16px 20px;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+.cb-chat-overlay > * {
+  pointer-events: auto;
+}
+.cb-chat-overlay-inner {
+  width: 100%;
+  max-width: 780px;
 }
 
 .cb-chat-input-wrap {

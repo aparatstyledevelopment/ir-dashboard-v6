@@ -11,6 +11,8 @@ export default function OwnershipChangesCard({
   onSourceOpen,
   onShowToast,
   isChipSpent,
+  onAttach,
+  isAttached,
 }) {
   const columns = [
     {
@@ -83,6 +85,8 @@ export default function OwnershipChangesCard({
       onSourceOpen={onSourceOpen}
       onShowToast={onShowToast}
       isChipSpent={isChipSpent}
+      onAttach={onAttach}
+      isAttached={isAttached}
     >
       <p
         style={{

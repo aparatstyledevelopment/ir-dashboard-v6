@@ -12,6 +12,8 @@ export default function TopHoldersCard({
   onSourceOpen,
   onShowToast,
   isChipSpent,
+  onAttach,
+  isAttached,
 }) {
   const [showAll, setShowAll] = useState(false);
   const rows = showAll ? TOP_HOLDERS : TOP_HOLDERS.slice(0, 10);
@@ -95,6 +97,8 @@ export default function TopHoldersCard({
       onSourceOpen={onSourceOpen}
       onShowToast={onShowToast}
       isChipSpent={isChipSpent}
+      onAttach={onAttach}
+      isAttached={isAttached}
     >
       <p
         style={{
