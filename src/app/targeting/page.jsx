@@ -1,6 +1,7 @@
 import { useOutletContext, useNavigate } from 'react-router-dom';
 import { Target, GitCompare } from 'lucide-react';
 import { useModuleConversation } from '../../hooks/useConversations';
+import { createChatSubmitHandler } from '../../utils/slashCommands';
 import ConversationShell from '../../components/conversation/ConversationShell';
 import QuickActionsPanel from '../../components/layout/QuickActionsPanel';
 import ChatInput from '../../components/dashboard/ChatInput';
@@ -46,11 +47,33 @@ export default function TargetingPage() {
     sendChipQuery,
     sendCatalogQuery,
     sendTextQuery,
+    sendBulkResponses,
+    clearActiveSession,
+    createSession,
     isChipSpent,
     attachCard,
     removeAttachment,
     isAttached,
   } = useModuleConversation('targeting');
+
+  const TGT_L1_TYPES = [
+    'tgt.priority',
+    'tgt.lookalike',
+    'tgt.peergaps',
+    'tgt.compare',
+    'tgt.longonly',
+    'tgt.exits',
+  ];
+
+  const handleChatSubmit = createChatSubmitHandler({
+    l1Types: TGT_L1_TYPES,
+    moduleName: 'Targeting',
+    sendTextQuery,
+    sendBulkResponses,
+    clearActiveSession,
+    createSession,
+    showToast,
+  });
 
   const handleChipSelect = (chip) => {
     sendChipQuery(chip.id, chip.responseType, chip.label);
@@ -193,7 +216,7 @@ export default function TargetingPage() {
         <div className="cb-chat-overlay">
           <div className="cb-chat-overlay-inner">
             <ChatInput
-              onSubmit={sendTextQuery}
+              onSubmit={handleChatSubmit}
               attachments={attachments}
               onRemoveAttachment={removeAttachment}
             />

@@ -7,6 +7,7 @@ import {
   Mail,
 } from 'lucide-react';
 import { useModuleConversation } from '../hooks/useConversations';
+import { createChatSubmitHandler } from '../utils/slashCommands';
 import ConversationShell from '../components/conversation/ConversationShell';
 import QuickActionsPanel from '../components/layout/QuickActionsPanel';
 import ChatInput from '../components/dashboard/ChatInput';
@@ -52,11 +53,33 @@ export default function DashboardPage() {
     sendChipQuery,
     sendCatalogQuery,
     sendTextQuery,
+    sendBulkResponses,
+    clearActiveSession,
+    createSession,
     isChipSpent,
     attachCard,
     removeAttachment,
     isAttached,
   } = useModuleConversation('dashboard');
+
+  const DASHBOARD_L1_TYPES = [
+    'ownership',
+    'topHolders',
+    'liquidity',
+    'insider',
+    'short',
+    'events',
+  ];
+
+  const handleChatSubmit = createChatSubmitHandler({
+    l1Types: DASHBOARD_L1_TYPES,
+    moduleName: 'Dashboard',
+    sendTextQuery,
+    sendBulkResponses,
+    clearActiveSession,
+    createSession,
+    showToast,
+  });
 
   const handleChipSelect = (chip) => {
     sendChipQuery(chip.id, chip.responseType, chip.label);
@@ -223,7 +246,7 @@ export default function DashboardPage() {
         <div className="cb-chat-overlay">
           <div className="cb-chat-overlay-inner">
             <ChatInput
-              onSubmit={sendTextQuery}
+              onSubmit={handleChatSubmit}
               attachments={attachments}
               onRemoveAttachment={removeAttachment}
             />

@@ -1,5 +1,6 @@
 import ResponseCard from '../../dashboard/responses/ResponseCard';
 import DataTable from '../../ui/DataTable';
+import { buildShareContent } from '../../../utils/shareContent';
 
 // Mock data inline — holders that recently exited the register, with
 // last-seen percentage and date.
@@ -33,6 +34,20 @@ const EXITS = [
     reason: 'PM change',
   },
 ];
+
+const SHARE = buildShareContent({
+  title: 'Recently Exited Holders',
+  narrative:
+    '4 institutional holders have exited the register in the past 12 months. Each is a potential winback candidate.',
+  columns: [
+    { header: 'Holder', key: 'name' },
+    { header: 'Country', key: 'country' },
+    { header: 'Last seen', key: 'lastSeen' },
+    { header: 'Last %', key: 'lastPct' },
+    { header: 'Reason', key: 'reason' },
+  ],
+  rows: EXITS,
+});
 
 export default function RecentExitsCard({
   onFollowUp,
@@ -97,6 +112,7 @@ export default function RecentExitsCard({
       isChipSpent={isChipSpent}
       onAttach={onAttach}
       isAttached={isAttached}
+      shareContent={SHARE}
     >
       <p
         style={{

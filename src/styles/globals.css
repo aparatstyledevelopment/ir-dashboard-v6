@@ -110,9 +110,11 @@ textarea {
   animation: toastIn 220ms ease-out both;
 }
 
-/* Custom thin scrollbar for conversation area. The 6px gutter gets
- * mirrored on .cb-input-gutter so the chat input centers in the same
- * effective width as the conversation content. */
+/* Custom thin scrollbar for conversation area. scrollbar-gutter is set
+ * to `stable both-edges` so the 6px gutter is reserved symmetrically,
+ * keeping content centered within the scroll container. .cb-chat-overlay
+ * below mirrors the same 6px reservation on both sides so the input
+ * pill lines up exactly with the conversation content above. */
 .conversation-scroll::-webkit-scrollbar {
   width: 6px;
 }
@@ -124,7 +126,7 @@ textarea {
   background: transparent;
 }
 .conversation-scroll {
-  scrollbar-gutter: stable;
+  scrollbar-gutter: stable both-edges;
 }
 
 .cb-input-gutter {
@@ -157,6 +159,167 @@ textarea {
 
 /* ----- Attach-to-chat: per-card button + chat input attachment chips ----- */
 
+/* Card actions row (share + attach) */
+.cb-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+/* Share button + dropdown */
+.cb-share {
+  position: relative;
+}
+.cb-share-btn {
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 140ms ease;
+  padding: 0;
+}
+.cb-share-btn:hover {
+  border-color: var(--text-primary);
+  color: var(--text-primary);
+}
+.cb-share-btn.is-open {
+  background: var(--surface-dark);
+  color: var(--surface-dark-text);
+  border-color: var(--surface-dark);
+}
+
+.cb-share-menu {
+  position: absolute;
+  top: 28px;
+  right: 0;
+  width: 220px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
+  z-index: 60;
+  overflow: hidden;
+  animation: shareMenuIn 160ms ease-out both;
+}
+@keyframes shareMenuIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.cb-share-sheet-handle {
+  display: none;
+}
+
+.cb-share-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  cursor: pointer;
+  color: var(--text-primary);
+  transition: background 120ms ease;
+}
+.cb-share-item:last-child {
+  border-bottom: none;
+}
+.cb-share-item:hover {
+  background: var(--bar-track);
+}
+.cb-share-item:disabled {
+  cursor: not-allowed;
+  color: var(--text-tertiary);
+}
+.cb-share-item:disabled:hover {
+  background: transparent;
+}
+.cb-share-item svg {
+  margin-top: 2px;
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+}
+.cb-share-item:hover svg {
+  color: var(--text-primary);
+}
+.cb-share-item-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: inherit;
+  letter-spacing: -0.01em;
+}
+.cb-share-item-sub {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  margin-top: 1px;
+  letter-spacing: -0.01em;
+}
+
+.cb-share-backdrop {
+  display: none;
+}
+
+@media (max-width: 639px) {
+  .cb-share-menu {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    border-radius: 12px 12px 0 0;
+    border-bottom: none;
+    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.18);
+    z-index: 95;
+    animation: shareSheetIn 220ms ease-out both;
+  }
+  @keyframes shareSheetIn {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+  .cb-share-sheet-handle {
+    display: block;
+    width: 36px;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    margin: 10px auto 4px;
+  }
+  .cb-share-item {
+    padding: 14px 18px;
+  }
+  .cb-share-item-label {
+    font-size: 13px;
+  }
+  .cb-share-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 94;
+  }
+}
+
 .cb-attach-btn {
   width: 22px;
   height: 22px;
@@ -183,11 +346,11 @@ textarea {
 }
 
 .cb-chat-attachments {
-  display: inline-flex;
+  display: flex;
   flex-wrap: wrap;
   gap: 5px;
   align-items: center;
-  margin: 0;
+  padding: 4px 2px 0 2px;
 }
 
 .cb-chat-attachment {
@@ -197,10 +360,10 @@ textarea {
   background: var(--surface-dark);
   color: var(--surface-dark-text);
   font-size: 10px;
-  padding: 3px 3px 3px 9px;
+  padding: 4px 4px 4px 10px;
   border-radius: 999px;
   letter-spacing: -0.01em;
-  max-width: 180px;
+  max-width: 200px;
   line-height: 1.2;
 }
 .cb-chat-attachment-label {
@@ -1186,6 +1349,59 @@ textarea {
 .cb-chat-form {
   background: transparent;
   padding: 0;
+  position: relative;
+}
+
+/* Slash command autocomplete popover */
+.cb-slash-menu {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(100% + 6px);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  z-index: 20;
+  animation: shareMenuIn 160ms ease-out both;
+}
+.cb-slash-item {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  transition: background 120ms ease;
+}
+.cb-slash-item:last-child {
+  border-bottom: none;
+}
+.cb-slash-item:hover {
+  background: var(--bar-track);
+}
+.cb-slash-cmd {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: 'JetBrains Mono', 'Menlo', monospace;
+  letter-spacing: -0.01em;
+}
+.cb-slash-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  letter-spacing: -0.01em;
+}
+.cb-slash-hint {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  margin-left: auto;
+  letter-spacing: -0.01em;
 }
 
 /* Overlay wrapper: absolute-positioned at the bottom of the conversation
@@ -1193,11 +1409,11 @@ textarea {
  * and is hidden where the chat box sits. */
 .cb-chat-overlay {
   position: absolute;
-  left: 0;
-  right: 6px; /* match the scrollbar-gutter on the conversation */
+  left: 6px;
+  right: 6px; /* match the symmetric scrollbar-gutter on the conversation */
   bottom: 0;
   background: var(--bg);
-  padding: 18px 16px 20px;
+  padding: 14px 16px 18px;
   display: flex;
   justify-content: center;
   pointer-events: none;
@@ -1212,16 +1428,21 @@ textarea {
 
 .cb-chat-input-wrap {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 6px;
   background: var(--bg);
   border: 1px solid var(--border);
-  border-radius: 26px;
-  padding: 8px 8px 8px 16px;
+  border-radius: 22px;
+  padding: 6px 8px 6px 14px;
   position: relative;
   transition: border-color 200ms ease, box-shadow 200ms ease;
-  min-height: 44px;
+}
+
+.cb-chat-input-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 34px;
 }
 .cb-chat-input-wrap::before {
   content: '';

@@ -1,6 +1,25 @@
 import ResponseCard from './ResponseCard';
 import BarChart from '../../ui/BarChart';
 import { formatPct } from '../../../utils/formatters';
+import { buildShareContent } from '../../../utils/shareContent';
+
+const SHORT_TREND = [
+  { when: '6 months ago', value: 3.2 },
+  { when: '3 months ago', value: 2.8 },
+  { when: '1 month ago', value: 2.3 },
+  { when: 'Now', value: 2.1 },
+];
+
+const SHARE = buildShareContent({
+  title: 'Short Interest Overview',
+  narrative:
+    'Short interest in INTEG B currently stands at 2.1% of capital, down from 2.8% three months ago. One disclosed short holder remains on the register: Marshall Wace LLP at 0.62%.',
+  columns: [
+    { header: 'When', key: 'when' },
+    { header: 'Short %', key: 'value' },
+  ],
+  rows: SHORT_TREND,
+});
 
 export default function ShortInterestCard({
   onFollowUp,
@@ -39,6 +58,7 @@ export default function ShortInterestCard({
       isChipSpent={isChipSpent}
       onAttach={onAttach}
       isAttached={isAttached}
+      shareContent={SHARE}
     >
       <p
         style={{

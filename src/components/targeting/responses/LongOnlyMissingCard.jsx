@@ -2,6 +2,26 @@ import ResponseCard from '../../dashboard/responses/ResponseCard';
 import DataTable from '../../ui/DataTable';
 import { TARGETS } from '../../../data/targets';
 import { flagFor } from '../../../utils/countryFlags';
+import { buildShareContent } from '../../../utils/shareContent';
+
+const LO_ROWS = TARGETS.filter(
+  (t) => t.type === 'Fund' && t.priority !== 'Cold'
+);
+
+const SHARE = buildShareContent({
+  title: 'Long-only Funds Missing INTEG B',
+  narrative:
+    'Long-only funds that are a strong fit and not currently holding INTEG B. Sorted by AI fit score.',
+  columns: [
+    { header: 'Fund', key: 'name' },
+    { header: 'Manager', key: 'firm' },
+    { header: 'Country', key: 'country' },
+    { header: 'AUM', key: 'aum' },
+    { header: 'Score', key: 'score' },
+    { header: 'Priority', key: 'priority' },
+  ],
+  rows: LO_ROWS,
+});
 
 export default function LongOnlyMissingCard({
   onFollowUp,
@@ -75,6 +95,7 @@ export default function LongOnlyMissingCard({
       isChipSpent={isChipSpent}
       onAttach={onAttach}
       isAttached={isAttached}
+      shareContent={SHARE}
     >
       <p
         style={{

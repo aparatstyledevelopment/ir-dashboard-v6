@@ -2,6 +2,23 @@ import ResponseCard from './ResponseCard';
 import DataTable from '../../ui/DataTable';
 import { INSIDER_TRANSACTIONS } from '../../../data/insiderTransactions';
 import { formatDateShort, formatSignedInt, formatPrice } from '../../../utils/formatters';
+import { buildShareContent } from '../../../utils/shareContent';
+
+const SHARE = buildShareContent({
+  title: 'Insider & PDMR Activity',
+  narrative:
+    'No new PDMR transactions in the past 14 days. Total insider ownership is 23.95% of capital, dominated by Richard Brännemark at 23.19%.',
+  columns: [
+    { header: 'Date', key: 'date' },
+    { header: 'Person', key: 'person' },
+    { header: 'Role', key: 'role' },
+    { header: 'Type', key: 'type' },
+    { header: 'Shares', key: 'shares' },
+    { header: 'Price', key: 'price' },
+    { header: 'Value (SEK)', key: 'value' },
+  ],
+  rows: INSIDER_TRANSACTIONS,
+});
 
 export default function InsiderActivityCard({
   onFollowUp,
@@ -40,6 +57,7 @@ export default function InsiderActivityCard({
       isChipSpent={isChipSpent}
       onAttach={onAttach}
       isAttached={isAttached}
+      shareContent={SHARE}
     >
       <p
         style={{

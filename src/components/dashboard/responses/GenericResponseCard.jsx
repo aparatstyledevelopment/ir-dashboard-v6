@@ -13,6 +13,19 @@ export default function GenericResponseCard({
   const hasAttachments = attachments && attachments.length > 0;
   const titleQuery = query || (hasAttachments ? '(card discussion)' : '');
 
+  const share = {
+    title: `Query: ${titleQuery}`,
+    text:
+      `Query: ${titleQuery}\n\n` +
+      (hasAttachments
+        ? `Referenced cards:\n${attachments
+            .map((a) => `- ${a.title}`)
+            .join('\n')}\n\n`
+        : '') +
+      'In the full Command Bar experience, the AI would synthesize a cross-card response here.',
+    csv: null,
+  };
+
   return (
     <ResponseCard
       title={`Query: ${titleQuery}`}
@@ -23,6 +36,7 @@ export default function GenericResponseCard({
       isChipSpent={isChipSpent}
       onAttach={onAttach}
       isAttached={isAttached}
+      shareContent={share}
     >
       {hasAttachments && (
         <div

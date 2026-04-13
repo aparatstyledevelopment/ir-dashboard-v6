@@ -1,6 +1,20 @@
 import ResponseCard from './ResponseCard';
 import { UPCOMING_EVENTS } from '../../../data/upcomingEvents';
 import { formatDateShort } from '../../../utils/formatters';
+import { buildShareContent } from '../../../utils/shareContent';
+
+const SHARE = buildShareContent({
+  title: 'Upcoming IR Calendar',
+  narrative:
+    'You have 3 upcoming events in the next 30 days. Q1 2026 earnings call expected around May 8. 1-on-1 with Nordea Asset Management in Stockholm on April 22. AGM confirmed for May 15 at Gothenburg Conference Centre.',
+  columns: [
+    { header: 'Date', key: 'date' },
+    { header: 'Type', key: 'type' },
+    { header: 'Description', key: 'description' },
+    { header: 'Location', key: 'location' },
+  ],
+  rows: UPCOMING_EVENTS,
+});
 
 export default function UpcomingEventsCard({
   onFollowUp,
@@ -39,6 +53,7 @@ export default function UpcomingEventsCard({
       isChipSpent={isChipSpent}
       onAttach={onAttach}
       isAttached={isAttached}
+      shareContent={SHARE}
     >
       <p
         style={{

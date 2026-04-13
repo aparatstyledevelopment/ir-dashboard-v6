@@ -8,6 +8,22 @@ import {
   formatPct,
 } from '../../../utils/formatters';
 import { slugify } from '../../../utils/slug';
+import { buildShareContent } from '../../../utils/shareContent';
+
+const SHARE = buildShareContent({
+  title: 'Lock-up Agreements',
+  narrative:
+    '4.34M shares (14.15% of capital) are currently locked up across 3 active agreements. The next major expiry is the founder block of 4.20M shares on June 30, 2026.',
+  columns: [
+    { header: 'Person', key: 'person' },
+    { header: 'Role', key: 'role' },
+    { header: 'Shares', key: 'shares' },
+    { header: 'Capital %', key: 'pctOfCapital' },
+    { header: 'Expiry', key: 'expiryDate' },
+    { header: 'Type', key: 'type' },
+  ],
+  rows: LOCKUPS,
+});
 
 export default function LockUpsCard({
   onFollowUp,
@@ -88,6 +104,7 @@ export default function LockUpsCard({
       isChipSpent={isChipSpent}
       onAttach={onAttach}
       isAttached={isAttached}
+      shareContent={SHARE}
     >
       <p
         style={{

@@ -2,6 +2,27 @@ import ResponseCard from '../../dashboard/responses/ResponseCard';
 import Sparkline from '../../ui/Sparkline';
 import { OWNER_TREND_12M } from '../../../data/shareholderTrend';
 import { formatNumber } from '../../../utils/formatters';
+import { buildShareContent } from '../../../utils/shareContent';
+
+const TREND_ROWS = OWNER_TREND_12M.months.map((m, i) => ({
+  month: m,
+  ownerCount: OWNER_TREND_12M.ownerCount[i],
+  freeFloat: OWNER_TREND_12M.freeFloat[i],
+  foreign: OWNER_TREND_12M.foreign[i],
+}));
+
+const SHARE = buildShareContent({
+  title: 'Owner Count — Trailing 12 Months',
+  narrative:
+    'Owner count has grown from 3,374 to 3,498 (+124, +3.7%) over the past 12 months. Net additions accelerated in Q1 2026.',
+  columns: [
+    { header: 'Month', key: 'month' },
+    { header: 'Owners', key: 'ownerCount' },
+    { header: 'Free Float %', key: 'freeFloat' },
+    { header: 'Foreign %', key: 'foreign' },
+  ],
+  rows: TREND_ROWS,
+});
 
 export default function OwnerTrendCard({
   onFollowUp,
@@ -46,6 +67,7 @@ export default function OwnerTrendCard({
       isChipSpent={isChipSpent}
       onAttach={onAttach}
       isAttached={isAttached}
+      shareContent={SHARE}
     >
       <p
         style={{

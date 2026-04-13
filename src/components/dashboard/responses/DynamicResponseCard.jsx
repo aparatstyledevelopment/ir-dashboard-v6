@@ -8,6 +8,7 @@ import StackedBar from '../../ui/StackedBar';
 import BubbleCluster from '../../ui/BubbleCluster';
 import WaterfallChart from '../../ui/WaterfallChart';
 import { getCatalogEntry } from '../../../data/responseCatalog';
+import { shareContentFromCatalogEntry } from '../../../utils/shareContent';
 import { flagFor } from '../../../utils/countryFlags';
 import { slugify } from '../../../utils/slug';
 import {
@@ -302,6 +303,8 @@ export default function DynamicResponseCard({
   const entry = getCatalogEntry(catalogId);
   if (!entry) return null;
 
+  const share = shareContentFromCatalogEntry(entry);
+
   return (
     <ResponseCard
       title={entry.title}
@@ -312,6 +315,7 @@ export default function DynamicResponseCard({
       isChipSpent={isChipSpent}
       onAttach={onAttach}
       isAttached={isAttached}
+      shareContent={share}
       sourceModule={entry.source}
     >
       <p

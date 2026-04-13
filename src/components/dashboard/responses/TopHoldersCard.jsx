@@ -6,6 +6,22 @@ import Sparkline from '../../ui/Sparkline';
 import { TOP_HOLDERS } from '../../../data/holders';
 import { formatPct } from '../../../utils/formatters';
 import { slugify } from '../../../utils/slug';
+import { buildShareContent } from '../../../utils/shareContent';
+
+const SHARE = buildShareContent({
+  title: 'Top 25 Shareholders by Capital %',
+  narrative:
+    'The top 25 holders control 54.2% of capital. Concentration has decreased by 1.3 percentage points since last quarter.',
+  columns: [
+    { header: 'Rank', key: 'rank' },
+    { header: 'Owner', key: 'name' },
+    { header: 'Country', key: 'country' },
+    { header: 'Capital %', key: 'capitalPct' },
+    { header: 'Votes %', key: 'votesPct' },
+    { header: 'Type', key: 'type' },
+  ],
+  rows: TOP_HOLDERS,
+});
 
 export default function TopHoldersCard({
   onFollowUp,
@@ -99,6 +115,7 @@ export default function TopHoldersCard({
       isChipSpent={isChipSpent}
       onAttach={onAttach}
       isAttached={isAttached}
+      shareContent={SHARE}
     >
       <p
         style={{

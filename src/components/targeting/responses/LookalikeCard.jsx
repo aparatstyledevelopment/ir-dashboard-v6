@@ -2,6 +2,28 @@ import ResponseCard from '../../dashboard/responses/ResponseCard';
 import DataTable from '../../ui/DataTable';
 import { TARGETS } from '../../../data/targets';
 import { flagFor } from '../../../utils/countryFlags';
+import { buildShareContent } from '../../../utils/shareContent';
+
+const LOOKALIKE_ROWS = TARGETS.filter(
+  (t) => t.peersHolding.length >= 1 && t.priority !== 'Cold'
+).map((t) => ({
+  ...t,
+  peersJoined: t.peersHolding.join('; '),
+}));
+
+const SHARE = buildShareContent({
+  title: 'Lookalike Holders',
+  narrative:
+    '6 candidates match our current holder DNA on at least 2 traits (peer overlap, type, style, geography).',
+  columns: [
+    { header: 'Name', key: 'name' },
+    { header: 'Country', key: 'country' },
+    { header: 'Shared peers', key: 'peersJoined' },
+    { header: 'Score', key: 'score' },
+    { header: 'Priority', key: 'priority' },
+  ],
+  rows: LOOKALIKE_ROWS,
+});
 
 export default function LookalikeCard({
   onFollowUp,
@@ -71,6 +93,7 @@ export default function LookalikeCard({
       isChipSpent={isChipSpent}
       onAttach={onAttach}
       isAttached={isAttached}
+      shareContent={SHARE}
     >
       <p
         style={{

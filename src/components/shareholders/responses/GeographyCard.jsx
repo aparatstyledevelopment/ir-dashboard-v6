@@ -3,6 +3,20 @@ import DonutChart from '../../ui/DonutChart';
 import { COUNTRY_BREAKDOWN } from '../../../data/shareholderTrend';
 import { formatPct } from '../../../utils/formatters';
 import { flagFor } from '../../../utils/countryFlags';
+import { buildShareContent } from '../../../utils/shareContent';
+
+const SHARE = buildShareContent({
+  title: 'Holders by Country',
+  narrative:
+    'Sweden dominates at 68.4% of capital. Norway is the second-largest country at 21.7%, almost entirely from one strategic holder (Aviva Perfusion).',
+  columns: [
+    { header: 'Country', key: 'label' },
+    { header: 'Code', key: 'country' },
+    { header: 'Capital %', key: 'capitalPct' },
+    { header: 'Owners', key: 'ownerCount' },
+  ],
+  rows: COUNTRY_BREAKDOWN,
+});
 
 export default function GeographyCard({
   onFollowUp,
@@ -47,6 +61,7 @@ export default function GeographyCard({
       isChipSpent={isChipSpent}
       onAttach={onAttach}
       isAttached={isAttached}
+      shareContent={SHARE}
     >
       <p
         style={{

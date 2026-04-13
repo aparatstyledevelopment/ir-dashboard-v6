@@ -5,6 +5,21 @@ import { OWNERSHIP_CHANGES } from '../../../data/ownershipChanges';
 import { flagFor } from '../../../utils/countryFlags';
 import { formatSignedInt, formatSignedPct } from '../../../utils/formatters';
 import { slugify } from '../../../utils/slug';
+import { buildShareContent } from '../../../utils/shareContent';
+
+const SHARE = buildShareContent({
+  title: 'Ownership Changes — Last 30 Days',
+  narrative:
+    'Net buying activity has been moderate over the past 30 days, with 12 owners increasing positions and 8 decreasing. The largest single move was Nordea Investment Funds adding 45,000 shares.',
+  columns: [
+    { header: 'Owner', key: 'name' },
+    { header: 'Country', key: 'country' },
+    { header: 'Delta Shares', key: 'deltaShares' },
+    { header: 'Delta Capital %', key: 'deltaCapital' },
+    { header: 'Direction', key: 'direction' },
+  ],
+  rows: OWNERSHIP_CHANGES,
+});
 
 export default function OwnershipChangesCard({
   onFollowUp,
@@ -87,6 +102,7 @@ export default function OwnershipChangesCard({
       isChipSpent={isChipSpent}
       onAttach={onAttach}
       isAttached={isAttached}
+      shareContent={SHARE}
     >
       <p
         style={{

@@ -2,6 +2,22 @@ import ResponseCard from './ResponseCard';
 import BarChart from '../../ui/BarChart';
 import { PEER_LIQUIDITY } from '../../../data/peerLiquidity';
 import { formatCurrencyEUR } from '../../../utils/formatters';
+import { buildShareContent } from '../../../utils/shareContent';
+
+const SHARE = buildShareContent({
+  title: 'Liquidity Analysis — INTEG B vs Peers',
+  narrative:
+    "INTEG B's average daily turnover of €18,400 ranks 4th among its 5-company peer group. Spread has widened 12 basis points month-over-month.",
+  columns: [
+    { header: 'Company', key: 'name' },
+    { header: 'Ticker', key: 'ticker' },
+    { header: 'Avg Daily Turnover (EUR)', key: 'avgDailyTurnoverEUR' },
+    { header: 'Avg Trades / Day', key: 'avgTradesPerDay' },
+    { header: 'VWAP', key: 'vwap' },
+    { header: 'Currency', key: 'currency' },
+  ],
+  rows: PEER_LIQUIDITY,
+});
 
 export default function LiquidityComparisonCard({
   onFollowUp,
@@ -46,6 +62,7 @@ export default function LiquidityComparisonCard({
       isChipSpent={isChipSpent}
       onAttach={onAttach}
       isAttached={isAttached}
+      shareContent={SHARE}
     >
       <p
         style={{

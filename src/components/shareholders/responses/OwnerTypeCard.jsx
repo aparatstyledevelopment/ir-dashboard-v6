@@ -2,6 +2,20 @@ import ResponseCard from '../../dashboard/responses/ResponseCard';
 import DonutChart from '../../ui/DonutChart';
 import { TYPE_BREAKDOWN } from '../../../data/shareholderTrend';
 import { formatPct } from '../../../utils/formatters';
+import { buildShareContent } from '../../../utils/shareContent';
+
+const SHARE = buildShareContent({
+  title: 'Holders by Type',
+  narrative:
+    'Individuals (mainly the founder + retail) own 32.4%. Funds hold 25.8%, strategic blocks 24.1%, pension/insurance 11.6%, banks 6.1%.',
+  columns: [
+    { header: 'Type', key: 'type' },
+    { header: 'Capital %', key: 'capitalPct' },
+    { header: 'Owners', key: 'ownerCount' },
+    { header: 'Note', key: 'note' },
+  ],
+  rows: TYPE_BREAKDOWN,
+});
 
 export default function OwnerTypeCard({
   onFollowUp,
@@ -47,6 +61,7 @@ export default function OwnerTypeCard({
       isChipSpent={isChipSpent}
       onAttach={onAttach}
       isAttached={isAttached}
+      shareContent={SHARE}
     >
       <p
         style={{

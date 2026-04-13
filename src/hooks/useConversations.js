@@ -134,6 +134,29 @@ export function useModuleConversation(moduleId) {
     [updateActiveSession]
   );
 
+  // Append a batch of response messages without typing simulation.
+  // Used by slash commands like /all to materialize a set of cards at
+  // once. Each item should look like { responseType, ... extraFields }.
+  const sendBulkResponses = useCallback(
+    (items) => {
+      if (!items || items.length === 0) return;
+      updateActiveSession((s) => ({
+        ...s,
+        title:
+          s.title === 'New chat' ? `/all — ${items.length} cards` : s.title,
+        messages: [
+          ...s.messages,
+          ...items.map((item) => ({
+            id: nextId(),
+            kind: 'response',
+            ...item,
+          })),
+        ],
+      }));
+    },
+    [updateActiveSession]
+  );
+
   const sendTextQuery = useCallback(
     (text) => {
       const trimmed = (text || '').trim();
@@ -185,6 +208,16 @@ export function useModuleConversation(moduleId) {
     },
     [updateActiveSession]
   );
+
+  const clearActiveSession = useCallback(() => {
+    updateActiveSession((s) => ({
+      ...s,
+      messages: [],
+      attachments: [],
+      spentChips: new Set(),
+      title: 'New chat',
+    }));
+  }, [updateActiveSession]);
 
   const attachCard = useCallback(
     (ref) => {
@@ -300,6 +333,8 @@ export function useModuleConversation(moduleId) {
     sendChipQuery,
     sendCatalogQuery,
     sendTextQuery,
+    sendBulkResponses,
+    clearActiveSession,
     isChipSpent,
     attachCard,
     removeAttachment,

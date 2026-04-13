@@ -2,6 +2,24 @@ import ResponseCard from '../../dashboard/responses/ResponseCard';
 import DataTable from '../../ui/DataTable';
 import { TARGETS } from '../../../data/targets';
 import { flagFor } from '../../../utils/countryFlags';
+import { buildShareContent } from '../../../utils/shareContent';
+
+const SHARE = buildShareContent({
+  title: 'Prioritized Targets',
+  narrative:
+    'Top 8 AI-prioritized targets. Polar Capital Healthcare leads with a 92/100 fit score — already holds 3 of our 5 closest peers.',
+  columns: [
+    { header: 'Name', key: 'name' },
+    { header: 'Firm', key: 'firm' },
+    { header: 'Type', key: 'type' },
+    { header: 'Country', key: 'country' },
+    { header: 'AUM', key: 'aum' },
+    { header: 'Priority', key: 'priority' },
+    { header: 'Score', key: 'score' },
+    { header: 'Rationale', key: 'rationale' },
+  ],
+  rows: TARGETS,
+});
 
 const PRIORITY_COLOR = {
   Hot: 'var(--negative)',
@@ -88,6 +106,7 @@ export default function PriorityTargetsCard({
       isChipSpent={isChipSpent}
       onAttach={onAttach}
       isAttached={isAttached}
+      shareContent={SHARE}
     >
       <p
         style={{

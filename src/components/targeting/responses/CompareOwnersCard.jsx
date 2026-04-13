@@ -1,5 +1,25 @@
 import ResponseCard from '../../dashboard/responses/ResponseCard';
 import { PEER_OVERLAP } from '../../../data/targets';
+import { buildShareContent } from '../../../utils/shareContent';
+
+const OVERLAP_ROWS = PEER_OVERLAP.funds.map((f) => {
+  const row = { Fund: f.name };
+  PEER_OVERLAP.peers.forEach((p, i) => {
+    row[p] = f.holds[i] ? 'Yes' : 'No';
+  });
+  return row;
+});
+
+const SHARE = buildShareContent({
+  title: 'Compare Owners — INTEG B vs 4 Peers',
+  narrative:
+    'Overlap matrix across INTEG B and our 4 closest peers. Cells mark ownership of each fund across each peer.',
+  columns: [
+    { header: 'Fund', key: 'Fund' },
+    ...PEER_OVERLAP.peers.map((p) => ({ header: p, key: p })),
+  ],
+  rows: OVERLAP_ROWS,
+});
 
 export default function CompareOwnersCard({
   onFollowUp,
@@ -38,6 +58,7 @@ export default function CompareOwnersCard({
       isChipSpent={isChipSpent}
       onAttach={onAttach}
       isAttached={isAttached}
+      shareContent={SHARE}
     >
       <p
         style={{

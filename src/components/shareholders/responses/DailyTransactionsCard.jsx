@@ -8,6 +8,22 @@ import {
 } from '../../../utils/formatters';
 import { flagFor } from '../../../utils/countryFlags';
 import { slugify } from '../../../utils/slug';
+import { buildShareContent } from '../../../utils/shareContent';
+
+const SHARE = buildShareContent({
+  title: 'Recent Register Transactions',
+  narrative:
+    '10 reportable transactions over the past 14 days. Net flow: +11,396 shares into the active register.',
+  columns: [
+    { header: 'Date', key: 'date' },
+    { header: 'Owner', key: 'owner' },
+    { header: 'Country', key: 'country' },
+    { header: 'Type', key: 'type' },
+    { header: 'Shares', key: 'shares' },
+    { header: 'Value (SEK)', key: 'valueSEK' },
+  ],
+  rows: DAILY_TRANSACTIONS,
+});
 
 export default function DailyTransactionsCard({
   onFollowUp,
@@ -105,6 +121,7 @@ export default function DailyTransactionsCard({
       isChipSpent={isChipSpent}
       onAttach={onAttach}
       isAttached={isAttached}
+      shareContent={SHARE}
     >
       <p
         style={{

@@ -3,6 +3,21 @@ import DataTable from '../../ui/DataTable';
 import { PEER_GAPS } from '../../../data/targets';
 import { flagFor } from '../../../utils/countryFlags';
 import { formatPct } from '../../../utils/formatters';
+import { buildShareContent } from '../../../utils/shareContent';
+
+const SHARE = buildShareContent({
+  title: 'Peer Holders — Gap Analysis',
+  narrative:
+    '47 institutional holders own at least one of our 5 closest peers but not INTEG B. 18 of them hold 2 or more peers — highest-conversion candidates.',
+  columns: [
+    { header: 'Peer', key: 'peer' },
+    { header: 'Holder', key: 'holder' },
+    { header: 'Country', key: 'country' },
+    { header: 'Holds peer %', key: 'holdingPct' },
+    { header: 'Status', key: 'status' },
+  ],
+  rows: PEER_GAPS,
+});
 
 export default function PeerGapsCard({
   onFollowUp,
@@ -74,6 +89,7 @@ export default function PeerGapsCard({
       isChipSpent={isChipSpent}
       onAttach={onAttach}
       isAttached={isAttached}
+      shareContent={SHARE}
     >
       <p
         style={{

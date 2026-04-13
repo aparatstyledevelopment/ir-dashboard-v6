@@ -1,6 +1,7 @@
 import { useOutletContext, useNavigate } from 'react-router-dom';
 import { Users, ArrowDownUp, Lock, ArrowUpDown } from 'lucide-react';
 import { useModuleConversation } from '../../hooks/useConversations';
+import { createChatSubmitHandler } from '../../utils/slashCommands';
 import ConversationShell from '../../components/conversation/ConversationShell';
 import QuickActionsPanel from '../../components/layout/QuickActionsPanel';
 import ChatInput from '../../components/dashboard/ChatInput';
@@ -46,11 +47,33 @@ export default function ShareholdersPage() {
     sendChipQuery,
     sendCatalogQuery,
     sendTextQuery,
+    sendBulkResponses,
+    clearActiveSession,
+    createSession,
     isChipSpent,
     attachCard,
     removeAttachment,
     isAttached,
   } = useModuleConversation('shareholders');
+
+  const SH_L1_TYPES = [
+    'sh.register',
+    'sh.trend',
+    'sh.geo',
+    'sh.type',
+    'sh.daily',
+    'sh.lockup',
+  ];
+
+  const handleChatSubmit = createChatSubmitHandler({
+    l1Types: SH_L1_TYPES,
+    moduleName: 'Shareholders',
+    sendTextQuery,
+    sendBulkResponses,
+    clearActiveSession,
+    createSession,
+    showToast,
+  });
 
   const handleChipSelect = (chip) => {
     sendChipQuery(chip.id, chip.responseType, chip.label);
@@ -207,7 +230,7 @@ export default function ShareholdersPage() {
         <div className="cb-chat-overlay">
           <div className="cb-chat-overlay-inner">
             <ChatInput
-              onSubmit={sendTextQuery}
+              onSubmit={handleChatSubmit}
               attachments={attachments}
               onRemoveAttachment={removeAttachment}
             />

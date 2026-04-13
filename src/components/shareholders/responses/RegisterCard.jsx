@@ -5,6 +5,22 @@ import Sparkline from '../../ui/Sparkline';
 import { TOP_HOLDERS } from '../../../data/holders';
 import { formatPct } from '../../../utils/formatters';
 import { slugify } from '../../../utils/slug';
+import { buildShareContent } from '../../../utils/shareContent';
+
+const SHARE = buildShareContent({
+  title: 'Shareholder Register',
+  narrative:
+    '3,498 identified holders. The top 25 control 54.2% of capital. The remaining 3,473 holders own 45.8% (~14.0M shares).',
+  columns: [
+    { header: 'Rank', key: 'rank' },
+    { header: 'Owner', key: 'name' },
+    { header: 'Country', key: 'country' },
+    { header: 'Capital %', key: 'capitalPct' },
+    { header: 'Votes %', key: 'votesPct' },
+    { header: 'Type', key: 'type' },
+  ],
+  rows: TOP_HOLDERS,
+});
 
 export default function RegisterCard({
   onFollowUp,
@@ -87,6 +103,7 @@ export default function RegisterCard({
       isChipSpent={isChipSpent}
       onAttach={onAttach}
       isAttached={isAttached}
+      shareContent={SHARE}
     >
       <p
         style={{
