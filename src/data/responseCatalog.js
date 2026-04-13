@@ -125,26 +125,16 @@ export const RESPONSE_CATALOG = {
   'l2.top25.new-entrants': {
     title: 'New in the Top 25 This Quarter',
     narrative:
-      'Three holders moved into the top 25 over the past quarter. Two are passive index increases; one is an active first-time position from Aberdeen.',
+      'Three holders moved into the top 25 over the past quarter. Aberdeen is the most meaningful entry — a first-time active position. Goldman Sachs AM and Avanza Pension are quant and aggregated-retail respectively.',
     body: {
-      type: 'list',
-      items: [
-        {
-          left: 'Aberdeen Standard',
-          right: 'New active position · World Smaller Companies fund',
-          sub: 'Entered #15 at 0.52%',
-        },
-        {
-          left: 'Goldman Sachs AM',
-          right: 'Quant entry · International Equity Insights',
-          sub: 'Entered #22 at 0.24%',
-        },
-        {
-          left: 'Avanza Pension',
-          right: 'Aggregated retail pension flow',
-          sub: 'Entered #24 at 0.19%',
-        },
+      type: 'bars',
+      data: [
+        { key: 'aberdeen', label: 'Aberdeen Standard (Active)', value: 0.52 },
+        { key: 'goldman', label: 'Goldman Sachs AM (Quant)', value: 0.24 },
+        { key: 'avanza', label: 'Avanza Pension (Retail)', value: 0.19 },
       ],
+      highlightKey: 'aberdeen',
+      valueFormatter: 'pct',
     },
     source: 'Shareholders → Owner Changes',
   },
@@ -154,15 +144,16 @@ export const RESPONSE_CATALOG = {
   'l2.liquidity.spread': {
     title: 'Spread Analysis',
     narrative:
-      "INTEG B's quoted spread averaged 38 basis points in March, up 12 bps month-over-month. The widening tracks lower volume in the post-Q4 quiet period.",
+      "INTEG B's average quoted spread is 38 basis points — nearly twice the 5-company peer median of 21 bps. Spread has widened 12 bps month-over-month as volume dropped in the post-Q4 quiet period.",
     body: {
-      type: 'metrics',
-      items: [
-        { label: 'Avg spread', value: '38 bps', sub: '+12 bps MoM' },
-        { label: 'Best spread', value: '22 bps', sub: 'open auction' },
-        { label: 'Worst spread', value: '74 bps', sub: '14:30 lull' },
-        { label: 'Peer median', value: '21 bps', sub: '5-co. set' },
-      ],
+      type: 'ring',
+      value: 38,
+      max: 100,
+      suffix: ' bps',
+      label: 'Avg spread',
+      sub: 'vs 21 bps peer median',
+      caption:
+        'Best spread 22 bps (open auction) · Worst 74 bps (14:30 lull). Widened +12 bps MoM in the quiet period. Peer median 21 bps across 5 Nordic medtech peers.',
     },
     source: 'Liquidity → Spread',
   },
@@ -190,21 +181,15 @@ export const RESPONSE_CATALOG = {
   'l2.liquidity.block-trades': {
     title: 'Block Trades This Quarter',
     narrative:
-      'Two block trades have crossed in Q1, both to the same counterparty (Pareto Securities). Combined, the blocks moved 79,200 shares (~0.26% of capital).',
+      'Two block trades have crossed in Q1, both routed through Pareto Securities off-book. Combined, the blocks moved 79,200 shares (~0.26% of capital).',
     body: {
-      type: 'list',
-      items: [
-        {
-          left: 'Mar 14',
-          right: 'Block · 51,400 sh @ 15.62 SEK',
-          sub: 'Pareto Securities (off-book)',
-        },
-        {
-          left: 'Feb 02',
-          right: 'Block · 27,800 sh @ 14.95 SEK',
-          sub: 'Pareto Securities (off-book)',
-        },
+      type: 'bars',
+      data: [
+        { key: 'feb02', label: 'Feb 02 · Pareto off-book', value: 27800 },
+        { key: 'mar14', label: 'Mar 14 · Pareto off-book', value: 51400 },
       ],
+      highlightKey: 'mar14',
+      valueFormatter: 'int',
     },
     source: 'Liquidity → Block Trades',
   },
@@ -293,15 +278,20 @@ export const RESPONSE_CATALOG = {
   'l2.short.vs-price': {
     title: 'Short Interest vs Stock Price',
     narrative:
-      'Short interest has been declining steadily as the share price recovered from its November lows. Days-to-cover sits at 4.2 days at current volume.',
+      'Short interest has been declining steadily over the past 6 months as the share price recovered from its November lows. Days-to-cover sits at 4.2 days at current volume — well below the 10-day danger threshold.',
     body: {
-      type: 'metrics',
-      items: [
-        { label: 'Now', value: '2.1%', sub: 'of capital' },
-        { label: '3 mo ago', value: '2.8%', sub: 'down 0.7pp' },
-        { label: '6 mo ago', value: '3.2%', sub: 'down 1.1pp' },
-        { label: 'Days to cover', value: '4.2', sub: 'at avg volume' },
+      type: 'bars',
+      data: [
+        { key: 'm6', label: '6 months ago', value: 3.2 },
+        { key: 'm5', label: '5 months ago', value: 3.0 },
+        { key: 'm4', label: '4 months ago', value: 2.9 },
+        { key: 'm3', label: '3 months ago', value: 2.8 },
+        { key: 'm2', label: '2 months ago', value: 2.5 },
+        { key: 'm1', label: '1 month ago', value: 2.3 },
+        { key: 'now', label: 'Now', value: 2.1 },
       ],
+      highlightKey: 'now',
+      valueFormatter: 'pct',
     },
     source: 'Short → Short Analysis',
   },
@@ -476,16 +466,18 @@ Object.assign(RESPONSE_CATALOG, {
   'l2.sh.trend.composition': {
     title: 'Composition Trend by Type',
     narrative:
-      "Fund ownership has grown 1.4pp over the past 12 months while individuals have decreased 0.8pp and the strategic block has shrunk 0.7pp. Pensions and bank/brokerage holders are roughly flat.",
+      'Fund ownership has grown +1.4pp over 12 months while individuals shrank −0.8pp and the strategic block −0.7pp. Showing the current composition as a stacked bar for the 5 holder types.',
     body: {
-      type: 'kv',
-      items: [
-        { label: 'Fund', value: '+1.4pp' },
-        { label: 'Individual', value: '−0.8pp' },
-        { label: 'Strategic / Other', value: '−0.7pp' },
-        { label: 'Pension & Insurance', value: '+0.1pp' },
-        { label: 'Bank / Brokerage', value: '+0.0pp' },
+      type: 'stacked',
+      label: 'Current holder type mix (100% of capital)',
+      data: [
+        { key: 'individual', label: 'Individual', value: 32.4 },
+        { key: 'fund', label: 'Fund', value: 25.8 },
+        { key: 'strategic', label: 'Strategic', value: 24.1 },
+        { key: 'pension', label: 'Pension', value: 11.6 },
+        { key: 'bank', label: 'Bank', value: 6.1 },
       ],
+      valueFormatter: 'pct',
     },
     source: 'Shareholders → Owner Trend',
   },
@@ -567,15 +559,16 @@ Object.assign(RESPONSE_CATALOG, {
   'l2.sh.geo.asia': {
     title: 'Asia & MENA Holders',
     narrative:
-      'Saudi Arabia represents 1.98% of capital through Al Rajhi Capital. No other Asian or MENA holders are currently on the register above the disclosure threshold.',
+      'Saudi Arabia represents 1.98% of capital through Al Rajhi Capital — essentially our entire Asia/MENA exposure. Japan, Hong Kong, Singapore, and UAE are all structurally under-represented and worth exploring on the next roadshow cycle.',
     body: {
-      type: 'kv',
-      items: [
-        { label: 'Saudi Arabia (Al Rajhi Capital)', value: '1.98%' },
-        { label: 'Other MENA', value: '—' },
-        { label: 'Japan', value: '—' },
-        { label: 'Hong Kong / Singapore', value: '—' },
+      type: 'donut',
+      data: [
+        { key: 'sa', label: 'Saudi Arabia', value: 1.98 },
+        { key: 'opportunity', label: 'Untapped Asia & MENA', value: 0.01 },
       ],
+      centerValue: '1.98%',
+      centerLabel: 'Asia/MENA',
+      valueFormatter: 'pct',
     },
     source: 'Shareholders → Geography',
   },
@@ -602,16 +595,17 @@ Object.assign(RESPONSE_CATALOG, {
   'l2.sh.type.individuals': {
     title: 'Individual Holders Detail',
     narrative:
-      '2,891 individual holders combine to 32.4% of capital. The founder holds 23.19% alone — about 72% of the entire individual segment. The remaining ~9.2% is spread across 2,890 retail holders.',
+      '2,891 individual holders combine to 32.4% of capital. The founder alone holds 23.19% — about 72% of the entire individual segment. The remaining ~9.2% is spread across 2,890 retail holders (median holding ~240 shares).',
     body: {
-      type: 'kv',
-      items: [
-        { label: 'Richard Brännemark (founder)', value: '23.19%' },
-        { label: 'Erik Lundström (board)', value: '0.38%' },
-        { label: 'Other 2,889 retail individuals', value: '~8.83%' },
-        { label: 'Avg retail holding', value: '~960 shares' },
-        { label: 'Median retail holding', value: '~240 shares' },
+      type: 'donut',
+      data: [
+        { key: 'founder', label: 'Richard Brännemark (founder)', value: 23.19 },
+        { key: 'board', label: 'Erik Lundström (board)', value: 0.38 },
+        { key: 'retail', label: 'Other 2,889 retail individuals', value: 8.83 },
       ],
+      centerValue: '32.4%',
+      centerLabel: 'Individuals',
+      valueFormatter: 'pct',
     },
     source: 'Shareholders → Owner Distribution',
   },
@@ -673,20 +667,22 @@ Object.assign(RESPONSE_CATALOG, {
   'l2.sh.tx.byowner': {
     title: 'Transactions Grouped by Owner (14 days)',
     narrative:
-      'Aggregating the past 14 days by owner: Aviva Perfusion is the largest net seller (−21,204 shares). Nordea is the largest net buyer (+12,500). Invesco is the second-largest buyer (+10,400).',
+      'Running waterfall of the 9 most active owners over the past 14 days. Net effect: −10,504 shares out of the active register. Aviva Perfusion is the largest net seller (−21,204); Nordea and Invesco lead the buy side.',
     body: {
-      type: 'kv',
-      items: [
-        { label: 'Aviva Perfusion AS', value: '−21,204' },
-        { label: 'Al Rajhi Capital', value: '−7,900' },
-        { label: 'Nordea Investment Funds', value: '+12,500' },
-        { label: 'Invesco Ltd', value: '+10,400' },
-        { label: 'Handelsbanken Fonder', value: '+5,500' },
-        { label: 'Aberdeen Standard', value: '+4,800' },
-        { label: 'Goldman Sachs AM', value: '+3,200' },
-        { label: 'Fjärde AP-fonden', value: '+2,700' },
-        { label: 'Öhman Fonder', value: '+1,400' },
+      type: 'waterfall',
+      data: [
+        { label: 'Start', value: 0 },
+        { label: 'Nordea', value: 12500 },
+        { label: 'Invesco', value: 10400 },
+        { label: 'Handelsbanken', value: 5500 },
+        { label: 'Aberdeen', value: 4800 },
+        { label: 'Goldman', value: 3200 },
+        { label: 'AP4', value: 2700 },
+        { label: 'Öhman', value: 1400 },
+        { label: 'Al Rajhi', value: -7900 },
+        { label: 'Aviva', value: -21204 },
       ],
+      valueFormatter: 'int',
     },
     source: 'Shareholders → Daily Transactions',
   },
@@ -696,14 +692,23 @@ Object.assign(RESPONSE_CATALOG, {
   'l2.sh.lockup.timeline': {
     title: 'Lock-up Expiry Timeline',
     narrative:
-      'Three lock-up agreements are active. The next expiry is the founder block on June 30, 2026 (4.20M shares = 13.69% of capital). Material market impact is possible if the position is reduced after release.',
+      'Three lock-up agreements are active. The founder block (4.20M shares = 13.69% of capital) expires June 30, 2026. Two smaller restricted-stock packages release later in 2026 and 2027. Bars show months until expiry.',
     body: {
-      type: 'list',
-      items: LOCKUPS.map((l) => ({
-        left: l.expiryDate,
-        right: `${l.person} · ${l.type}`,
-        sub: `${l.shares.toLocaleString()} shares (${l.pctOfCapital.toFixed(2)}%)`,
-      })),
+      type: 'bars',
+      data: LOCKUPS.map((l) => {
+        const now = new Date('2026-04-13');
+        const exp = new Date(l.expiryDate);
+        const months = Math.round(
+          (exp - now) / (1000 * 60 * 60 * 24 * 30.44)
+        );
+        return {
+          key: l.person,
+          label: `${l.person} · ${l.pctOfCapital.toFixed(2)}%`,
+          value: months,
+        };
+      }),
+      highlightKey: 'Richard Brännemark',
+      valueFormatter: 'int',
     },
     source: 'Shareholders → Lock-ups',
   },
@@ -821,16 +826,18 @@ Object.assign(RESPONSE_CATALOG, {
   'l2.tgt.look.criteria': {
     title: 'Lookalike Matching Criteria',
     narrative:
-      'Lookalike matching uses 5 weighted traits: peer overlap (30%), investment style (25%), holding duration (20%), geographic fit (15%), ESG alignment (10%).',
+      'The AI lookalike engine combines 5 weighted traits into a single match score. Peer overlap and investment style carry the most weight — together they account for 55% of the match signal.',
     body: {
-      type: 'kv',
-      items: [
-        { label: 'Peer overlap', value: '30% weight' },
-        { label: 'Investment style', value: '25% weight' },
-        { label: 'Typical holding duration', value: '20% weight' },
-        { label: 'Geographic fit', value: '15% weight' },
-        { label: 'ESG alignment', value: '10% weight' },
+      type: 'stacked',
+      label: 'Weight of each trait in the composite match score',
+      data: [
+        { key: 'peer', label: 'Peer overlap', value: 30 },
+        { key: 'style', label: 'Investment style', value: 25 },
+        { key: 'duration', label: 'Holding duration', value: 20 },
+        { key: 'geo', label: 'Geographic fit', value: 15 },
+        { key: 'esg', label: 'ESG alignment', value: 10 },
       ],
+      valueFormatter: 'pct',
     },
     source: 'Targeting → Compare Owners',
   },
@@ -888,16 +895,17 @@ Object.assign(RESPONSE_CATALOG, {
   'l2.tgt.gap.byPeer': {
     title: 'Peer Gaps Grouped by Peer',
     narrative:
-      'Holders of our peers, grouped by which peer they own. BONESUPPORT has the widest gap — 18 institutional holders own it that don\'t own us. OssDsign has 12 unique holders, Medistim 10.',
+      'Holders of our peers that are NOT on our register, grouped by which peer they own. BONESUPPORT has the widest gap — 18 institutional holders own it that don\'t own us. OssDsign 12, Medistim 10, QuickCool 4.',
     body: {
-      type: 'kv',
-      items: [
-        { label: 'BONESUPPORT gap', value: '18 unique holders' },
-        { label: 'OssDsign gap', value: '12 unique holders' },
-        { label: 'Medistim gap', value: '10 unique holders' },
-        { label: 'QuickCool gap', value: '4 unique holders' },
-        { label: 'Total unique peer gap', value: '47 (may overlap)' },
+      type: 'bars',
+      data: [
+        { key: 'bone', label: 'BONESUPPORT', value: 18 },
+        { key: 'oss', label: 'OssDsign', value: 12 },
+        { key: 'medi', label: 'Medistim', value: 10 },
+        { key: 'qkc', label: 'QuickCool', value: 4 },
       ],
+      highlightKey: 'bone',
+      valueFormatter: 'int',
     },
     source: 'Targeting → Compare Owners',
   },
@@ -957,17 +965,20 @@ Object.assign(RESPONSE_CATALOG, {
   'l2.tgt.cmp.unique': {
     title: 'Unique to INTEG B',
     narrative:
-      'Holders that appear in our register but NOT in any peer register: 6 institutional positions representing 8.2% of capital. These are our "distinctive" holders and worth nurturing.',
+      'Holders that appear in our register but NOT in any peer register — 6 institutional positions representing 8.2% of capital. These are our "distinctive" holders and worth nurturing as a differentiated story.',
     body: {
-      type: 'list',
-      items: [
-        { left: 'SEB Life International', right: '2.87% of our capital', sub: 'Unit-linked · Luxembourg' },
-        { left: 'Al Rajhi Capital', right: '1.98% of our capital', sub: 'Sharia-compliant · Saudi' },
-        { left: 'Göteborgs Universitet', right: '0.98% of our capital', sub: 'Endowment · Local' },
-        { left: 'Länsförsäkringar', right: '0.87% of our capital', sub: 'Sverige Aktiv fund' },
-        { left: 'Carnegie Fonder', right: '0.76% of our capital', sub: 'Swedish boutique' },
-        { left: '2 smaller holders', right: '~0.4% combined', sub: 'Individual + family office' },
+      type: 'donut',
+      data: [
+        { key: 'seb', label: 'SEB Life International (LU)', value: 2.87 },
+        { key: 'rajhi', label: 'Al Rajhi Capital (SA)', value: 1.98 },
+        { key: 'gbg', label: 'Göteborgs Universitet (SE)', value: 0.98 },
+        { key: 'lans', label: 'Länsförsäkringar (SE)', value: 0.87 },
+        { key: 'carnegie', label: 'Carnegie Fonder (SE)', value: 0.76 },
+        { key: 'other', label: '2 smaller holders', value: 0.4 },
       ],
+      centerValue: '8.2%',
+      centerLabel: 'Unique to us',
+      valueFormatter: 'pct',
     },
     source: 'Targeting → Compare Owners',
   },
@@ -1041,15 +1052,18 @@ Object.assign(RESPONSE_CATALOG, {
   /* ----- L2 from "Recently exited" ----- */
 
   'l2.tgt.exit.winback': {
-    title: 'Winback Candidates',
+    title: 'Winback Probability',
     narrative:
-      '2 of our 4 recent exits are strong winback candidates: Alliance Bernstein (rotated out of sector, may rotate back) and Prudential (PM change, new PM is known to be open to small-cap).',
+      '2 of our 4 recent exits score above 60 on the AI winback-probability model: Alliance Bernstein (sector rotation — reversible) and Prudential (PM change — new PM is open to Nordic small-cap). The other 2 are mandate closures with near-zero reversal odds.',
     body: {
-      type: 'list',
-      items: [
-        { left: 'Alliance Bernstein', right: 'Intl Growth · Exited Dec 2025', sub: 'Rotation rationale — reversible if sector cycle turns' },
-        { left: 'Prudential International', right: 'Exited Jul 2025', sub: 'PM change — new PM is open to Nordic small-cap' },
-      ],
+      type: 'ring',
+      value: 68,
+      max: 100,
+      suffix: '',
+      label: 'Winback prob.',
+      sub: 'average across 2',
+      caption:
+        'Alliance Bernstein 72/100 · Prudential 64/100 · UBP 12/100 · BNP Paribas 8/100. Top candidates respond well to a 3-touch sequence with pipeline updates and peer comparables.',
     },
     source: 'Targeting → Compare Owners',
   },
