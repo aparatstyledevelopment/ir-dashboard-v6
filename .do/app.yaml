@@ -1,14 +1,22 @@
 # DigitalOcean App Platform spec
-# Deploys this repo as a Static Site (Vite + React SPA).
+# Deploys this repo as a Static Site (recommended — free, fastest).
 #
-# To deploy:
-#   1. In the DigitalOcean control panel: Apps → Create App → GitHub
-#      and select aparatstyledevelopment/ir-dashboard-v6.
-#   2. DO will auto-detect this app spec, or you can paste it in manually.
-#   3. Confirm and deploy.
+# If you already created the app via the dashboard's autodetection,
+# DO may have created a Node.js Web Service instead. In that case
+# `npm start` (defined in package.json) will serve the built dist/
+# directory on $PORT using the `serve` package, with SPA fallback
+# configured via dist/serve.json.
 #
-# `catchall_document: index.html` is required so client-side routes
-# like /shareholders, /stock, etc. don't 404 on direct navigation.
+# To switch an existing Web Service to a Static Site (recommended):
+#   1. DO dashboard → your app → Settings → Components
+#   2. Destroy the existing Service component
+#   3. Create Component → Static Site → use this repo
+#   4. Build command: npm ci && npm run build
+#   5. Output directory: dist
+#   6. Catchall document: index.html
+#
+# Or paste this spec into Settings → App Spec.
+
 name: ir-dashboard-v6
 region: fra
 static_sites:
