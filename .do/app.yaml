@@ -1,0 +1,27 @@
+# DigitalOcean App Platform spec
+# Deploys this repo as a Static Site (Vite + React SPA).
+#
+# To deploy:
+#   1. In the DigitalOcean control panel: Apps → Create App → GitHub
+#      and select aparatstyledevelopment/ir-dashboard-v6.
+#   2. DO will auto-detect this app spec, or you can paste it in manually.
+#   3. Confirm and deploy.
+#
+# `catchall_document: index.html` is required so client-side routes
+# like /shareholders, /stock, etc. don't 404 on direct navigation.
+name: ir-dashboard-v6
+region: fra
+static_sites:
+  - name: command-bar
+    github:
+      repo: aparatstyledevelopment/ir-dashboard-v6
+      branch: claude/command-bar-dashboard-phase-1-dTi73
+      deploy_on_push: true
+    source_dir: /
+    build_command: npm ci && npm run build
+    output_dir: dist
+    environment_slug: node-js
+    catchall_document: index.html
+    index_document: index.html
+    routes:
+      - path: /
