@@ -1,6 +1,6 @@
 export const MODULES = [
   { id: 'dashboard', label: 'Dashboard', icon: 'LayoutDashboard', active: true },
-  { id: 'shareholders', label: 'Shareholders', icon: 'Users', active: false },
+  { id: 'shareholders', label: 'Shareholders', icon: 'Users', active: true },
   { id: 'targeting', label: 'Targeting', icon: 'Target', active: false },
   { id: 'stock', label: 'Stock', icon: 'TrendingUp', active: false },
   { id: 'liquidity', label: 'Liquidity', icon: 'BarChart3', active: false },

@@ -64,6 +64,20 @@ export default function OwnershipChangesCard({
         { id: 'l2.buyers.last-quarter', label: 'Compare to last quarter' },
         { id: 'l2.buyers.foreign', label: 'Show foreign buyers only' },
       ]}
+      expansionChips={[
+        [
+          { id: 'exp.buyers.coordinated', label: 'Detect coordinated buying' },
+          { id: 'exp.buyers.stealth', label: 'Surface stealth accumulators' },
+          { id: 'exp.buyers.predict', label: 'Predict next-week movers' },
+        ],
+        [
+          { id: 'exp.buyers.conviction', label: 'Score buyer conviction' },
+          { id: 'exp.buyers.peeroverlap', label: 'Map peer portfolio overlap' },
+          { id: 'exp.buyers.outreach', label: 'Auto-draft outreach to top buyer' },
+        ],
+      ]}
+      expandedToast="You've seen the AI suggestions for ownership flow — predictive models ship with production."
+      mockToast="In production, this would run a flow-clustering model on the live tape."
       sourceModule="Shareholders → Owner Changes"
       onFollowUp={onFollowUp}
       onSourceOpen={onSourceOpen}

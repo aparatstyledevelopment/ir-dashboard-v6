@@ -110,7 +110,9 @@ textarea {
   animation: toastIn 220ms ease-out both;
 }
 
-/* Custom thin scrollbar for conversation area */
+/* Custom thin scrollbar for conversation area. The 6px gutter gets
+ * mirrored on .cb-input-gutter so the chat input centers in the same
+ * effective width as the conversation content. */
 .conversation-scroll::-webkit-scrollbar {
   width: 6px;
 }
@@ -121,22 +123,274 @@ textarea {
 .conversation-scroll::-webkit-scrollbar-track {
   background: transparent;
 }
+.conversation-scroll {
+  scrollbar-gutter: stable;
+}
+
+.cb-input-gutter {
+  padding-right: 6px;
+}
+
+/* ----- Attach-to-chat: per-card button + chat input attachment chips ----- */
+
+.cb-attach-btn {
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 140ms ease;
+  padding: 0;
+}
+.cb-attach-btn:hover {
+  border-color: var(--text-primary);
+  color: var(--text-primary);
+}
+.cb-attach-btn.is-attached {
+  background: var(--surface-dark);
+  color: var(--surface-dark-text);
+  border-color: var(--surface-dark);
+}
+
+.cb-chat-attachments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+  padding: 0 4px;
+}
+
+.cb-chat-attachment {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface-dark);
+  color: var(--surface-dark-text);
+  font-size: 11px;
+  padding: 4px 4px 4px 11px;
+  border-radius: 999px;
+  letter-spacing: -0.01em;
+  max-width: 220px;
+}
+.cb-chat-attachment-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cb-chat-attachment button {
+  background: rgba(255, 255, 255, 0.18);
+  border: none;
+  color: var(--surface-dark-text);
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 11px;
+  padding: 0;
+  flex-shrink: 0;
+}
+.cb-chat-attachment button:hover {
+  background: rgba(255, 255, 255, 0.32);
+}
+
+/* User bubble shows the attached-card refs above the text */
+.cb-user-attachments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+.cb-user-attachment-tag {
+  display: inline-block;
+  font-size: 10px;
+  padding: 2px 8px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-tertiary);
+  background: var(--bg);
+  letter-spacing: -0.01em;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ----- Quick actions panel (left of conversation on desktop) ----- */
+
+.cb-quickactions {
+  display: none;
+  flex-direction: column;
+  width: 232px;
+  flex-shrink: 0;
+  background: var(--bg);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+}
+@media (min-width: 1024px) {
+  .cb-quickactions {
+    display: flex;
+  }
+}
+
+.cb-qa-header {
+  padding: 18px 16px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.cb-qa-header h3 {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  margin: 0;
+}
+.cb-qa-header p {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  margin: 4px 0 0;
+  letter-spacing: -0.01em;
+}
+
+.cb-qa-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.cb-qa-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  text-align: left;
+  color: var(--text-primary);
+  transition: background 140ms ease;
+  width: 100%;
+}
+.cb-qa-item:hover {
+  background: var(--bar-track);
+}
+.cb-qa-icon {
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.cb-qa-item:hover .cb-qa-icon {
+  color: var(--text-primary);
+}
+.cb-qa-body {
+  flex: 1;
+  min-width: 0;
+}
+.cb-qa-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+  display: block;
+}
+.cb-qa-sub {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  letter-spacing: -0.01em;
+  margin-top: 2px;
+  display: block;
+  line-height: 1.4;
+}
+.cb-qa-arrow {
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* Floating action button for mobile-only quick actions */
+.cb-qa-fab {
+  position: fixed;
+  bottom: 88px;
+  right: 16px;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--surface-dark);
+  color: var(--surface-dark-text);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 80;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+}
+@media (min-width: 1024px) {
+  .cb-qa-fab {
+    display: none;
+  }
+}
+
+.cb-qa-sheet-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 90;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.cb-qa-sheet {
+  width: 100%;
+  max-width: 480px;
+  background: var(--bg);
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  border: 1px solid var(--border);
+  border-bottom: none;
+  max-height: 70vh;
+  overflow-y: auto;
+  animation: sheetSlideUp 220ms ease-out both;
+}
+@keyframes sheetSlideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+.cb-qa-sheet-handle {
+  width: 36px;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  margin: 10px auto 4px;
+}
 
 /* ----- Responsive helpers (avoid Tailwind responsive classes that
    collide with inline styles) ----- */
 
 .cb-mobile-only {
-  display: flex;
+  display: flex !important;
 }
 .cb-tablet-up {
-  display: none;
+  display: none !important;
 }
 @media (min-width: 640px) {
   .cb-mobile-only {
-    display: none;
+    display: none !important;
   }
   .cb-tablet-up {
-    display: inline;
+    display: inline !important;
   }
 }
 
@@ -425,11 +679,11 @@ textarea {
   background: #FAFAFA;
   border: 1px solid var(--border);
   color: var(--text-primary);
-  padding: 5px 10px;
+  padding: 5px 11px;
   font-size: 11px;
   font-weight: 400;
   letter-spacing: -0.01em;
-  border-radius: 12px;
+  border-radius: 999px;
   white-space: nowrap;
   cursor: pointer;
   transition: background 140ms ease, border-color 140ms ease,

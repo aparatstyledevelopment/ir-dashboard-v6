@@ -76,6 +76,20 @@ export default function TopHoldersCard({
         { id: 'l2.top25.institutional', label: 'Institutional holders only' },
         { id: 'l2.top25.new-entrants', label: "Who's new in top 25?" },
       ]}
+      expansionChips={[
+        [
+          { id: 'exp.top25.lookalikes', label: 'Find lookalike holders globally' },
+          { id: 'exp.top25.churn', label: 'Spot churning positions' },
+          { id: 'exp.top25.forecast', label: "Forecast next quarter's top 10" },
+        ],
+        [
+          { id: 'exp.top25.esg', label: 'Map ESG alignment scores' },
+          { id: 'exp.top25.gaps', label: 'Detect engagement gaps' },
+          { id: 'exp.top25.briefs', label: 'Auto-draft holder briefs' },
+        ],
+      ]}
+      expandedToast="You've seen the AI suggestions for the top-25 view — holder DNA matching ships with production."
+      mockToast="In production, this would match against a global pool of 40k+ institutional profiles."
       sourceModule="Shareholders → Owners"
       onFollowUp={onFollowUp}
       onSourceOpen={onSourceOpen}

@@ -204,6 +204,8 @@ export default function DynamicResponseCard({
   onSourceOpen,
   onShowToast,
   isChipSpent,
+  onAttach,
+  isAttached,
 }) {
   const entry = getCatalogEntry(catalogId);
   if (!entry) return null;
@@ -216,6 +218,8 @@ export default function DynamicResponseCard({
       onSourceOpen={onSourceOpen}
       onShowToast={onShowToast}
       isChipSpent={isChipSpent}
+      onAttach={onAttach}
+      isAttached={isAttached}
       sourceModule={entry.source}
     >
       <p

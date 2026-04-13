@@ -14,6 +14,20 @@ export default function ShortInterestCard({
         { id: 'l2.short.vs-price', label: 'Short vs stock price' },
         { id: 'l2.short.peers', label: 'Peer short comparison' },
       ]}
+      expansionChips={[
+        [
+          { id: 'exp.short.squeeze', label: 'Squeeze-risk forecast' },
+          { id: 'exp.short.closers', label: 'Identify likely short closers' },
+          { id: 'exp.short.rotation', label: 'Sector short rotation signals' },
+        ],
+        [
+          { id: 'exp.short.borrow', label: 'Estimate borrow-cost trajectory' },
+          { id: 'exp.short.ladder', label: 'Detect short ladder build-up' },
+          { id: 'exp.short.narrative', label: 'Auto-draft anti-short narrative' },
+        ],
+      ]}
+      expandedToast="You've seen the AI suggestions for short interest — squeeze risk modelling ships with production."
+      mockToast="In production, this would join borrow data, options flow, and short tape."
       sourceModule="Short → Short Analysis"
       onFollowUp={onFollowUp}
       onSourceOpen={onSourceOpen}

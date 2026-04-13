@@ -14,6 +14,20 @@ export default function InsiderActivityCard({
         { id: 'l2.insider.holdings', label: 'Board & management holdings' },
         { id: 'l2.insider.trend', label: 'Insider ownership trend' },
       ]}
+      expansionChips={[
+        [
+          { id: 'exp.ins.predict', label: 'Predict next insider trade' },
+          { id: 'exp.ins.options', label: 'Cross-reference with options activity' },
+          { id: 'exp.ins.minutes', label: 'Sentiment from board minutes' },
+        ],
+        [
+          { id: 'exp.ins.vesting', label: 'Estimate vesting cliff impact' },
+          { id: 'exp.ins.conviction', label: 'Map insider conviction over time' },
+          { id: 'exp.ins.boardbrief', label: 'Auto-draft board briefing' },
+        ],
+      ]}
+      expandedToast="You've seen the AI suggestions for insider activity — intent inference ships with production."
+      mockToast="In production, this would join PDMR filings with options flow and meeting minutes."
       sourceModule="Insider → Transactions"
       onFollowUp={onFollowUp}
       onSourceOpen={onSourceOpen}

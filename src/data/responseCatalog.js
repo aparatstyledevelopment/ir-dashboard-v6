@@ -1,5 +1,6 @@
-// Level-2 response catalog for Dashboard follow-up chips.
-// Each L1 response card has 3 follow-up chips that target an entry here.
+// Level-2 response catalog. Each L1 response card has 3 follow-up chips
+// that target an entry here. Both the Dashboard and Shareholders modules
+// register entries in this single shared catalog.
 
 import { TOP_HOLDERS } from './holders';
 import { OWNERSHIP_CHANGES } from './ownershipChanges';
@@ -7,6 +8,8 @@ import { PEER_LIQUIDITY } from './peerLiquidity';
 import { INSIDER_TRANSACTIONS } from './insiderTransactions';
 import { SHORT_INTEREST } from './shortInterest';
 import { UPCOMING_EVENTS } from './upcomingEvents';
+import { DAILY_TRANSACTIONS } from './dailyTransactions';
+import { LOCKUPS, LOCKUP_RELEASES } from './lockups';
 
 // Body type contracts:
 //   { type: 'narrative' }                       → no body
@@ -378,6 +381,347 @@ export const RESPONSE_CATALOG = {
     source: 'CRM → Outreach',
   },
 };
+
+/* ============================================================ */
+/* Shareholders module — L2 catalog (l2.sh.*)                    */
+/* ============================================================ */
+
+Object.assign(RESPONSE_CATALOG, {
+  /* ----- L2 from "Show full register" ----- */
+
+  'l2.sh.register.search': {
+    title: 'Search the Register',
+    narrative:
+      'Smart search across all 3,498 holders. In production you can filter by name, country, type, holding range, or recent activity — the result set updates live as you refine.',
+    body: {
+      type: 'kv',
+      items: [
+        { label: 'Search by name', value: '"Nordea", "Brännemark", "Aviva"' },
+        { label: 'Filter by country', value: 'SE, NO, US, SA, GB, DE, DK …' },
+        { label: 'Filter by type', value: 'Fund, Pension, Strategic, Individual' },
+        { label: 'Holding range', value: '0–0.1% / 0.1–1% / 1–5% / 5%+' },
+        { label: 'Last update window', value: '7d / 30d / 90d / 12mo' },
+      ],
+    },
+    source: 'Shareholders → Search',
+  },
+
+  'l2.sh.register.export': {
+    title: 'Export Register',
+    narrative:
+      'Export the full register in 4 formats. The export includes owner name, country, type, capital %, votes %, share count, and last-update timestamp.',
+    body: {
+      type: 'list',
+      items: [
+        {
+          left: 'CSV',
+          right: 'Best for spreadsheets · ~210 KB',
+          sub: 'UTF-8, comma-separated',
+        },
+        {
+          left: 'Excel',
+          right: 'Multi-sheet workbook · ~340 KB',
+          sub: 'Includes pivot-ready Owner / Trend / Lockup sheets',
+        },
+        {
+          left: 'PDF',
+          right: 'Board-ready report · ~520 KB',
+          sub: 'Branded layout with charts',
+        },
+        {
+          left: 'JSON',
+          right: 'For programmatic use · ~180 KB',
+          sub: 'Stable schema with versioning',
+        },
+      ],
+    },
+    source: 'Shareholders → Export',
+  },
+
+  'l2.sh.register.history': {
+    title: 'Register Snapshot History',
+    narrative:
+      'Compare any two register snapshots to see net ownership changes. The system retains 24 monthly snapshots plus the most recent 12 weekly diffs.',
+    body: {
+      type: 'list',
+      items: [
+        { left: 'Apr 12 2026', right: 'Latest snapshot · 3,498 owners', sub: '+9 vs prior week' },
+        { left: 'Apr 05 2026', right: '3,489 owners', sub: '+11 vs prior week' },
+        { left: 'Mar 29 2026', right: '3,478 owners', sub: '+8 vs prior week' },
+        { left: 'Mar 22 2026', right: '3,470 owners', sub: '+10 vs prior week' },
+        { left: 'Mar 15 2026', right: '3,460 owners', sub: 'End of month snapshot' },
+      ],
+    },
+    source: 'Shareholders → History',
+  },
+
+  /* ----- L2 from "Owner trend" ----- */
+
+  'l2.sh.trend.composition': {
+    title: 'Composition Trend by Type',
+    narrative:
+      "Fund ownership has grown 1.4pp over the past 12 months while individuals have decreased 0.8pp and the strategic block has shrunk 0.7pp. Pensions and bank/brokerage holders are roughly flat.",
+    body: {
+      type: 'kv',
+      items: [
+        { label: 'Fund', value: '+1.4pp' },
+        { label: 'Individual', value: '−0.8pp' },
+        { label: 'Strategic / Other', value: '−0.7pp' },
+        { label: 'Pension & Insurance', value: '+0.1pp' },
+        { label: 'Bank / Brokerage', value: '+0.0pp' },
+      ],
+    },
+    source: 'Shareholders → Owner Trend',
+  },
+
+  'l2.sh.trend.foreign': {
+    title: 'Foreign Ownership — 12 Month Trend',
+    narrative:
+      "Foreign ownership has declined 1.3pp from 21.4% to 20.1% over 12 months. The decline is almost entirely driven by Aviva Perfusion's gradual reduction.",
+    body: {
+      type: 'bars',
+      data: [
+        { key: 'm1', label: 'May 25', value: 21.38 },
+        { key: 'm3', label: 'Jul 25', value: 21.02 },
+        { key: 'm6', label: 'Oct 25', value: 20.55 },
+        { key: 'm9', label: 'Jan 26', value: 20.22 },
+        { key: 'm12', label: 'Apr 26', value: 20.08 },
+      ],
+      highlightKey: 'm12',
+      valueFormatter: 'pct',
+    },
+    source: 'Shareholders → Owner Trend',
+  },
+
+  'l2.sh.trend.concentration': {
+    title: 'Top-25 Concentration Trend',
+    narrative:
+      'Top 25 controlled 55.5% of capital 12 months ago. Today they control 54.2% — a 1.3pp decline driven by founder + Aviva reductions.',
+    body: {
+      type: 'bars',
+      data: [
+        { key: 't1', label: 'May 25', value: 55.50 },
+        { key: 't3', label: 'Jul 25', value: 55.30 },
+        { key: 't6', label: 'Oct 25', value: 54.92 },
+        { key: 't9', label: 'Jan 26', value: 54.50 },
+        { key: 't12', label: 'Apr 26', value: 54.20 },
+      ],
+      highlightKey: 't12',
+      valueFormatter: 'pct',
+    },
+    source: 'Shareholders → Owner Trend',
+  },
+
+  /* ----- L2 from "Geographic breakdown" ----- */
+
+  'l2.sh.geo.europe': {
+    title: 'European Holders',
+    narrative:
+      'European holders (excluding Sweden) control 24.9% of capital. Norway dominates at 21.7%, then Denmark 1.5%, UK 1.2%, Germany 0.5%, others 0.0%.',
+    body: {
+      type: 'bars',
+      data: [
+        { key: 'no', label: 'Norway', value: 21.71 },
+        { key: 'dk', label: 'Denmark', value: 1.52 },
+        { key: 'gb', label: 'United Kingdom', value: 1.21 },
+        { key: 'de', label: 'Germany', value: 0.46 },
+      ],
+      valueFormatter: 'pct',
+    },
+    source: 'Shareholders → Geography',
+  },
+
+  'l2.sh.geo.americas': {
+    title: 'Americas Holders',
+    narrative:
+      'US institutions hold 3.16% across 42 disclosed positions. The largest are Invesco (1.23%), Vanguard (0.48%), and Dimensional Fund Advisors (0.42%). No Canadian or Latin American holders are currently disclosed.',
+    body: {
+      type: 'table',
+      mode: 'plain',
+      columns: [
+        { header: 'Holder', key: 'name' },
+        { header: 'Capital %', key: 'capitalPct', align: 'right', fmt: 'pct' },
+        { header: 'Type', key: 'type' },
+      ],
+      rows: TOP_HOLDERS.filter((h) => h.country === 'US'),
+    },
+    source: 'Shareholders → Geography',
+  },
+
+  'l2.sh.geo.asia': {
+    title: 'Asia & MENA Holders',
+    narrative:
+      'Saudi Arabia represents 1.98% of capital through Al Rajhi Capital. No other Asian or MENA holders are currently on the register above the disclosure threshold.',
+    body: {
+      type: 'kv',
+      items: [
+        { label: 'Saudi Arabia (Al Rajhi Capital)', value: '1.98%' },
+        { label: 'Other MENA', value: '—' },
+        { label: 'Japan', value: '—' },
+        { label: 'Hong Kong / Singapore', value: '—' },
+      ],
+    },
+    source: 'Shareholders → Geography',
+  },
+
+  /* ----- L2 from "By owner type" ----- */
+
+  'l2.sh.type.funds': {
+    title: 'Fund Holders Detail',
+    narrative:
+      '218 fund holders combine to 25.8% of capital. The top 5 funds (Nordea, Handelsbanken, Carnegie, Öhman, Swedbank Robur) control roughly half of the fund total.',
+    body: {
+      type: 'table',
+      mode: 'holders-with-link',
+      columns: [
+        { header: '#', key: 'rank', align: 'right' },
+        { header: 'Fund', key: 'name' },
+        { header: 'Capital %', key: 'capitalPct', align: 'right', fmt: 'pct' },
+      ],
+      rows: TOP_HOLDERS.filter((h) => h.type === 'Fund').slice(0, 10),
+    },
+    source: 'Shareholders → Owner Distribution',
+  },
+
+  'l2.sh.type.individuals': {
+    title: 'Individual Holders Detail',
+    narrative:
+      '2,891 individual holders combine to 32.4% of capital. The founder holds 23.19% alone — about 72% of the entire individual segment. The remaining ~9.2% is spread across 2,890 retail holders.',
+    body: {
+      type: 'kv',
+      items: [
+        { label: 'Richard Brännemark (founder)', value: '23.19%' },
+        { label: 'Erik Lundström (board)', value: '0.38%' },
+        { label: 'Other 2,889 retail individuals', value: '~8.83%' },
+        { label: 'Avg retail holding', value: '~960 shares' },
+        { label: 'Median retail holding', value: '~240 shares' },
+      ],
+    },
+    source: 'Shareholders → Owner Distribution',
+  },
+
+  'l2.sh.type.strategic': {
+    title: 'Strategic / Other Holders',
+    narrative:
+      '12 strategic / other-type holders control 24.1% of capital. The vast majority is concentrated in Aviva Perfusion AS (21.13%). Universities, foundations, and private holding companies make up the remainder.',
+    body: {
+      type: 'list',
+      items: [
+        { left: '21.13%', right: 'Aviva Perfusion AS', sub: 'Norwegian strategic, IPO-era holder' },
+        { left: '1.98%', right: 'Al Rajhi Capital', sub: 'Saudi sovereign-linked holding' },
+        { left: '0.98%', right: 'Göteborgs Universitet', sub: 'University endowment' },
+        { left: '0.01%', right: '9 smaller private holdings', sub: 'Foundations, holding companies' },
+      ],
+    },
+    source: 'Shareholders → Owner Distribution',
+  },
+
+  /* ----- L2 from "Daily transactions" ----- */
+
+  'l2.sh.tx.last7': {
+    title: 'Last 7 Days Transactions',
+    narrative:
+      '7 reportable transactions in the past 7 days. Net flow is +20,496 shares (5 buys totalling 36.4k, 3 sells totalling 16.0k).',
+    body: {
+      type: 'table',
+      mode: 'plain',
+      columns: [
+        { header: 'Date', key: 'date', fmt: 'date', nowrap: true },
+        { header: 'Owner', key: 'owner' },
+        { header: 'Type', key: 'type' },
+        { header: 'Shares', key: 'shares', align: 'right', fmt: 'int' },
+      ],
+      rows: DAILY_TRANSACTIONS.slice(0, 7),
+    },
+    source: 'Shareholders → Daily Transactions',
+  },
+
+  'l2.sh.tx.large': {
+    title: 'Large Transactions (>€100k value)',
+    narrative:
+      '5 transactions exceeded €100k in value over the past 14 days. Aviva Perfusion accounted for the two largest, both on the sell side. Nordea and Invesco contributed the largest buys.',
+    body: {
+      type: 'table',
+      mode: 'plain',
+      columns: [
+        { header: 'Date', key: 'date', fmt: 'date', nowrap: true },
+        { header: 'Owner', key: 'owner' },
+        { header: 'Type', key: 'type' },
+        { header: 'Value (SEK)', key: 'valueSEK', align: 'right', fmt: 'int' },
+      ],
+      rows: DAILY_TRANSACTIONS.filter((t) => t.valueSEK >= 100_000),
+    },
+    source: 'Shareholders → Daily Transactions',
+  },
+
+  'l2.sh.tx.byowner': {
+    title: 'Transactions Grouped by Owner (14 days)',
+    narrative:
+      'Aggregating the past 14 days by owner: Aviva Perfusion is the largest net seller (−21,204 shares). Nordea is the largest net buyer (+12,500). Invesco is the second-largest buyer (+10,400).',
+    body: {
+      type: 'kv',
+      items: [
+        { label: 'Aviva Perfusion AS', value: '−21,204' },
+        { label: 'Al Rajhi Capital', value: '−7,900' },
+        { label: 'Nordea Investment Funds', value: '+12,500' },
+        { label: 'Invesco Ltd', value: '+10,400' },
+        { label: 'Handelsbanken Fonder', value: '+5,500' },
+        { label: 'Aberdeen Standard', value: '+4,800' },
+        { label: 'Goldman Sachs AM', value: '+3,200' },
+        { label: 'Fjärde AP-fonden', value: '+2,700' },
+        { label: 'Öhman Fonder', value: '+1,400' },
+      ],
+    },
+    source: 'Shareholders → Daily Transactions',
+  },
+
+  /* ----- L2 from "Lock-up status" ----- */
+
+  'l2.sh.lockup.timeline': {
+    title: 'Lock-up Expiry Timeline',
+    narrative:
+      'Three lock-up agreements are active. The next expiry is the founder block on June 30, 2026 (4.20M shares = 13.69% of capital). Material market impact is possible if the position is reduced after release.',
+    body: {
+      type: 'list',
+      items: LOCKUPS.map((l) => ({
+        left: l.expiryDate,
+        right: `${l.person} · ${l.type}`,
+        sub: `${l.shares.toLocaleString()} shares (${l.pctOfCapital.toFixed(2)}%)`,
+      })),
+    },
+    source: 'Shareholders → Lock-ups',
+  },
+
+  'l2.sh.lockup.persons': {
+    title: 'Locked-up Insiders',
+    narrative:
+      'Three insiders currently hold locked shares. Brännemark dominates with 4.20M shares; Lundström and Hellström each hold smaller restricted-stock packages from board / executive grants.',
+    body: {
+      type: 'list',
+      items: LOCKUPS.map((l) => ({
+        left: l.person,
+        right: `${l.role} · ${l.type}`,
+        sub: `${l.shares.toLocaleString()} shares (${l.pctOfCapital.toFixed(2)}%) · expires ${l.expiryDate}`,
+      })),
+    },
+    source: 'Shareholders → Lock-ups',
+  },
+
+  'l2.sh.lockup.history': {
+    title: 'Lock-up Release History',
+    narrative:
+      'Two lock-ups have released in the past 24 months: 1.20M shares from the original IPO 180-day lock-up in March 2024, and 240k shares from a board package vesting tranche in November 2024. Both released without material price impact.',
+    body: {
+      type: 'list',
+      items: LOCKUP_RELEASES.map((l) => ({
+        left: l.date,
+        right: `${l.person} · ${l.note}`,
+        sub: `${l.shares.toLocaleString()} shares (${l.pctOfCapital.toFixed(2)}%)`,
+      })),
+    },
+    source: 'Shareholders → Lock-ups',
+  },
+});
 
 // Default expansion chips for each L2 card group.
 export function getCatalogEntry(id) {

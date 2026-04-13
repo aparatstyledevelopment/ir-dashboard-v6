@@ -23,6 +23,20 @@ export default function LiquidityComparisonCard({
         { id: 'l2.liquidity.volume-trend', label: 'Monthly volume trend' },
         { id: 'l2.liquidity.block-trades', label: 'Block trades this quarter' },
       ]}
+      expansionChips={[
+        [
+          { id: 'exp.liq.forecast', label: 'Project liquidity for next quarter' },
+          { id: 'exp.liq.windows', label: 'Recommend market-making windows' },
+          { id: 'exp.liq.risk', label: 'Identify spread-risk hours' },
+        ],
+        [
+          { id: 'exp.liq.buyback', label: 'Simulate buyback impact on liquidity' },
+          { id: 'exp.liq.issuance', label: 'Compare to issuance scenarios' },
+          { id: 'exp.liq.indexrebal', label: 'Detect index-rebalance risk' },
+        ],
+      ]}
+      expandedToast="You've seen the AI suggestions for liquidity — intraday forecasting ships with production."
+      mockToast="In production, this would run a microstructure model on the live order book."
       sourceModule="Liquidity → Liquidity Analysis"
       onFollowUp={onFollowUp}
       onSourceOpen={onSourceOpen}

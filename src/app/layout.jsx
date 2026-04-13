@@ -4,10 +4,12 @@ import Sidebar from '../components/layout/Sidebar';
 import TopBar from '../components/layout/TopBar';
 import MobileDrawer from '../components/layout/MobileDrawer';
 import Toast from '../components/ui/Toast';
+import { useConversations } from '../hooks/useConversations';
 
 export default function RootLayout() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [toast, setToast] = useState(null);
+  const conversations = useConversations();
 
   const showToast = (msg) => setToast(msg);
 
@@ -31,7 +33,7 @@ export default function RootLayout() {
         }}
       >
         <TopBar onOpenDrawer={() => setDrawerOpen(true)} />
-        <Outlet context={{ showToast }} />
+        <Outlet context={{ showToast, conversations }} />
       </div>
 
       <Toast message={toast} onDismiss={() => setToast(null)} />

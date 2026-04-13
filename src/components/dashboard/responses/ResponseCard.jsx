@@ -1,3 +1,4 @@
+import { Plus, Check } from 'lucide-react';
 import ChipGroup from '../../ui/ChipGroup';
 import SourceDataLink from '../../shared/SourceDataLink';
 
@@ -6,11 +7,15 @@ export default function ResponseCard({
   children,
   followUps = [],
   expansionChips,
+  expandedToast,
+  mockToast,
   sourceModule,
   onFollowUp,
   onSourceOpen,
   onShowToast,
   isChipSpent,
+  onAttach,
+  isAttached,
 }) {
   // Normalize legacy string follow-ups to {id, label} objects.
   const normalized = followUps.map((f, i) =>
@@ -18,10 +23,7 @@ export default function ResponseCard({
   );
 
   return (
-    <article
-      className="fade-in-up cb-card"
-      style={{ borderRadius: '4px' }}
-    >
+    <article className="fade-in-up cb-card" style={{ borderRadius: '4px' }}>
       <header
         style={{
           padding: '12px 16px',
@@ -30,9 +32,28 @@ export default function ResponseCard({
           fontWeight: 500,
           color: 'var(--text-primary)',
           letterSpacing: '-0.01em',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '10px',
         }}
       >
-        {title}
+        <span>{title}</span>
+        {onAttach && (
+          <button
+            type="button"
+            onClick={onAttach}
+            className={'cb-attach-btn' + (isAttached ? ' is-attached' : '')}
+            aria-label={isAttached ? 'Remove from chat' : 'Add card to chat'}
+            title={isAttached ? 'Added to chat — click to remove' : 'Add to chat'}
+          >
+            {isAttached ? (
+              <Check size={12} strokeWidth={2.4} />
+            ) : (
+              <Plus size={12} strokeWidth={2.4} />
+            )}
+          </button>
+        )}
       </header>
       <div style={{ padding: '14px 16px' }}>{children}</div>
       {normalized.length > 0 && (
@@ -45,6 +66,8 @@ export default function ResponseCard({
           <ChipGroup
             chips={normalized}
             expansionChips={expansionChips}
+            expandedToast={expandedToast}
+            mockToast={mockToast}
             onChipClick={onFollowUp}
             onShowToast={onShowToast}
             isChipSpent={isChipSpent}

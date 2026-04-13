@@ -16,6 +16,20 @@ export default function UpcomingEventsCard({
         { id: 'l2.events.attendees', label: 'Who attended last earnings call?' },
         { id: 'l2.events.roadshow', label: 'Roadshow schedule' },
       ]}
+      expansionChips={[
+        [
+          { id: 'exp.evt.agenda', label: 'Suggest agenda topics for AGM' },
+          { id: 'exp.evt.qa', label: 'Predict Q&A questions' },
+          { id: 'exp.evt.targets', label: 'Recommend roadshow targets' },
+        ],
+        [
+          { id: 'exp.evt.q1prep', label: 'Auto-draft Q1 prep deck' },
+          { id: 'exp.evt.practice', label: 'Generate practice Q&A' },
+          { id: 'exp.evt.dayBrief', label: 'Build investor day brief' },
+        ],
+      ]}
+      expandedToast="You've seen the AI suggestions for IR events — pre-event briefs ship with production."
+      mockToast="In production, this would join your event history with peer briefings to draft prep materials."
       sourceModule="CRM → Events"
       onFollowUp={onFollowUp}
       onSourceOpen={onSourceOpen}
