@@ -1,11 +1,18 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import ResponseCard from './ResponseCard';
 import DataTable from '../../ui/DataTable';
 import Sparkline from '../../ui/Sparkline';
 import { TOP_HOLDERS } from '../../../data/holders';
 import { formatPct } from '../../../utils/formatters';
+import { slugify } from '../../../utils/slug';
 
-export default function TopHoldersCard({ onFollowUp, onSourceOpen }) {
+export default function TopHoldersCard({
+  onFollowUp,
+  onSourceOpen,
+  onShowToast,
+  isChipSpent,
+}) {
   const [showAll, setShowAll] = useState(false);
   const rows = showAll ? TOP_HOLDERS : TOP_HOLDERS.slice(0, 10);
 
@@ -22,7 +29,11 @@ export default function TopHoldersCard({ onFollowUp, onSourceOpen }) {
     {
       header: 'Owner',
       key: 'name',
-      render: (r) => <span>{r.name}</span>,
+      render: (r) => (
+        <Link to={`/investor/${slugify(r.name)}`} className="cb-link">
+          {r.name}
+        </Link>
+      ),
     },
     {
       header: 'Capital %',
@@ -61,13 +72,15 @@ export default function TopHoldersCard({ onFollowUp, onSourceOpen }) {
     <ResponseCard
       title="Top 25 Shareholders by Capital %"
       followUps={[
-        'Show owner distribution',
-        'Institutional holders only',
-        "Who's new in top 25?",
+        { id: 'l2.top25.distribution', label: 'Show owner distribution' },
+        { id: 'l2.top25.institutional', label: 'Institutional holders only' },
+        { id: 'l2.top25.new-entrants', label: "Who's new in top 25?" },
       ]}
       sourceModule="Shareholders → Owners"
       onFollowUp={onFollowUp}
       onSourceOpen={onSourceOpen}
+      onShowToast={onShowToast}
+      isChipSpent={isChipSpent}
     >
       <p
         style={{

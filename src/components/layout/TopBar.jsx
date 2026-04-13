@@ -23,15 +23,8 @@ export default function TopBar({ onOpenDrawer }) {
           type="button"
           onClick={onOpenDrawer}
           aria-label="Open menu"
-          className="sm:hidden"
-          style={{
-            background: 'transparent',
-            border: 'none',
-            padding: 0,
-            color: 'var(--text-primary)',
-            display: 'flex',
-            alignItems: 'center',
-          }}
+          className="cb-mobile-only cb-icon-btn"
+          style={{ color: 'var(--text-primary)' }}
         >
           <Menu size={18} strokeWidth={1.75} />
         </button>
@@ -53,15 +46,18 @@ export default function TopBar({ onOpenDrawer }) {
           <span
             style={{
               fontWeight: 500,
-              color: 'var(--text-primary)',
+              color: isUp ? 'var(--positive)' : 'var(--negative)',
               fontSize: '11px',
             }}
           >
             {arrow} {Math.abs(COMPANY.change).toFixed(2)}%
           </span>
           <span
-            className="hidden sm:inline"
-            style={{ color: 'var(--text-tertiary)', fontSize: '11px' }}
+            className="cb-tablet-up"
+            style={{
+              color: 'var(--text-tertiary)',
+              fontSize: '11px',
+            }}
           >
             · {COMPANY.exchange}
           </span>
@@ -69,18 +65,7 @@ export default function TopBar({ onOpenDrawer }) {
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-        <button
-          type="button"
-          aria-label="Search"
-          style={{
-            background: 'transparent',
-            border: 'none',
-            padding: 0,
-            color: 'var(--text-tertiary)',
-            display: 'flex',
-            alignItems: 'center',
-          }}
-        >
+        <button type="button" aria-label="Search" className="cb-icon-btn">
           <Search size={16} strokeWidth={1.75} />
         </button>
         <div

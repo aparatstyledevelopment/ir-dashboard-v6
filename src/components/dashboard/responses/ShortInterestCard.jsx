@@ -1,13 +1,24 @@
 import ResponseCard from './ResponseCard';
 
-export default function ShortInterestCard({ onFollowUp, onSourceOpen }) {
+export default function ShortInterestCard({
+  onFollowUp,
+  onSourceOpen,
+  onShowToast,
+  isChipSpent,
+}) {
   return (
     <ResponseCard
       title="Short Interest Overview"
-      followUps={['Show short holders', 'Short vs stock price', 'Peer short comparison']}
+      followUps={[
+        { id: 'l2.short.holders', label: 'Show short holders' },
+        { id: 'l2.short.vs-price', label: 'Short vs stock price' },
+        { id: 'l2.short.peers', label: 'Peer short comparison' },
+      ]}
       sourceModule="Short → Short Analysis"
       onFollowUp={onFollowUp}
       onSourceOpen={onSourceOpen}
+      onShowToast={onShowToast}
+      isChipSpent={isChipSpent}
     >
       <p
         style={{

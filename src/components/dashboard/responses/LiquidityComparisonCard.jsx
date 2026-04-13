@@ -3,7 +3,12 @@ import BarChart from '../../ui/BarChart';
 import { PEER_LIQUIDITY } from '../../../data/peerLiquidity';
 import { formatCurrencyEUR } from '../../../utils/formatters';
 
-export default function LiquidityComparisonCard({ onFollowUp, onSourceOpen }) {
+export default function LiquidityComparisonCard({
+  onFollowUp,
+  onSourceOpen,
+  onShowToast,
+  isChipSpent,
+}) {
   const data = PEER_LIQUIDITY.map((p) => ({
     key: p.ticker,
     label: `${p.name} (${p.ticker})`,
@@ -14,13 +19,15 @@ export default function LiquidityComparisonCard({ onFollowUp, onSourceOpen }) {
     <ResponseCard
       title="Liquidity Analysis — INTEG B vs Peers"
       followUps={[
-        'Show spread analysis',
-        'Monthly volume trend',
-        'Block trades this quarter',
+        { id: 'l2.liquidity.spread', label: 'Show spread analysis' },
+        { id: 'l2.liquidity.volume-trend', label: 'Monthly volume trend' },
+        { id: 'l2.liquidity.block-trades', label: 'Block trades this quarter' },
       ]}
       sourceModule="Liquidity → Liquidity Analysis"
       onFollowUp={onFollowUp}
       onSourceOpen={onSourceOpen}
+      onShowToast={onShowToast}
+      isChipSpent={isChipSpent}
     >
       <p
         style={{

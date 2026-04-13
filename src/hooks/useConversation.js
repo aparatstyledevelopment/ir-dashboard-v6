@@ -12,24 +12,43 @@ export function useConversation() {
     setMessages((prev) => [...prev, { id: nextId(), ...msg }]);
   }, []);
 
-  const sendChipQuery = useCallback(
-    (chipId, responseType, label) => {
-      setSpentChips((prev) => {
-        const next = new Set(prev);
-        next.add(chipId);
-        return next;
-      });
-      setIsTyping(true);
-      setTimeout(() => {
-        setIsTyping(false);
-        setMessages((prev) => [
-          ...prev,
-          { id: nextId(), kind: 'response', responseType, label },
-        ]);
-      }, 800);
-    },
-    []
-  );
+  const sendChipQuery = useCallback((chipId, responseType, label) => {
+    setSpentChips((prev) => {
+      const next = new Set(prev);
+      next.add(chipId);
+      return next;
+    });
+    setIsTyping(true);
+    setTimeout(() => {
+      setIsTyping(false);
+      setMessages((prev) => [
+        ...prev,
+        { id: nextId(), kind: 'response', responseType, label },
+      ]);
+    }, 800);
+  }, []);
+
+  const sendCatalogQuery = useCallback((catalogId, label) => {
+    setSpentChips((prev) => {
+      const next = new Set(prev);
+      next.add(catalogId);
+      return next;
+    });
+    setIsTyping(true);
+    setTimeout(() => {
+      setIsTyping(false);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: nextId(),
+          kind: 'response',
+          responseType: 'catalog',
+          catalogId,
+          label,
+        },
+      ]);
+    }, 800);
+  }, []);
 
   const sendTextQuery = useCallback((text) => {
     const trimmed = text.trim();
@@ -45,15 +64,13 @@ export function useConversation() {
     }, 800);
   }, []);
 
-  const isChipSpent = useCallback(
-    (chipId) => spentChips.has(chipId),
-    [spentChips]
-  );
+  const isChipSpent = useCallback((chipId) => spentChips.has(chipId), [spentChips]);
 
   return {
     messages,
     isTyping,
     sendChipQuery,
+    sendCatalogQuery,
     sendTextQuery,
     isChipSpent,
     append,

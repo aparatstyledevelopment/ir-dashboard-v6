@@ -9,6 +9,7 @@ export default function DashboardPage() {
     messages,
     isTyping,
     sendChipQuery,
+    sendCatalogQuery,
     sendTextQuery,
     isChipSpent,
   } = useConversation();
@@ -17,9 +18,19 @@ export default function DashboardPage() {
     sendChipQuery(chip.id, chip.responseType, chip.label);
   };
 
-  const handleFollowUp = (label) => {
-    // Follow-up chips inside response cards behave like generic queries.
-    sendTextQuery(label);
+  // Follow-up chips inside response cards are objects like { id, label }.
+  // The id matches a key in the L2 response catalog.
+  const handleFollowUp = (chip) => {
+    if (!chip) return;
+    if (typeof chip === 'string') {
+      sendTextQuery(chip);
+      return;
+    }
+    if (chip.id && chip.id.startsWith('l2.')) {
+      sendCatalogQuery(chip.id, chip.label);
+      return;
+    }
+    sendTextQuery(chip.label || String(chip));
   };
 
   const handleSourceOpen = (moduleName) => {
@@ -45,6 +56,7 @@ export default function DashboardPage() {
         isChipSpent={isChipSpent}
         onFollowUp={handleFollowUp}
         onSourceOpen={handleSourceOpen}
+        onShowToast={showToast}
       />
       <div
         style={{

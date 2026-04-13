@@ -1,16 +1,25 @@
+import { Link } from 'react-router-dom';
 import ResponseCard from './ResponseCard';
 import DataTable from '../../ui/DataTable';
 import { OWNERSHIP_CHANGES } from '../../../data/ownershipChanges';
 import { flagFor } from '../../../utils/countryFlags';
 import { formatSignedInt, formatSignedPct } from '../../../utils/formatters';
+import { slugify } from '../../../utils/slug';
 
-export default function OwnershipChangesCard({ onFollowUp, onSourceOpen }) {
+export default function OwnershipChangesCard({
+  onFollowUp,
+  onSourceOpen,
+  onShowToast,
+  isChipSpent,
+}) {
   const columns = [
     {
       header: 'Owner',
       key: 'name',
       render: (r) => (
-        <span style={{ color: 'var(--text-primary)' }}>{r.name}</span>
+        <Link to={`/investor/${slugify(r.name)}`} className="cb-link">
+          {r.name}
+        </Link>
       ),
     },
     {
@@ -51,13 +60,15 @@ export default function OwnershipChangesCard({ onFollowUp, onSourceOpen }) {
     <ResponseCard
       title="Ownership Changes — Last 30 Days"
       followUps={[
-        'View full owner list',
-        'Compare to last quarter',
-        'Show foreign buyers only',
+        { id: 'l2.buyers.full-list', label: 'View full owner list' },
+        { id: 'l2.buyers.last-quarter', label: 'Compare to last quarter' },
+        { id: 'l2.buyers.foreign', label: 'Show foreign buyers only' },
       ]}
       sourceModule="Shareholders → Owner Changes"
       onFollowUp={onFollowUp}
       onSourceOpen={onSourceOpen}
+      onShowToast={onShowToast}
+      isChipSpent={isChipSpent}
     >
       <p
         style={{

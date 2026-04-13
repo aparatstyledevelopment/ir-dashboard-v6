@@ -1,30 +1,35 @@
-export default function Chip({ children, onClick, spent = false, disabled = false }) {
+import { Sparkles } from 'lucide-react';
+
+export default function Chip({
+  children,
+  onClick,
+  spent = false,
+  mock = false,
+  variant = 'default',
+  ariaLabel,
+  title,
+}) {
+  const isExpand = variant === 'expand';
+  const className =
+    'cb-chip' +
+    (spent ? ' is-spent' : '') +
+    (mock ? ' is-mock' : '') +
+    (isExpand ? ' is-expand is-icon-only' : '');
+
   return (
     <button
       type="button"
       onClick={onClick}
-      disabled={disabled || spent}
-      className="transition-colors"
-      style={{
-        background: 'var(--bg)',
-        border: `1px solid ${spent ? '#EFEFEF' : 'var(--border)'}`,
-        color: spent ? 'var(--text-tertiary)' : 'var(--text-primary)',
-        padding: '8px 14px',
-        fontSize: '12px',
-        fontWeight: 400,
-        letterSpacing: '-0.01em',
-        borderRadius: '4px',
-        whiteSpace: 'nowrap',
-        cursor: spent ? 'default' : 'pointer',
-      }}
-      onMouseEnter={(e) => {
-        if (!spent) e.currentTarget.style.background = 'var(--bar-track)';
-      }}
-      onMouseLeave={(e) => {
-        if (!spent) e.currentTarget.style.background = 'var(--bg)';
-      }}
+      disabled={spent}
+      className={className}
+      aria-label={ariaLabel}
+      title={title}
     >
-      {children}
+      {isExpand ? (
+        <Sparkles className="cb-spark" size={11} strokeWidth={1.75} />
+      ) : (
+        children
+      )}
     </button>
   );
 }

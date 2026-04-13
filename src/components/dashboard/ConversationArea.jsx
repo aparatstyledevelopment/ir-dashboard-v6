@@ -9,6 +9,7 @@ import InsiderActivityCard from './responses/InsiderActivityCard';
 import ShortInterestCard from './responses/ShortInterestCard';
 import UpcomingEventsCard from './responses/UpcomingEventsCard';
 import GenericResponseCard from './responses/GenericResponseCard';
+import DynamicResponseCard from './responses/DynamicResponseCard';
 
 function UserBubble({ text }) {
   return (
@@ -34,23 +35,26 @@ function UserBubble({ text }) {
   );
 }
 
-function ResponseRenderer({ message, onFollowUp, onSourceOpen }) {
-  const props = { onFollowUp, onSourceOpen };
+function ResponseRenderer({ message, sharedProps }) {
   switch (message.responseType) {
     case 'ownership':
-      return <OwnershipChangesCard {...props} />;
+      return <OwnershipChangesCard {...sharedProps} />;
     case 'topHolders':
-      return <TopHoldersCard {...props} />;
+      return <TopHoldersCard {...sharedProps} />;
     case 'liquidity':
-      return <LiquidityComparisonCard {...props} />;
+      return <LiquidityComparisonCard {...sharedProps} />;
     case 'insider':
-      return <InsiderActivityCard {...props} />;
+      return <InsiderActivityCard {...sharedProps} />;
     case 'short':
-      return <ShortInterestCard {...props} />;
+      return <ShortInterestCard {...sharedProps} />;
     case 'events':
-      return <UpcomingEventsCard {...props} />;
+      return <UpcomingEventsCard {...sharedProps} />;
     case 'generic':
-      return <GenericResponseCard query={message.query} {...props} />;
+      return <GenericResponseCard query={message.query} {...sharedProps} />;
+    case 'catalog':
+      return (
+        <DynamicResponseCard catalogId={message.catalogId} {...sharedProps} />
+      );
     default:
       return null;
   }
@@ -63,6 +67,7 @@ export default function ConversationArea({
   isChipSpent,
   onFollowUp,
   onSourceOpen,
+  onShowToast,
 }) {
   const endRef = useRef(null);
 
@@ -71,6 +76,13 @@ export default function ConversationArea({
       endRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
     }
   }, [messages.length, isTyping]);
+
+  const sharedProps = {
+    onFollowUp,
+    onSourceOpen,
+    onShowToast,
+    isChipSpent,
+  };
 
   return (
     <div
@@ -91,7 +103,11 @@ export default function ConversationArea({
         }}
       >
         <MorningBriefing />
-        <SmartChips onSelect={onChipSelect} isChipSpent={isChipSpent} />
+        <SmartChips
+          onSelect={onChipSelect}
+          isChipSpent={isChipSpent}
+          onShowToast={onShowToast}
+        />
 
         {messages.map((m) => {
           if (m.kind === 'user') {
@@ -100,11 +116,7 @@ export default function ConversationArea({
           if (m.kind === 'response') {
             return (
               <div key={m.id}>
-                <ResponseRenderer
-                  message={m}
-                  onFollowUp={onFollowUp}
-                  onSourceOpen={onSourceOpen}
-                />
+                <ResponseRenderer message={m} sharedProps={sharedProps} />
               </div>
             );
           }

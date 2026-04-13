@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Sparkles } from 'lucide-react';
 
 export default function ChatInput({ onSubmit }) {
   const [value, setValue] = useState('');
+  const [focused, setFocused] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -11,57 +12,31 @@ export default function ChatInput({ onSubmit }) {
     setValue('');
   };
 
+  const hasValue = Boolean(value.trim());
+
   return (
-    <form
-      onSubmit={handleSubmit}
-      style={{
-        background: 'var(--bg)',
-        borderTop: '1px solid var(--border)',
-        padding: '12px 16px',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '10px',
-      }}
-    >
-      <input
-        type="text"
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        placeholder="Ask about Integrum..."
-        aria-label="Ask about Integrum"
-        style={{
-          flex: 1,
-          background: 'var(--bg)',
-          border: '1px solid var(--border)',
-          borderRadius: '4px',
-          padding: '10px 12px',
-          fontSize: '13px',
-          color: 'var(--text-primary)',
-          outline: 'none',
-          letterSpacing: '-0.01em',
-        }}
-        onFocus={(e) => (e.currentTarget.style.borderColor = 'var(--text-tertiary)')}
-        onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--border)')}
-      />
-      <button
-        type="submit"
-        aria-label="Send"
-        disabled={!value.trim()}
-        style={{
-          background: value.trim() ? 'var(--surface-dark)' : 'var(--bar-track)',
-          color: value.trim() ? 'var(--surface-dark-text)' : 'var(--text-tertiary)',
-          border: 'none',
-          padding: '10px 12px',
-          borderRadius: '4px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          cursor: value.trim() ? 'pointer' : 'default',
-          transition: 'background 120ms',
-        }}
-      >
-        <ArrowRight size={15} strokeWidth={2} />
-      </button>
+    <form className="cb-chat-form" onSubmit={handleSubmit}>
+      <div className={'cb-chat-input-wrap' + (focused ? ' is-focused' : '')}>
+        <Sparkles className="cb-chat-spark" size={15} strokeWidth={1.75} />
+        <input
+          type="text"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          placeholder="Ask anything about Integrum..."
+          aria-label="Ask anything about Integrum"
+          className="cb-chat-input"
+        />
+        <button
+          type="submit"
+          aria-label="Send"
+          disabled={!hasValue}
+          className={'cb-chat-send' + (hasValue ? ' is-active' : '')}
+        >
+          <ArrowRight size={15} strokeWidth={2} />
+        </button>
+      </div>
     </form>
   );
 }

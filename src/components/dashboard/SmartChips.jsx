@@ -1,4 +1,4 @@
-import Chip from '../ui/Chip';
+import ChipGroup from '../ui/ChipGroup';
 
 export const TOP_CHIPS = [
   { id: 'buyers', label: "Who's been buying?", responseType: 'ownership' },
@@ -9,27 +9,20 @@ export const TOP_CHIPS = [
   { id: 'events', label: 'Upcoming IR events', responseType: 'events' },
 ];
 
-export default function SmartChips({ onSelect, isChipSpent }) {
+const TOP_EXPANSION = [
+  { id: 'exp-top-news', label: "Sentiment from yesterday's news flow" },
+  { id: 'exp-top-quarter', label: "Compare to last quarter's briefing" },
+  { id: 'exp-top-anomalies', label: 'Highlight unusual signals' },
+];
+
+export default function SmartChips({ onSelect, isChipSpent, onShowToast }) {
   return (
-    <div
-      className="no-scrollbar"
-      style={{
-        display: 'flex',
-        gap: '8px',
-        overflowX: 'auto',
-        flexWrap: 'nowrap',
-        paddingBottom: '2px',
-      }}
-    >
-      {TOP_CHIPS.map((c) => (
-        <Chip
-          key={c.id}
-          onClick={() => onSelect(c)}
-          spent={isChipSpent ? isChipSpent(c.id) : false}
-        >
-          {c.label}
-        </Chip>
-      ))}
-    </div>
+    <ChipGroup
+      chips={TOP_CHIPS}
+      expansionChips={TOP_EXPANSION}
+      onChipClick={onSelect}
+      onShowToast={onShowToast}
+      isChipSpent={isChipSpent}
+    />
   );
 }

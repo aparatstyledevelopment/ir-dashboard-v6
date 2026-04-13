@@ -1,17 +1,24 @@
 import ResponseCard from './ResponseCard';
 
-export default function InsiderActivityCard({ onFollowUp, onSourceOpen }) {
+export default function InsiderActivityCard({
+  onFollowUp,
+  onSourceOpen,
+  onShowToast,
+  isChipSpent,
+}) {
   return (
     <ResponseCard
       title="Insider & PDMR Activity"
       followUps={[
-        'Show all insider transactions',
-        'Board & management holdings',
-        'Insider ownership trend',
+        { id: 'l2.insider.all-tx', label: 'Show all insider transactions' },
+        { id: 'l2.insider.holdings', label: 'Board & management holdings' },
+        { id: 'l2.insider.trend', label: 'Insider ownership trend' },
       ]}
       sourceModule="Insider → Transactions"
       onFollowUp={onFollowUp}
       onSourceOpen={onSourceOpen}
+      onShowToast={onShowToast}
+      isChipSpent={isChipSpent}
     >
       <p
         style={{

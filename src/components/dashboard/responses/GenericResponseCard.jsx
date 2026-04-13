@@ -1,12 +1,20 @@
 import ResponseCard from './ResponseCard';
 
-export default function GenericResponseCard({ query, onFollowUp, onSourceOpen }) {
+export default function GenericResponseCard({
+  query,
+  onFollowUp,
+  onSourceOpen,
+  onShowToast,
+  isChipSpent,
+}) {
   return (
     <ResponseCard
       title={`Query: ${query}`}
-      followUps={['Back to overview', 'Try a different question']}
+      followUps={[]}
       onFollowUp={onFollowUp}
       onSourceOpen={onSourceOpen}
+      onShowToast={onShowToast}
+      isChipSpent={isChipSpent}
     >
       <p
         style={{

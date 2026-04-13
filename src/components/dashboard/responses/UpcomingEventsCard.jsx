@@ -2,18 +2,25 @@ import ResponseCard from './ResponseCard';
 import { UPCOMING_EVENTS } from '../../../data/upcomingEvents';
 import { formatDateShort } from '../../../utils/formatters';
 
-export default function UpcomingEventsCard({ onFollowUp, onSourceOpen }) {
+export default function UpcomingEventsCard({
+  onFollowUp,
+  onSourceOpen,
+  onShowToast,
+  isChipSpent,
+}) {
   return (
     <ResponseCard
       title="Upcoming IR Calendar"
       followUps={[
-        'Add to my calendar',
-        'Who attended last earnings call?',
-        'Roadshow schedule',
+        { id: 'l2.events.calendar', label: 'Add to my calendar' },
+        { id: 'l2.events.attendees', label: 'Who attended last earnings call?' },
+        { id: 'l2.events.roadshow', label: 'Roadshow schedule' },
       ]}
       sourceModule="CRM → Events"
       onFollowUp={onFollowUp}
       onSourceOpen={onSourceOpen}
+      onShowToast={onShowToast}
+      isChipSpent={isChipSpent}
     >
       <p
         style={{

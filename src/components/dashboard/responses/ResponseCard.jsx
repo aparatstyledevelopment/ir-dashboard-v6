@@ -1,22 +1,26 @@
-import Chip from '../../ui/Chip';
+import ChipGroup from '../../ui/ChipGroup';
 import SourceDataLink from '../../shared/SourceDataLink';
 
 export default function ResponseCard({
   title,
   children,
   followUps = [],
+  expansionChips,
   sourceModule,
   onFollowUp,
   onSourceOpen,
+  onShowToast,
+  isChipSpent,
 }) {
+  // Normalize legacy string follow-ups to {id, label} objects.
+  const normalized = followUps.map((f, i) =>
+    typeof f === 'string' ? { id: `${title}-fu-${i}`, label: f } : f
+  );
+
   return (
     <article
-      className="fade-in-up"
-      style={{
-        background: 'var(--bg)',
-        border: '1px solid var(--border)',
-        borderRadius: '4px',
-      }}
+      className="fade-in-up cb-card"
+      style={{ borderRadius: '4px' }}
     >
       <header
         style={{
@@ -31,21 +35,20 @@ export default function ResponseCard({
         {title}
       </header>
       <div style={{ padding: '14px 16px' }}>{children}</div>
-      {followUps.length > 0 && (
+      {normalized.length > 0 && (
         <div
           style={{
             padding: '12px 16px',
             borderTop: '1px solid var(--border)',
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: '6px',
           }}
         >
-          {followUps.map((f, i) => (
-            <Chip key={i} onClick={() => onFollowUp && onFollowUp(f)}>
-              {f}
-            </Chip>
-          ))}
+          <ChipGroup
+            chips={normalized}
+            expansionChips={expansionChips}
+            onChipClick={onFollowUp}
+            onShowToast={onShowToast}
+            isChipSpent={isChipSpent}
+          />
         </div>
       )}
       {sourceModule && (
