@@ -6,6 +6,8 @@ export default function Chip({
   spent = false,
   mock = false,
   variant = 'default',
+  thinking = false,
+  reveal = false,
   ariaLabel,
   title,
 }) {
@@ -14,7 +16,9 @@ export default function Chip({
     'cb-chip' +
     (spent ? ' is-spent' : '') +
     (mock ? ' is-mock' : '') +
-    (isExpand ? ' is-expand is-icon-only' : '');
+    (isExpand ? ' is-expand is-icon-only' : '') +
+    (thinking ? ' is-thinking' : '') +
+    (reveal ? ' cb-chip-reveal' : '');
 
   return (
     <button

@@ -131,6 +131,30 @@ textarea {
   padding-right: 6px;
 }
 
+/* Go-to-bottom FAB — anchored just above the chat box overlay */
+.cb-jump-bottom {
+  position: absolute;
+  right: 20px;
+  bottom: 100px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-primary);
+  cursor: pointer;
+  z-index: 10;
+  transition: background 140ms ease, border-color 140ms ease;
+}
+.cb-jump-bottom:hover {
+  background: var(--bar-track);
+  border-color: var(--text-primary);
+}
+
 /* ----- Attach-to-chat: per-card button + chat input attachment chips ----- */
 
 .cb-attach-btn {
@@ -159,24 +183,25 @@ textarea {
 }
 
 .cb-chat-attachments {
-  display: flex;
+  display: inline-flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 10px;
-  padding: 0 4px;
+  gap: 5px;
+  align-items: center;
+  margin: 0;
 }
 
 .cb-chat-attachment {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   background: var(--surface-dark);
   color: var(--surface-dark-text);
-  font-size: 11px;
-  padding: 4px 4px 4px 11px;
+  font-size: 10px;
+  padding: 3px 3px 3px 9px;
   border-radius: 999px;
   letter-spacing: -0.01em;
-  max-width: 220px;
+  max-width: 180px;
+  line-height: 1.2;
 }
 .cb-chat-attachment-label {
   overflow: hidden;
@@ -741,6 +766,15 @@ textarea {
   flex-shrink: 0;
 }
 
+.cb-sidebar-chats-empty {
+  padding: 18px 18px 16px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  letter-spacing: -0.01em;
+  text-align: center;
+  line-height: 1.5;
+}
+
 .cb-sidebar-mf {
   display: none;
 }
@@ -770,6 +804,151 @@ textarea {
 }
 .cb-icon-btn:hover {
   color: var(--text-primary);
+}
+
+/* Top bar layout */
+.cb-topbar {
+  height: 52px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  flex-shrink: 0;
+  gap: 10px;
+}
+.cb-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+.cb-topbar-ticker {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 12px;
+  letter-spacing: -0.01em;
+  min-width: 0;
+  overflow: hidden;
+}
+.cb-topbar-ticker-name {
+  font-weight: 600;
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+.cb-topbar-ticker-sep {
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+}
+.cb-topbar-ticker-price {
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+.cb-topbar-ticker-change {
+  font-weight: 500;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+.cb-topbar-ticker-exchange {
+  color: var(--text-tertiary);
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: none;
+}
+@media (min-width: 1024px) {
+  .cb-topbar-ticker-exchange {
+    display: inline;
+  }
+}
+
+.cb-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.cb-topbar-search {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  width: 320px;
+  max-width: 38vw;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 14px;
+}
+.cb-topbar-search input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 12px;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+  min-width: 0;
+}
+.cb-topbar-search-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 140ms ease;
+}
+.cb-topbar-search-btn:hover {
+  color: var(--text-primary);
+  border-color: var(--text-primary);
+}
+@media (min-width: 880px) {
+  .cb-topbar-search {
+    display: flex;
+  }
+  .cb-topbar-search-btn {
+    display: none;
+  }
+}
+
+.cb-topbar-notif {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 140ms ease;
+}
+.cb-topbar-notif:hover {
+  color: var(--text-primary);
+  border-color: var(--text-primary);
+}
+.cb-topbar-notif-dot {
+  position: absolute;
+  top: 6px;
+  right: 7px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--negative);
+  border: 1.5px solid var(--bg);
 }
 
 /* ----- Morning briefing emphasis ----- */
@@ -953,6 +1132,35 @@ textarea {
 .cb-chip.is-expand:hover .cb-spark {
   color: var(--text-primary);
 }
+.cb-chip.is-expand.is-thinking .cb-spark {
+  animation: chipSparkSpin 200ms linear forwards;
+  color: var(--text-primary);
+}
+@keyframes chipSparkSpin {
+  from {
+    transform: rotate(0deg) scale(1);
+    opacity: 0.6;
+  }
+  to {
+    transform: rotate(180deg) scale(1.2);
+    opacity: 1;
+  }
+}
+
+/* Fade-in-up with a slightly larger offset for newly revealed chips */
+@keyframes chipReveal {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.cb-chip-reveal {
+  animation: chipReveal 320ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
 .cb-chip.is-icon-only {
   width: 24px;
   height: 24px;
@@ -1005,13 +1213,15 @@ textarea {
 .cb-chat-input-wrap {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+  flex-wrap: wrap;
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 26px;
   padding: 8px 8px 8px 16px;
   position: relative;
   transition: border-color 200ms ease, box-shadow 200ms ease;
+  min-height: 44px;
 }
 .cb-chat-input-wrap::before {
   content: '';

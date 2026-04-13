@@ -1,6 +1,8 @@
-import { NavLink } from 'react-router-dom';
-import { X } from 'lucide-react';
+import { NavLink, useLocation } from 'react-router-dom';
 import {
+  X,
+  Plus,
+  MessageSquare,
   LayoutDashboard,
   Users,
   Target,
@@ -29,16 +31,85 @@ const ICON_MAP = {
   FileText,
 };
 
-export default function MobileDrawer({ open, onClose }) {
+const MODULE_LABEL = {
+  dashboard: 'Dashboard',
+  shareholders: 'Shareholders',
+  targeting: 'Targeting',
+};
+
+function getModuleFromPath(pathname) {
+  if (pathname === '/') return 'dashboard';
+  const segments = pathname.split('/').filter(Boolean);
+  return segments[0] || 'dashboard';
+}
+
+function formatRelative(ts) {
+  const delta = Date.now() - ts;
+  const m = Math.floor(delta / 60000);
+  if (m < 1) return 'just now';
+  if (m < 60) return `${m}m`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h`;
+  const d = Math.floor(h / 24);
+  return `${d}d`;
+}
+
+export default function MobileDrawer({ open, onClose, conversations }) {
+  const location = useLocation();
+  const contextModule =
+    location.state?.contextModule || getModuleFromPath(location.pathname);
+  const moduleLabel = MODULE_LABEL[contextModule] || '';
+  const isModuleWithConversation = Boolean(MODULE_LABEL[contextModule]);
+
+  const slot = conversations?.slots?.[contextModule];
+  const sessionList = slot
+    ? slot.sessionOrder
+        .map((id) => slot.sessions[id])
+        .filter(Boolean)
+        .map((s) => ({
+          id: s.id,
+          title: s.title,
+          createdAt: s.createdAt,
+          messageCount: s.messages.length,
+          isActive: s.id === slot.activeSessionId,
+        }))
+    : [];
+  const populated = sessionList.filter(
+    (s) => s.messageCount > 0 || s.title !== 'New chat'
+  );
+
+  const handleNewChat = () => {
+    if (!conversations) return;
+    const id = `s-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+    const fresh = {
+      id,
+      title: 'New chat',
+      createdAt: Date.now(),
+      messages: [],
+      isTyping: false,
+      spentChips: new Set(),
+      attachments: [],
+    };
+    conversations.updateSlot(contextModule, (c) => ({
+      ...c,
+      activeSessionId: id,
+      sessionOrder: [id, ...c.sessionOrder],
+      sessions: { ...c.sessions, [id]: fresh },
+    }));
+    onClose?.();
+  };
+
+  const handleSwitchSession = (id) => {
+    if (!conversations) return;
+    conversations.updateSlot(contextModule, (c) =>
+      c.sessions[id] ? { ...c, activeSessionId: id } : c
+    );
+    onClose?.();
+  };
+
   if (!open) return null;
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 200,
-      }}
-    >
+    <div style={{ position: 'fixed', inset: 0, zIndex: 200 }}>
       <div
         onClick={onClose}
         style={{
@@ -53,7 +124,7 @@ export default function MobileDrawer({ open, onClose }) {
           top: 0,
           left: 0,
           bottom: 0,
-          width: '240px',
+          width: '268px',
           background: 'var(--bg)',
           borderRight: '1px solid var(--border)',
           display: 'flex',
@@ -107,7 +178,8 @@ export default function MobileDrawer({ open, onClose }) {
             <X size={18} strokeWidth={1.75} />
           </button>
         </div>
-        <nav style={{ flex: 1, padding: '8px 0', overflowY: 'auto' }}>
+
+        <nav style={{ padding: '8px 0', flexShrink: 0, overflowY: 'auto' }}>
           {MODULES.map((m) => {
             const Icon = ICON_MAP[m.icon] || LayoutDashboard;
             const to = m.id === 'dashboard' ? '/' : `/${m.id}`;
@@ -154,6 +226,91 @@ export default function MobileDrawer({ open, onClose }) {
             );
           })}
         </nav>
+
+        {isModuleWithConversation && (
+          <div
+            style={{
+              flex: 1,
+              minHeight: 0,
+              borderTop: '1px solid var(--border)',
+              display: 'flex',
+              flexDirection: 'column',
+              padding: '14px 0 6px',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '0 18px 10px',
+                fontSize: '10px',
+                fontWeight: 600,
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+                color: 'var(--text-tertiary)',
+              }}
+            >
+              <span>Recent {moduleLabel} chats</span>
+              <button
+                type="button"
+                className="cb-sidebar-new-chat"
+                onClick={handleNewChat}
+                aria-label="Start a new chat"
+                title="New chat"
+              >
+                <Plus size={12} strokeWidth={2} />
+              </button>
+            </div>
+            {populated.length === 0 ? (
+              <div className="cb-sidebar-chats-empty">
+                <MessageSquare
+                  size={16}
+                  strokeWidth={1.5}
+                  style={{
+                    color: 'var(--text-tertiary)',
+                    margin: '0 auto 6px',
+                  }}
+                />
+                <div>No recent {moduleLabel.toLowerCase()} chats yet.</div>
+                <div
+                  style={{
+                    color: 'var(--text-tertiary)',
+                    marginTop: '2px',
+                    fontSize: '10px',
+                  }}
+                >
+                  Ask something to start.
+                </div>
+              </div>
+            ) : (
+              <div style={{ flex: 1, overflowY: 'auto' }}>
+                {populated.slice(0, 20).map((s) => (
+                  <button
+                    key={s.id}
+                    type="button"
+                    className={
+                      'cb-sidebar-chat-item' +
+                      (s.isActive ? ' is-active' : '')
+                    }
+                    onClick={() => handleSwitchSession(s.id)}
+                    title={s.title}
+                  >
+                    <MessageSquare
+                      size={11}
+                      strokeWidth={1.75}
+                      className="cb-sidebar-chat-icon"
+                    />
+                    <span className="cb-sidebar-chat-title">{s.title}</span>
+                    <span className="cb-sidebar-chat-time">
+                      {formatRelative(s.createdAt)}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </aside>
     </div>
   );

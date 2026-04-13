@@ -19,8 +19,6 @@ const DEFAULT_EXPANDED_TOAST =
 const DEFAULT_MOCK_TOAST =
   'Mockup suggestion — this would trigger an AI deep-dive in the finished product.';
 
-// Normalize expansionChips into an array of stages.
-// Accepts either a flat array (single stage) or an array of arrays (multi-stage).
 function normalizeStages(expansionChips) {
   const raw = expansionChips || DEFAULT_EXPANSION;
   if (!Array.isArray(raw) || raw.length === 0) return [];
@@ -39,22 +37,37 @@ export default function ChipGroup({
 }) {
   const stages = normalizeStages(expansionChips);
   const [stageIndex, setStageIndex] = useState(0);
+  const [thinking, setThinking] = useState(false);
+  // Stage index at which each revealed-stage gets its "reveal" animation
+  const [revealingStage, setRevealingStage] = useState(-1);
   const expandedMsg = expandedToast || DEFAULT_EXPANDED_TOAST;
   const mockMsg = mockToast || DEFAULT_MOCK_TOAST;
 
   const handleExpand = () => {
+    if (thinking) return;
     if (stageIndex >= stages.length) {
       onShowToast?.(expandedMsg);
-    } else {
-      setStageIndex(stageIndex + 1);
+      return;
     }
+    setThinking(true);
+    // Simulate a short "thinking" beat before revealing the next stage.
+    setTimeout(() => {
+      setThinking(false);
+      setStageIndex((i) => i + 1);
+      setRevealingStage(stageIndex); // the stage index that just got revealed
+    }, 240);
   };
 
   const handleMockClick = () => {
     onShowToast?.(mockMsg);
   };
 
-  const visibleExpansion = stages.slice(0, stageIndex).flat();
+  // Build the visible expansion chips with a flag marking which belong to
+  // the most-recently revealed stage (so they can run a reveal animation).
+  const visibleStages = stages.slice(0, stageIndex);
+  const visibleExpansion = visibleStages.flatMap((stageChips, i) =>
+    stageChips.map((c) => ({ ...c, _isNew: i === revealingStage }))
+  );
 
   return (
     <div className="cb-chip-group">
@@ -68,13 +81,19 @@ export default function ChipGroup({
         </Chip>
       ))}
       {visibleExpansion.map((c, i) => (
-        <Chip key={c.id || `exp-${i}`} mock onClick={handleMockClick}>
+        <Chip
+          key={c.id || `exp-${i}`}
+          mock
+          reveal={c._isNew}
+          onClick={handleMockClick}
+        >
           {c.label}
         </Chip>
       ))}
       {showExpand && (
         <Chip
           variant="expand"
+          thinking={thinking}
           onClick={handleExpand}
           ariaLabel={
             stageIndex >= stages.length

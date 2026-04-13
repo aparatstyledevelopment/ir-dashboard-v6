@@ -1,5 +1,5 @@
 import { useOutletContext, useNavigate } from 'react-router-dom';
-import { Target, Users, GitCompare, Mail, LayoutDashboard } from 'lucide-react';
+import { Target, GitCompare } from 'lucide-react';
 import { useModuleConversation } from '../../hooks/useConversations';
 import ConversationShell from '../../components/conversation/ConversationShell';
 import QuickActionsPanel from '../../components/layout/QuickActionsPanel';
@@ -141,7 +141,7 @@ export default function TargetingPage() {
       id: 'qa.tgt.screener',
       icon: Target,
       label: 'Target screener',
-      sub: 'All prioritized candidates',
+      sub: 'All AI-prioritized candidates',
       onClick: () => navFromTargeting('/targeting/screener'),
     },
     {
@@ -149,29 +149,7 @@ export default function TargetingPage() {
       icon: GitCompare,
       label: 'Compare owners',
       sub: 'Peer holder overlap matrix',
-      onClick: () =>
-        sendChipQuery('tgt.compare', 'tgt.compare', 'Compare owners'),
-    },
-    {
-      id: 'qa.tgt.owners',
-      icon: Users,
-      label: 'Current shareholders',
-      sub: 'Our full register',
-      onClick: () => navFromTargeting('/shareholders/owners'),
-    },
-    {
-      id: 'qa.tgt.contacts',
-      icon: Mail,
-      label: 'CRM contacts',
-      sub: 'Tracked people at target firms',
-      onClick: () => navFromTargeting('/crm/people'),
-    },
-    {
-      id: 'qa.tgt.dash',
-      icon: LayoutDashboard,
-      label: 'Dashboard overview',
-      sub: 'Cross-module briefing',
-      onClick: () => navigate('/'),
+      onClick: () => navFromTargeting('/targeting/compare-owners'),
     },
   ];
 

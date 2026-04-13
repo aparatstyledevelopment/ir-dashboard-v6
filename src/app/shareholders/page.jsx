@@ -1,12 +1,5 @@
 import { useOutletContext, useNavigate } from 'react-router-dom';
-import {
-  Users,
-  ArrowDownUp,
-  Lock,
-  Target,
-  Mail,
-  LayoutDashboard,
-} from 'lucide-react';
+import { Users, ArrowDownUp, Lock, ArrowUpDown } from 'lucide-react';
 import { useModuleConversation } from '../../hooks/useConversations';
 import ConversationShell from '../../components/conversation/ConversationShell';
 import QuickActionsPanel from '../../components/layout/QuickActionsPanel';
@@ -147,44 +140,30 @@ export default function ShareholdersPage() {
     {
       id: 'qa.sh.owners',
       icon: Users,
-      label: 'Full register',
+      label: 'Full shareholder register',
       sub: '3,498 identified holders',
       onClick: () => navFromShareholders('/shareholders/owners'),
     },
     {
       id: 'qa.sh.daily',
       icon: ArrowDownUp,
-      label: 'Daily transactions',
-      sub: 'Last 14 days (T+2)',
+      label: 'Daily transactions (T+2)',
+      sub: 'Last 14 days of register flow',
       onClick: () => navFromShareholders('/shareholders/daily-transactions'),
+    },
+    {
+      id: 'qa.sh.changes',
+      icon: ArrowUpDown,
+      label: 'Owner changes (30d)',
+      sub: 'Net moves over the last month',
+      onClick: () => navFromShareholders('/shareholders/owner-changes'),
     },
     {
       id: 'qa.sh.lockup',
       icon: Lock,
-      label: 'Lock-ups',
+      label: 'Lock-up agreements',
       sub: 'Active agreements & expiry',
       onClick: () => navFromShareholders('/shareholders/lockups'),
-    },
-    {
-      id: 'qa.sh.contacts',
-      icon: Mail,
-      label: 'CRM contacts',
-      sub: 'People at our holder firms',
-      onClick: () => navFromShareholders('/crm/people'),
-    },
-    {
-      id: 'qa.sh.targets',
-      icon: Target,
-      label: 'Targeting screener',
-      sub: 'Prospects not yet holding',
-      onClick: () => navFromShareholders('/targeting/screener'),
-    },
-    {
-      id: 'qa.sh.dash',
-      icon: LayoutDashboard,
-      label: 'Dashboard overview',
-      sub: 'Cross-module briefing',
-      onClick: () => navigate('/'),
     },
   ];
 

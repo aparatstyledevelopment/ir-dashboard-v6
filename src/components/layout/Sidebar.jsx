@@ -111,6 +111,17 @@ export default function Sidebar({ conversations }) {
     contextModule === 'shareholders' ||
     contextModule === 'targeting';
 
+  const MODULE_LABEL = {
+    dashboard: 'Dashboard',
+    shareholders: 'Shareholders',
+    targeting: 'Targeting',
+  };
+  const moduleLabel = MODULE_LABEL[contextModule] || '';
+  // Hide the default empty "New chat" placeholder from the visible list.
+  const populated = sessionList.filter(
+    (s) => s.messageCount > 0 || s.title !== 'New chat'
+  );
+
   return (
     <aside className="cb-sidebar">
       <div className="cb-sidebar-header">
@@ -141,10 +152,10 @@ export default function Sidebar({ conversations }) {
         })}
       </nav>
 
-      {isModuleWithConversation && sessionList.length > 0 && (
+      {isModuleWithConversation && (
         <div className="cb-sidebar-chats">
           <div className="cb-sidebar-chats-header">
-            <span>Recent chats</span>
+            <span>Recent {moduleLabel} chats</span>
             <button
               type="button"
               className="cb-sidebar-new-chat"
@@ -155,29 +166,49 @@ export default function Sidebar({ conversations }) {
               <Plus size={12} strokeWidth={2} />
             </button>
           </div>
-          <div className="cb-sidebar-chat-list">
-            {sessionList.slice(0, 6).map((s) => (
-              <button
-                key={s.id}
-                type="button"
-                className={
-                  'cb-sidebar-chat-item' + (s.isActive ? ' is-active' : '')
-                }
-                onClick={() => handleSwitchSession(s.id)}
-                title={s.title}
+          {populated.length === 0 ? (
+            <div className="cb-sidebar-chats-empty">
+              <MessageSquare
+                size={16}
+                strokeWidth={1.5}
+                style={{ color: 'var(--text-tertiary)', margin: '0 auto 6px' }}
+              />
+              <div>No recent {moduleLabel.toLowerCase()} chats yet.</div>
+              <div
+                style={{
+                  color: 'var(--text-tertiary)',
+                  marginTop: '2px',
+                  fontSize: '10px',
+                }}
               >
-                <MessageSquare
-                  size={11}
-                  strokeWidth={1.75}
-                  className="cb-sidebar-chat-icon"
-                />
-                <span className="cb-sidebar-chat-title">{s.title}</span>
-                <span className="cb-sidebar-chat-time">
-                  {formatRelative(s.createdAt)}
-                </span>
-              </button>
-            ))}
-          </div>
+                Ask something to start.
+              </div>
+            </div>
+          ) : (
+            <div className="cb-sidebar-chat-list">
+              {populated.slice(0, 6).map((s) => (
+                <button
+                  key={s.id}
+                  type="button"
+                  className={
+                    'cb-sidebar-chat-item' + (s.isActive ? ' is-active' : '')
+                  }
+                  onClick={() => handleSwitchSession(s.id)}
+                  title={s.title}
+                >
+                  <MessageSquare
+                    size={11}
+                    strokeWidth={1.75}
+                    className="cb-sidebar-chat-icon"
+                  />
+                  <span className="cb-sidebar-chat-title">{s.title}</span>
+                  <span className="cb-sidebar-chat-time">
+                    {formatRelative(s.createdAt)}
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
