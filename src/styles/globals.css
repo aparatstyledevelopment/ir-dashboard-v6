@@ -138,17 +138,18 @@ textarea {
 
 /* Go-to-bottom FAB — stacks ABOVE the quick-actions FAB which itself
  * sits just above the chat box. Both are anchored to the chat overlay
- * height via --cb-overlay-h set from ConversationShell. */
+ * height via --cb-overlay-h set from ConversationShell. Matches the
+ * quick-actions FAB dimensions (46×46) so the stack is visually clean. */
 .cb-jump-bottom {
   position: absolute;
   right: 22px;
-  bottom: calc(var(--cb-overlay-h, 64px) + 86px);
-  width: 34px;
-  height: 34px;
+  bottom: calc(var(--cb-overlay-h, 64px) + 90px);
+  width: 46px;
+  height: 46px;
   border-radius: 50%;
   background: var(--bg);
   border: 1px solid var(--border);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -156,6 +157,10 @@ textarea {
   cursor: pointer;
   z-index: 10;
   transition: background 140ms ease, border-color 140ms ease;
+}
+.cb-jump-bottom:hover {
+  background: var(--bar-track);
+  border-color: var(--text-primary);
 }
 .cb-jump-bottom:hover {
   background: var(--bar-track);

@@ -172,7 +172,7 @@ export default function ConversationShell({
           aria-label="Jump to latest"
           title="Jump to latest"
         >
-          <ChevronDown size={16} strokeWidth={2} />
+          <ChevronDown size={18} strokeWidth={1.75} />
         </button>
       )}
 
