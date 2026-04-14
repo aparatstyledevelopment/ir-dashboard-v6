@@ -84,19 +84,33 @@ export default function ConversationShell({
   }, []);
 
   // Track the chat overlay's live height. When attachments appear the
-  // pill grows; we use this to set the conversation's bottom padding so
-  // the last message always sits exactly at the chat box top edge.
+  // pill grows; we use this to set the conversation's bottom padding AND
+  // to expose the height as a CSS variable so the jump-to-bottom and
+  // quick-actions FABs can stack right above the chat box regardless of
+  // how tall it is.
   useLayoutEffect(() => {
     const el = overlayRef.current;
     if (!el || typeof ResizeObserver === 'undefined') return undefined;
+    const setVar = (h) => {
+      document.documentElement.style.setProperty('--cb-overlay-h', `${h}px`);
+    };
     const ro = new ResizeObserver((entries) => {
       const rect = entries[0]?.contentRect;
       if (rect) {
-        setOverlayHeight(Math.max(48, Math.round(rect.height)));
+        const h = Math.max(48, Math.round(rect.height));
+        setOverlayHeight(h);
+        setVar(h);
       }
     });
     ro.observe(el);
-    return () => ro.disconnect();
+    // Initialize immediately so the first paint has the right value.
+    const initial = Math.max(48, Math.round(el.getBoundingClientRect().height));
+    setOverlayHeight(initial);
+    setVar(initial);
+    return () => {
+      ro.disconnect();
+      document.documentElement.style.removeProperty('--cb-overlay-h');
+    };
   }, []);
 
   const jumpToBottom = () => {
@@ -157,7 +171,6 @@ export default function ConversationShell({
           onClick={jumpToBottom}
           aria-label="Jump to latest"
           title="Jump to latest"
-          style={{ bottom: `${overlayHeight + 14}px` }}
         >
           <ChevronDown size={16} strokeWidth={2} />
         </button>

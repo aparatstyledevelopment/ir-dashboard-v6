@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Share2, ClipboardCopy, FileDown, FileText } from 'lucide-react';
 import { downloadCsv, slugifyForFile } from '../../utils/csv';
+import { openCardPdf } from '../../utils/pdf';
 
 async function copyToClipboard(text) {
   try {
@@ -84,7 +85,7 @@ function MenuItems({ shareContent, onCopy, onDownloadCsv, onDownloadPdf }) {
         <FileText size={14} strokeWidth={1.75} />
         <div>
           <div className="cb-share-item-label">Download PDF</div>
-          <div className="cb-share-item-sub">Board-ready report</div>
+          <div className="cb-share-item-sub">Opens print dialog · save as PDF</div>
         </div>
       </button>
     </>
@@ -147,8 +148,15 @@ export default function ShareMenu({ shareContent, onShowToast }) {
 
   const handleDownloadPdf = () => {
     setOpen(false);
+    const ok = openCardPdf(shareContent);
+    if (!ok) {
+      onShowToast?.(
+        'Could not open the print window — check your browser\u2019s pop-up blocker.'
+      );
+      return;
+    }
     onShowToast?.(
-      'PDF export is mocked for this prototype — coming in the finished product.'
+      'Opening print dialog. Choose "Save as PDF" to download.'
     );
   };
 

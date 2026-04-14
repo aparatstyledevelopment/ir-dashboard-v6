@@ -24,6 +24,7 @@ export function createChatSubmitHandler({
   clearActiveSession,
   createSession,
   showToast,
+  onReport,
 }) {
   return function handleChatSubmit(text) {
     const trimmed = (text || '').trim();
@@ -63,6 +64,15 @@ export function createChatSubmitHandler({
       return;
     }
 
+    if (trimmed === '/report') {
+      if (onReport) {
+        onReport();
+      } else {
+        showToast?.('Report generation is not wired for this module yet.');
+      }
+      return;
+    }
+
     const MOCK_COMMAND_MESSAGES = {
       '/brief':
         '/brief would rerun the morning briefing from live data in production.',
@@ -70,8 +80,6 @@ export function createChatSubmitHandler({
         '/compare would open a peer comparison flow in production.',
       '/notify':
         '/notify would subscribe you to register and target alerts in production.',
-      '/report':
-        '/report would draft a board-ready one-pager from this session in production.',
       '/summarize':
         '/summarize would boil this conversation into key takeaways in production.',
     };

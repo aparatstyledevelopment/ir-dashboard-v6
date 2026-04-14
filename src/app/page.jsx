@@ -8,6 +8,8 @@ import {
 } from 'lucide-react';
 import { useModuleConversation } from '../hooks/useConversations';
 import { createChatSubmitHandler } from '../utils/slashCommands';
+import { resolveAttachedShares } from '../utils/resolveShare';
+import { openReportPdf } from '../utils/pdf';
 import ConversationShell from '../components/conversation/ConversationShell';
 import {
   renderAnyResponse,
@@ -70,12 +72,34 @@ export default function DashboardPage() {
     isAttached,
   } = useModuleConversation('dashboard');
 
+  const handleReport = () => {
+    const shares = resolveAttachedShares(attachments, messages);
+    if (shares.length === 0) {
+      showToast(
+        'Attach cards first (use the + button), then send /report to generate a PDF.'
+      );
+      return;
+    }
+    const ok = openReportPdf(
+      shares,
+      `Dashboard Report — ${shares.length} cards`
+    );
+    if (!ok) {
+      showToast('Could not open the print window. Check pop-up blockers.');
+      return;
+    }
+    showToast(
+      `Opening a ${shares.length}-card PDF report. Choose "Save as PDF" to download.`
+    );
+  };
+
   const handleChatSubmit = createChatSubmitHandler({
     sendTextQuery,
     sendBulkResponses,
     clearActiveSession,
     createSession,
     showToast,
+    onReport: handleReport,
   });
   // DASHBOARD_L1_TYPES still imported for future use.
   void DASHBOARD_L1_TYPES;

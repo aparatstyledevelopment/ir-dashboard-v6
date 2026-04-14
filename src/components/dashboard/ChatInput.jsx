@@ -47,9 +47,8 @@ const SLASH_COMMANDS = [
   },
   {
     cmd: '/report',
-    label: 'Generate board report',
-    hint: 'Draft a one-pager from the current chat.',
-    mock: true,
+    label: 'Generate PDF report',
+    hint: 'Builds a PDF from currently attached cards.',
   },
   {
     cmd: '/summarize',

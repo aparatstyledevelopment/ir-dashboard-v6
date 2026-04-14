@@ -136,13 +136,13 @@ textarea {
   padding-right: 6px;
 }
 
-/* Go-to-bottom FAB — anchored just above the chat box overlay.
- * The 22px right offset matches the chat box overlay's right edge
- * (6px overlay-right + 16px overlay-padding). */
+/* Go-to-bottom FAB — stacks ABOVE the quick-actions FAB which itself
+ * sits just above the chat box. Both are anchored to the chat overlay
+ * height via --cb-overlay-h set from ConversationShell. */
 .cb-jump-bottom {
   position: absolute;
   right: 22px;
-  bottom: 100px;
+  bottom: calc(var(--cb-overlay-h, 64px) + 70px);
   width: 34px;
   height: 34px;
   border-radius: 50%;
@@ -518,12 +518,11 @@ textarea {
   margin-top: 2px;
 }
 
-/* Floating action button for mobile-only quick actions.
- * right: 22px matches the chat box overlay's visible right edge
- * (6px overlay-right + 16px overlay-padding). */
+/* Quick-actions FAB — sits right above the chat box, tracking its
+ * live height via --cb-overlay-h. */
 .cb-qa-fab {
   position: fixed;
-  bottom: 96px;
+  bottom: calc(var(--cb-overlay-h, 64px) + 14px);
   right: 22px;
   width: 46px;
   height: 46px;
@@ -1469,9 +1468,18 @@ textarea {
 .cb-chat-overlay > * {
   pointer-events: auto;
 }
+/* Desktop: 760px pill (conversation is 720px → 20px wider on each side). */
 .cb-chat-overlay-inner {
   width: 100%;
-  max-width: 780px;
+  max-width: 760px;
+}
+/* Mobile: chat box stretches almost edge-to-edge. */
+@media (max-width: 639px) {
+  .cb-chat-overlay {
+    left: 0;
+    right: 0;
+    padding: 0 6px 12px;
+  }
 }
 
 .cb-chat-input-wrap {

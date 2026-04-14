@@ -2,6 +2,8 @@ import { useOutletContext, useNavigate } from 'react-router-dom';
 import { Target, GitCompare } from 'lucide-react';
 import { useModuleConversation } from '../../hooks/useConversations';
 import { createChatSubmitHandler } from '../../utils/slashCommands';
+import { resolveAttachedShares } from '../../utils/resolveShare';
+import { openReportPdf } from '../../utils/pdf';
 import ConversationShell from '../../components/conversation/ConversationShell';
 import { renderAnyResponse } from '../../components/conversation/renderResponse';
 import QuickActionsPanel from '../../components/layout/QuickActionsPanel';
@@ -61,12 +63,34 @@ export default function TargetingPage() {
     isAttached,
   } = useModuleConversation('targeting');
 
+  const handleReport = () => {
+    const shares = resolveAttachedShares(attachments, messages);
+    if (shares.length === 0) {
+      showToast(
+        'Attach cards first (use the + button), then send /report to generate a PDF.'
+      );
+      return;
+    }
+    const ok = openReportPdf(
+      shares,
+      `Targeting Report — ${shares.length} cards`
+    );
+    if (!ok) {
+      showToast('Could not open the print window. Check pop-up blockers.');
+      return;
+    }
+    showToast(
+      `Opening a ${shares.length}-card PDF report. Choose "Save as PDF" to download.`
+    );
+  };
+
   const handleChatSubmit = createChatSubmitHandler({
     sendTextQuery,
     sendBulkResponses,
     clearActiveSession,
     createSession,
     showToast,
+    onReport: handleReport,
   });
 
   const handleChipSelect = (chip) => {
