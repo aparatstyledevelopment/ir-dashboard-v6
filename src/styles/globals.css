@@ -142,7 +142,7 @@ textarea {
 .cb-jump-bottom {
   position: absolute;
   right: 22px;
-  bottom: calc(var(--cb-overlay-h, 64px) + 70px);
+  bottom: calc(var(--cb-overlay-h, 64px) + 86px);
   width: 34px;
   height: 34px;
   border-radius: 50%;
@@ -518,11 +518,11 @@ textarea {
   margin-top: 2px;
 }
 
-/* Quick-actions FAB — sits right above the chat box, tracking its
- * live height via --cb-overlay-h. */
+/* Quick-actions FAB — sits above the chat box, tracking its live
+ * height via --cb-overlay-h with a 30px breathing gap. */
 .cb-qa-fab {
   position: fixed;
-  bottom: calc(var(--cb-overlay-h, 64px) + 14px);
+  bottom: calc(var(--cb-overlay-h, 64px) + 30px);
   right: 22px;
   width: 46px;
   height: 46px;
