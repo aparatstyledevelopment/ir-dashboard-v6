@@ -240,16 +240,17 @@ export const RESPONSE_CATALOG = {
   'l2.insider.trend': {
     title: 'Insider Ownership Trend',
     narrative:
-      'Insider ownership has been flat for the past 12 months. The only material move was the founder\u2019s 5,000-share estate-planning sale in January.',
+      'Insider ownership has been broadly flat for the past 5 quarters with small quarterly PDMR buy/sell activity. The dip in Q1 2026 reflects the founder\u2019s 5,000-share estate-planning sale.',
     body: {
       type: 'bars',
       data: [
-        { key: 'q1-25', label: 'Q1 2025', value: 23.95 },
-        { key: 'q2-25', label: 'Q2 2025', value: 23.95 },
-        { key: 'q3-25', label: 'Q3 2025', value: 23.97 },
-        { key: 'q4-25', label: 'Q4 2025', value: 23.97 },
+        { key: 'q1-25', label: 'Q1 2025', value: 23.9 },
+        { key: 'q2-25', label: 'Q2 2025', value: 24.02 },
+        { key: 'q3-25', label: 'Q3 2025', value: 24.09 },
+        { key: 'q4-25', label: 'Q4 2025', value: 24.12 },
         { key: 'q1-26', label: 'Q1 2026', value: 23.95 },
       ],
+      highlightKey: 'q1-26',
       valueFormatter: 'pct',
     },
     source: 'Insider → Trend',
