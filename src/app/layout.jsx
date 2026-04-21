@@ -11,10 +11,16 @@ import { useArtifacts, ArtifactsProvider } from '../hooks/useArtifacts';
 export default function RootLayout() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [toast, setToast] = useState(null);
+  const [activeModule, setActiveModule] = useState('dashboard');
   const conversations = useConversations();
   const artifacts = useArtifacts();
 
   const showToast = (msg) => setToast(msg);
+
+  const switchModule = (moduleId) => {
+    setActiveModule(moduleId);
+    conversations.goToStaging(moduleId);
+  };
 
   return (
     <ArtifactsProvider value={artifacts}>
@@ -25,11 +31,17 @@ export default function RootLayout() {
           background: 'var(--bg)',
         }}
       >
-        <Sidebar conversations={conversations} />
+        <Sidebar
+          conversations={conversations}
+          activeModule={activeModule}
+          onSwitchModule={switchModule}
+        />
         <MobileDrawer
           open={drawerOpen}
           onClose={() => setDrawerOpen(false)}
           conversations={conversations}
+          activeModule={activeModule}
+          onSwitchModule={switchModule}
         />
 
         <div
@@ -41,7 +53,15 @@ export default function RootLayout() {
           }}
         >
           <TopBar onOpenDrawer={() => setDrawerOpen(true)} />
-          <Outlet context={{ showToast, conversations, artifacts }} />
+          <Outlet
+            context={{
+              showToast,
+              conversations,
+              artifacts,
+              activeModule,
+              switchModule,
+            }}
+          />
         </div>
 
         <ArtifactsPane artifacts={artifacts} />

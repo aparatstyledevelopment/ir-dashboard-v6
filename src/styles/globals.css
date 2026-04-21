@@ -789,7 +789,12 @@ textarea {
   letter-spacing: -0.01em;
   color: var(--text-tertiary);
   font-weight: 400;
+  border: none;
   border-left: 2px solid transparent;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
   transition: color 120ms;
 }
 .cb-sidebar-link:hover {
@@ -1582,6 +1587,40 @@ textarea {
   padding: 0;
 }
 
+/* Quick actions rendered inside the artifacts pane as the default view. */
+.cb-artifacts-qa {
+  padding-top: 12px;
+}
+
+/* Toggle button shown when the pane is collapsed — a small icon on the
+ * right edge of the main area. */
+.cb-artifacts-toggle {
+  position: fixed;
+  top: 65px;
+  right: 6px;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-tertiary);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 5;
+  transition: color 120ms;
+}
+.cb-artifacts-toggle:hover {
+  color: var(--text-primary);
+  border-color: var(--text-primary);
+}
+@media (min-width: 768px) {
+  .cb-artifacts-toggle {
+    display: flex;
+  }
+}
+
 /* Pane variant of the list screen inner padding (tighter top so the close
  * button doesn't overlap the title). */
 .cb-screen-inner--pane {
@@ -1605,24 +1644,20 @@ textarea {
   font-size: 11px;
   font-weight: 500;
   letter-spacing: -0.01em;
-  color: var(--text-secondary);
-  background: var(--bg);
-  border: 1px solid var(--border);
+  color: var(--surface-dark-text);
+  background: var(--surface-dark);
+  border: none;
   border-radius: 999px;
-  padding: 5px 11px 5px 9px;
+  padding: 6px 12px 6px 10px;
   cursor: pointer;
-  transition: color 140ms ease, border-color 140ms ease, background 140ms ease;
+  transition: opacity 140ms ease;
 }
 .cb-source-btn:hover {
-  color: var(--text-primary);
-  border-color: var(--text-primary);
-  background: var(--bar-track);
+  opacity: 0.82;
 }
 .cb-source-btn svg {
-  color: var(--text-tertiary);
-}
-.cb-source-btn:hover svg {
-  color: var(--text-primary);
+  color: var(--surface-dark-text);
+  opacity: 0.65;
 }
 
 /* Evidence view sections (Query + Response) inside the artifacts pane. */

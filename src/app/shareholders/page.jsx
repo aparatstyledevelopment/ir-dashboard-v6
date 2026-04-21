@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { Users, ArrowDownUp, Lock, ArrowUpDown } from 'lucide-react';
 import { useModuleConversation } from '../../hooks/useConversations';
@@ -62,82 +63,6 @@ export default function ShareholdersPage() {
     isAttached,
   } = useModuleConversation('shareholders');
 
-  const handleReport = () => {
-    const shares = resolveAttachedShares(attachments, messages);
-    if (shares.length === 0) {
-      showToast(
-        'Attach cards first (use the + button), then send /report to generate a PDF.'
-      );
-      return;
-    }
-    const ok = openReportPdf(
-      shares,
-      `Shareholders Report — ${shares.length} cards`
-    );
-    if (!ok) {
-      showToast('Could not open the print window. Check pop-up blockers.');
-      return;
-    }
-    showToast(
-      `Opening a ${shares.length}-card PDF report. Choose "Save as PDF" to download.`
-    );
-  };
-
-  const handleChatSubmit = createChatSubmitHandler({
-    sendTextQuery,
-    sendBulkResponses,
-    clearActiveSession,
-    createSession,
-    showToast,
-    onReport: handleReport,
-  });
-
-  const handleChipSelect = (chip) => {
-    sendChipQuery(chip.id, chip.responseType, chip.label);
-  };
-
-  const handleFollowUp = (chip) => {
-    if (!chip) return;
-    if (typeof chip === 'string') {
-      sendTextQuery(chip);
-      return;
-    }
-    if (chip.id && chip.id.startsWith('l2.')) {
-      sendCatalogQuery(chip.id, chip.label);
-      return;
-    }
-    sendTextQuery(chip.label || String(chip));
-  };
-
-  const handleAttach = (ref) => {
-    const result = attachCard(ref);
-    if (!result.ok && result.reason === 'limit-reached') {
-      showToast('You can attach up to 5 cards at a time. Remove one first.');
-    }
-  };
-
-  const sharedProps = {
-    onFollowUp: handleFollowUp,
-    onShowToast: showToast,
-    isChipSpent,
-  };
-
-  const renderResponse = (message) => {
-    const attachable = message.responseType !== 'generic';
-    const ref = { id: message.id, title: getMessageTitle(message) };
-    const cardProps = {
-      ...sharedProps,
-      onSourceOpen: (moduleName) =>
-        artifacts.openArtifact({
-          type: 'evidence',
-          payload: { message, sourceModule: moduleName },
-        }),
-      onAttach: attachable ? () => handleAttach(ref) : undefined,
-      isAttached: attachable ? isAttached(message.id) : false,
-    };
-    return renderAnyResponse(message, cardProps);
-  };
-
   const openScreen = (screen) =>
     artifacts.openArtifact({ type: 'screen', payload: { screen } });
 
@@ -172,49 +97,88 @@ export default function ShareholdersPage() {
     },
   ];
 
+  useEffect(() => {
+    artifacts.setQuickActions(
+      quickActions,
+      'Shareholders quick actions',
+      'Jump to a key view'
+    );
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleReport = () => {
+    const shares = resolveAttachedShares(attachments, messages);
+    if (shares.length === 0) {
+      showToast('Attach cards first, then send /report.');
+      return;
+    }
+    openReportPdf(shares, `Shareholders Report — ${shares.length} cards`);
+    showToast(`Opening a ${shares.length}-card PDF report.`);
+  };
+
+  const handleChatSubmit = createChatSubmitHandler({
+    sendTextQuery,
+    sendBulkResponses,
+    clearActiveSession,
+    createSession,
+    showToast,
+    onReport: handleReport,
+  });
+
+  const handleChipSelect = (chip) =>
+    sendChipQuery(chip.id, chip.responseType, chip.label);
+
+  const handleFollowUp = (chip) => {
+    if (!chip) return;
+    if (typeof chip === 'string') { sendTextQuery(chip); return; }
+    if (chip.id?.startsWith('l2.')) { sendCatalogQuery(chip.id, chip.label); return; }
+    sendTextQuery(chip.label || String(chip));
+  };
+
+  const handleAttach = (ref) => {
+    const result = attachCard(ref);
+    if (!result.ok && result.reason === 'limit-reached') {
+      showToast('You can attach up to 5 cards at a time.');
+    }
+  };
+
+  const sharedProps = {
+    onFollowUp: handleFollowUp,
+    onShowToast: showToast,
+    isChipSpent,
+  };
+
+  const renderResponse = (message) => {
+    const attachable = message.responseType !== 'generic';
+    const ref = { id: message.id, title: getMessageTitle(message) };
+    const cardProps = {
+      ...sharedProps,
+      onSourceOpen: (moduleName) =>
+        artifacts.openArtifact({
+          type: 'evidence',
+          payload: { message, sourceModule: moduleName },
+        }),
+      onAttach: attachable ? () => handleAttach(ref) : undefined,
+      isAttached: attachable ? isAttached(message.id) : false,
+    };
+    return renderAnyResponse(message, cardProps);
+  };
+
   return (
-    <main
-      style={{
-        flex: 1,
-        display: 'flex',
-        minHeight: 0,
-        background: 'var(--bg)',
-      }}
-    >
+    <main style={{ flex: 1, display: 'flex', minHeight: 0, background: 'var(--bg)' }}>
       <QuickActionsPanel
         title="Shareholders quick actions"
         subtitle="Jump to a key view"
         actions={quickActions}
+        mobileOnly
       />
-
-      <div
-        style={{
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          minWidth: 0,
-          position: 'relative',
-        }}
-      >
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, position: 'relative' }}>
         <ConversationShell
           briefing={<ShareholdersBriefing />}
-          chips={
-            <ShareholdersChips
-              onSelect={handleChipSelect}
-              isChipSpent={isChipSpent}
-              onShowToast={showToast}
-            />
-          }
+          chips={<ShareholdersChips onSelect={handleChipSelect} isChipSpent={isChipSpent} onShowToast={showToast} />}
           messages={messages}
           isTyping={isTyping}
           renderResponse={renderResponse}
-          chatInputSlot={
-            <ChatInput
-              onSubmit={handleChatSubmit}
-              attachments={attachments}
-              onRemoveAttachment={removeAttachment}
-            />
-          }
+          chatInputSlot={<ChatInput onSubmit={handleChatSubmit} attachments={attachments} onRemoveAttachment={removeAttachment} />}
         />
       </div>
     </main>

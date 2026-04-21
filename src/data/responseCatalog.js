@@ -27,6 +27,8 @@ export const RESPONSE_CATALOG = {
     title: 'Full Owner List — Top 25',
     narrative:
       'Showing all 25 disclosed holders, ranked by capital. The top 25 control 54.2% of capital with the remainder split across roughly 3,470 smaller positions.',
+    query:
+      'SELECT rank, name, capital_pct, type\nFROM shareholders\nWHERE disclosed = true\n  AND ticker = \'INTEG B\'\nORDER BY capital_pct DESC\nLIMIT 25;',
     body: {
       type: 'table',
       mode: 'holders-with-link',
@@ -67,6 +69,8 @@ export const RESPONSE_CATALOG = {
     title: 'Foreign Buyers Only',
     narrative:
       'Filtering to non-Swedish holders shows 6 active positions among the top 25, controlling 26.4% of capital. The largest non-Swedish positions are concentrated in the Nordics and the US.',
+    query:
+      'SELECT name, country, delta_shares, delta_capital_pct\nFROM register_changes\nWHERE event_date >= CURRENT_DATE - INTERVAL \'30 days\'\n  AND country != \'SE\'   -- exclude domestic holders\n  AND ticker = \'INTEG B\'\nORDER BY ABS(delta_capital_pct) DESC;',
     body: {
       type: 'table',
       mode: 'changes-with-link',

@@ -39,6 +39,7 @@ export default function QuickActionsPanel({
   title = 'Quick actions',
   subtitle = 'Jump straight to a key view',
   actions = [],
+  mobileOnly = false,
 }) {
   const [sheetOpen, setSheetOpen] = useState(false);
 
@@ -48,8 +49,8 @@ export default function QuickActionsPanel({
 
   return (
     <>
-      {/* Desktop: persistent left-rail panel */}
-      <aside className="cb-quickactions">
+      {/* Desktop: hidden when mobileOnly (quick actions live in artifacts pane) */}
+      <aside className="cb-quickactions" style={mobileOnly ? { display: 'none' } : undefined}>
         <div className="cb-qa-header">
           <h3>{title}</h3>
           <p>{subtitle}</p>

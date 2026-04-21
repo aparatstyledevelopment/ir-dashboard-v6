@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import {
   Users,
@@ -70,6 +71,55 @@ export default function DashboardPage() {
     removeAttachment,
     isAttached,
   } = useModuleConversation('dashboard');
+
+  const openScreen = (screen) =>
+    artifacts.openArtifact({ type: 'screen', payload: { screen } });
+
+  const quickActions = [
+    {
+      id: 'qa.dash.owners',
+      icon: Users,
+      label: 'All shareholders',
+      sub: '3,498 identified holders',
+      onClick: () => openScreen('shareholders-owners'),
+    },
+    {
+      id: 'qa.dash.contacts',
+      icon: Mail,
+      label: 'All contacts',
+      sub: 'IR CRM database',
+      onClick: () => openScreen('crm-people'),
+    },
+    {
+      id: 'qa.dash.transactions',
+      icon: ArrowDownUp,
+      label: 'Daily transactions',
+      sub: 'Register flow (T+2)',
+      onClick: () => openScreen('shareholders-daily-transactions'),
+    },
+    {
+      id: 'qa.dash.lockups',
+      icon: Lock,
+      label: 'Lock-up agreements',
+      sub: 'Active lock-ups & expiry',
+      onClick: () => openScreen('shareholders-lockups'),
+    },
+    {
+      id: 'qa.dash.targets',
+      icon: Target,
+      label: 'Targeting screener',
+      sub: 'AI-prioritized prospects',
+      onClick: () => openScreen('targeting-screener'),
+    },
+  ];
+
+  useEffect(() => {
+    artifacts.setQuickActions(
+      quickActions,
+      'Dashboard quick actions',
+      'Jump to a key view'
+    );
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleReport = () => {
     const shares = resolveAttachedShares(attachments, messages);
@@ -155,47 +205,6 @@ export default function DashboardPage() {
     return renderAnyResponse(message, cardProps);
   };
 
-  const openScreen = (screen) =>
-    artifacts.openArtifact({ type: 'screen', payload: { screen } });
-
-  const quickActions = [
-    {
-      id: 'qa.dash.owners',
-      icon: Users,
-      label: 'All shareholders',
-      sub: '3,498 identified holders',
-      onClick: () => openScreen('shareholders-owners'),
-    },
-    {
-      id: 'qa.dash.contacts',
-      icon: Mail,
-      label: 'All contacts',
-      sub: 'IR CRM database',
-      onClick: () => openScreen('crm-people'),
-    },
-    {
-      id: 'qa.dash.transactions',
-      icon: ArrowDownUp,
-      label: 'Daily transactions',
-      sub: 'Register flow (T+2)',
-      onClick: () => openScreen('shareholders-daily-transactions'),
-    },
-    {
-      id: 'qa.dash.lockups',
-      icon: Lock,
-      label: 'Lock-up agreements',
-      sub: 'Active lock-ups & expiry',
-      onClick: () => openScreen('shareholders-lockups'),
-    },
-    {
-      id: 'qa.dash.targets',
-      icon: Target,
-      label: 'Targeting screener',
-      sub: 'AI-prioritized prospects',
-      onClick: () => openScreen('targeting-screener'),
-    },
-  ];
-
   return (
     <main
       style={{
@@ -205,10 +214,12 @@ export default function DashboardPage() {
         background: 'var(--bg)',
       }}
     >
+      {/* Mobile only — FAB + bottom sheet */}
       <QuickActionsPanel
         title="Dashboard quick actions"
         subtitle="Jump to a key view"
         actions={quickActions}
+        mobileOnly
       />
 
       <div

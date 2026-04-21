@@ -1,5 +1,3 @@
-import { Link } from 'react-router-dom';
-
 export default function ComingSoon({ moduleName }) {
   return (
     <div
@@ -47,18 +45,6 @@ export default function ComingSoon({ moduleName }) {
       >
         This module is being reimagined for the Command Bar experience.
       </p>
-      <Link
-        to="/"
-        style={{
-          fontSize: '12px',
-          color: 'var(--text-primary)',
-          textDecoration: 'underline',
-          textUnderlineOffset: '3px',
-          marginTop: '4px',
-        }}
-      >
-        ← Back to Dashboard
-      </Link>
     </div>
   );
 }

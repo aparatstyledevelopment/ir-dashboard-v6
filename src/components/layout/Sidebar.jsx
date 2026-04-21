@@ -1,4 +1,3 @@
-import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   Users,
@@ -32,30 +31,17 @@ const ICON_MAP = {
   FileText,
 };
 
-const PATH_MODULE_OVERRIDES = {
-  '/crm': 'crm',
-};
-
 const MODULE_TAG = {
   dashboard: 'D',
   shareholders: 'S',
   targeting: 'T',
 };
 
-const MODULE_ROUTE = {
-  dashboard: '/',
-  shareholders: '/shareholders',
-  targeting: '/targeting',
+const MODULE_ID_FOR_SESSION = {
+  dashboard: 'dashboard',
+  shareholders: 'shareholders',
+  targeting: 'targeting',
 };
-
-function getModuleFromPath(pathname) {
-  if (pathname === '/') return 'dashboard';
-  const segments = pathname.split('/').filter(Boolean);
-  if (segments.length === 0) return 'dashboard';
-  const first = `/${segments[0]}`;
-  if (PATH_MODULE_OVERRIDES[first]) return PATH_MODULE_OVERRIDES[first];
-  return segments[0];
-}
 
 function formatRelative(ts) {
   const delta = Date.now() - ts;
@@ -68,13 +54,11 @@ function formatRelative(ts) {
   return `${d}d`;
 }
 
-export default function Sidebar({ conversations }) {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const contextModule =
-    location.state?.contextModule || getModuleFromPath(location.pathname);
-
-  // Global list across all modules, ordered by recency.
+export default function Sidebar({
+  conversations,
+  activeModule,
+  onSwitchModule,
+}) {
   const state = conversations?.state;
   const globalList = state
     ? state.sessionOrder
@@ -89,31 +73,27 @@ export default function Sidebar({ conversations }) {
           isActive: state.activeByModule[s.moduleId] === s.id,
         }))
     : [];
-  // Hide blank placeholders if any slipped in.
   const populated = globalList.filter(
     (s) => s.messageCount > 0 || s.title !== 'New chat'
   );
 
   const isModuleWithConversation =
-    contextModule === 'dashboard' ||
-    contextModule === 'shareholders' ||
-    contextModule === 'targeting';
+    activeModule === 'dashboard' ||
+    activeModule === 'shareholders' ||
+    activeModule === 'targeting';
 
   const handleNewChat = () => {
     if (!conversations) return;
-    // Put the current module back into staging — shows the collapsed
-    // briefing. A real session is only minted on the first interaction.
-    conversations.goToStaging(contextModule);
+    conversations.goToStaging(activeModule);
   };
 
   const handleSwitchSession = (s) => {
     if (!conversations) return;
     conversations.switchSession(s.id);
-    // If the chat belongs to a different module, route there.
-    const target = MODULE_ROUTE[s.moduleId];
-    const here = MODULE_ROUTE[contextModule];
-    if (target && target !== here) {
-      navigate(target);
+    if (s.moduleId !== activeModule) {
+      onSwitchModule?.(s.moduleId);
+      // Re-set activeByModule since onSwitchModule calls goToStaging
+      setTimeout(() => conversations.switchSession(s.id), 0);
     }
   };
 
@@ -136,27 +116,19 @@ export default function Sidebar({ conversations }) {
       <nav className="cb-sidebar-nav">
         {MODULES.map((m) => {
           const Icon = ICON_MAP[m.icon] || LayoutDashboard;
-          const to = m.id === 'dashboard' ? '/' : `/${m.id}`;
-          const isActive = contextModule === m.id;
+          const isActive = activeModule === m.id;
           return (
-            <Link
+            <button
               key={m.id}
-              to={to}
+              type="button"
               title={m.label}
               className={'cb-sidebar-link' + (isActive ? ' is-active' : '')}
-              onClick={() => {
-                // Clicking a module always lands the user in a fresh
-                // (staging) state. To resume an earlier chat they can
-                // pick it from the recent-chats list below.
-                if (conversations && MODULE_ROUTE[m.id]) {
-                  conversations.goToStaging(m.id);
-                }
-              }}
+              onClick={() => onSwitchModule?.(m.id)}
             >
               <Icon size={15} strokeWidth={1.75} />
               <span className="cb-sidebar-label">{m.label}</span>
               {!m.active && <span className="cb-soon-badge">Soon</span>}
-            </Link>
+            </button>
           );
         })}
       </nav>

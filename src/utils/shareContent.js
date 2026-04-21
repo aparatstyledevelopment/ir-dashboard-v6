@@ -127,21 +127,42 @@ function bodyToStructured(body) {
 
 // Compose a source query for a catalog entry. If the entry provides an
 // explicit `query` field, use it. Otherwise, synthesize a plausible
-// pseudo-SQL from the title + any table columns.
+// pseudo-SQL from the title, body type, table columns, and source path.
 function deriveSourceQuery(entry) {
   if (entry?.query) return entry.query;
   if (!entry) return null;
   const title = entry.title || 'result';
   const body = entry.body;
+  const src = entry.source
+    ? entry.source.replace(/\s*→\s*/g, '.').toLowerCase().replace(/\s+/g, '_')
+    : 'dataset';
+
   if (body?.type === 'table' && Array.isArray(body.columns)) {
     const cols = body.columns
-      .map((c) => c.key || c.header?.toLowerCase().replace(/[^a-z0-9]+/g, '_'))
+      .map((c) => c.key || c.header?.toLowerCase().replace(/[^a-z0-9_]+/g, '_'))
       .filter(Boolean)
       .slice(0, 6)
       .join(', ');
-    return `-- "${title}"\nSELECT ${cols || '*'}\nFROM ${entry.source || 'dataset'};`;
+    const rowCount = Array.isArray(body.rows) ? body.rows.length : null;
+    const where = body.mode?.includes('link')
+      ? '\nWHERE visibility = \'disclosed\''
+      : '';
+    const limit = rowCount && rowCount >= 10 ? `\nLIMIT ${rowCount}` : '';
+    return `-- ${title}\nSELECT ${cols || '*'}\nFROM ${src}${where}\nORDER BY 1 ASC${limit};`;
   }
-  return `-- "${title}"\nQUERY: ${title.toLowerCase()};`;
+  if (body?.type === 'bars' || body?.type === 'donut' || body?.type === 'stacked') {
+    return `-- ${title}\nSELECT label, value\nFROM ${src}\nORDER BY value DESC;`;
+  }
+  if (body?.type === 'waterfall') {
+    return `-- ${title}\nSELECT label, delta_value AS value\nFROM ${src}\nORDER BY sort_order ASC;`;
+  }
+  if (body?.type === 'bubbles') {
+    return `-- ${title}\nSELECT label, x_axis AS x, y_axis AS y, size, priority\nFROM ${src}\nORDER BY size DESC;`;
+  }
+  if (body?.type === 'metrics' || body?.type === 'kv') {
+    return `-- ${title}\nSELECT metric_label, metric_value\nFROM ${src}_metrics;`;
+  }
+  return `-- ${title}\nSELECT *\nFROM ${src};`;
 }
 
 export function shareContentFromCatalogEntry(entry) {

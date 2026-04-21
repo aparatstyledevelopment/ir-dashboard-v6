@@ -1,16 +1,47 @@
 import { useEffect, useRef, useState } from 'react';
-import { X } from 'lucide-react';
+import { X, ChevronRight, PanelRightClose } from 'lucide-react';
 import ArtifactView from '../artifacts/ArtifactView';
 
-// The right-side artifacts pane. Flex-layout child on desktop (takes up
-// `width` pixels, shrinking the chat column); full-screen overlay on
-// mobile (<768px).
-//
-// Props:
-//   artifacts: { state, openArtifact, closeArtifact, setWidth }
+function QuickActionList({ actions, title, subtitle }) {
+  return (
+    <div className="cb-artifacts-qa">
+      <div className="cb-qa-header">
+        <h3>{title}</h3>
+        <p>{subtitle}</p>
+      </div>
+      <div className="cb-qa-list">
+        {actions.map((a) => {
+          const Icon = a.icon;
+          return (
+            <button
+              key={a.id}
+              type="button"
+              className="cb-qa-item"
+              onClick={a.onClick}
+            >
+              {Icon && (
+                <span className="cb-qa-icon">
+                  <Icon size={14} strokeWidth={1.75} />
+                </span>
+              )}
+              <span className="cb-qa-body">
+                <span className="cb-qa-label">{a.label}</span>
+                {a.sub && <span className="cb-qa-sub">{a.sub}</span>}
+              </span>
+              <span className="cb-qa-arrow">
+                <ChevronRight size={12} strokeWidth={1.75} />
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export default function ArtifactsPane({ artifacts }) {
-  const { state, closeArtifact, setWidth } = artifacts;
-  const { open, item, width } = state;
+  const { state, closeArtifact, setWidth, togglePane } = artifacts;
+  const { paneVisible, item, width, quickActions, quickActionsTitle, quickActionsSub } = state;
   const paneRef = useRef(null);
   const dragStartRef = useRef(null);
   const [isMobile, setIsMobile] = useState(false);
@@ -24,18 +55,15 @@ export default function ArtifactsPane({ artifacts }) {
     return () => mq.removeEventListener?.('change', update);
   }, []);
 
-  // Close on Escape for keyboard users.
   useEffect(() => {
-    if (!open) return undefined;
+    if (!item) return undefined;
     const onKey = (e) => {
       if (e.key === 'Escape') closeArtifact();
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [open, closeArtifact]);
+  }, [item, closeArtifact]);
 
-  // Drag handle resizing. We watch for mousemove on the window so the
-  // cursor staying inside the handle isn't required once a drag starts.
   useEffect(() => {
     if (!dragging) return undefined;
     const onMove = (e) => {
@@ -63,7 +91,25 @@ export default function ArtifactsPane({ artifacts }) {
     };
   }, [dragging, setWidth]);
 
-  if (!open || !item) return null;
+  // Desktop: always render, visibility controlled by paneVisible.
+  // Mobile: only render when an actual artifact item is open.
+  if (isMobile && !item) return null;
+  if (!isMobile && !paneVisible) {
+    // Show a small re-open tab on the right edge.
+    return (
+      <button
+        type="button"
+        className="cb-artifacts-toggle"
+        onClick={togglePane}
+        aria-label="Open side panel"
+        title="Open panel"
+      >
+        <PanelRightClose size={16} strokeWidth={1.5} />
+      </button>
+    );
+  }
+
+  const showingQuickActions = !item && quickActions.length > 0;
 
   return (
     <aside
@@ -75,7 +121,7 @@ export default function ArtifactsPane({ artifacts }) {
       }
       style={isMobile ? undefined : { width: `${width}px` }}
       role="complementary"
-      aria-label="Artifact panel"
+      aria-label="Side panel"
     >
       {!isMobile && (
         <button
@@ -98,15 +144,30 @@ export default function ArtifactsPane({ artifacts }) {
       <button
         type="button"
         className="cb-icon-btn cb-artifacts-close"
-        onClick={closeArtifact}
-        aria-label="Close panel"
-        title="Close"
+        onClick={item ? closeArtifact : togglePane}
+        aria-label={item ? 'Back to quick actions' : 'Collapse panel'}
+        title={item ? 'Back' : 'Collapse'}
       >
         <X size={16} strokeWidth={1.75} />
       </button>
 
       <div className="cb-artifacts-body">
-        <ArtifactView item={item} />
+        {item ? (
+          <ArtifactView item={item} />
+        ) : showingQuickActions ? (
+          <QuickActionList
+            actions={quickActions}
+            title={quickActionsTitle}
+            subtitle={quickActionsSub}
+          />
+        ) : (
+          <div className="cb-artifacts-qa">
+            <div className="cb-qa-header">
+              <h3>Side panel</h3>
+              <p>Quick actions and data views will appear here.</p>
+            </div>
+          </div>
+        )}
       </div>
     </aside>
   );

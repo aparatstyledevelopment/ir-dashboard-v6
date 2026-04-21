@@ -1,4 +1,3 @@
-import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
   X,
   Plus,
@@ -32,29 +31,11 @@ const ICON_MAP = {
   FileText,
 };
 
-const MODULE_LABEL = {
-  dashboard: 'Dashboard',
-  shareholders: 'Shareholders',
-  targeting: 'Targeting',
-};
-
 const MODULE_TAG = {
   dashboard: 'D',
   shareholders: 'S',
   targeting: 'T',
 };
-
-const MODULE_ROUTE = {
-  dashboard: '/',
-  shareholders: '/shareholders',
-  targeting: '/targeting',
-};
-
-function getModuleFromPath(pathname) {
-  if (pathname === '/') return 'dashboard';
-  const segments = pathname.split('/').filter(Boolean);
-  return segments[0] || 'dashboard';
-}
 
 function formatRelative(ts) {
   const delta = Date.now() - ts;
@@ -67,12 +48,17 @@ function formatRelative(ts) {
   return `${d}d`;
 }
 
-export default function MobileDrawer({ open, onClose, conversations }) {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const contextModule =
-    location.state?.contextModule || getModuleFromPath(location.pathname);
-  const isModuleWithConversation = Boolean(MODULE_LABEL[contextModule]);
+export default function MobileDrawer({
+  open,
+  onClose,
+  conversations,
+  activeModule,
+  onSwitchModule,
+}) {
+  const isModuleWithConversation =
+    activeModule === 'dashboard' ||
+    activeModule === 'shareholders' ||
+    activeModule === 'targeting';
 
   const state = conversations?.state;
   const globalList = state
@@ -94,17 +80,16 @@ export default function MobileDrawer({ open, onClose, conversations }) {
 
   const handleNewChat = () => {
     if (!conversations) return;
-    conversations.goToStaging(contextModule);
+    conversations.goToStaging(activeModule);
     onClose?.();
   };
 
   const handleSwitchSession = (s) => {
     if (!conversations) return;
     conversations.switchSession(s.id);
-    const target = MODULE_ROUTE[s.moduleId];
-    const here = MODULE_ROUTE[contextModule];
-    if (target && target !== here) {
-      navigate(target);
+    if (s.moduleId !== activeModule) {
+      onSwitchModule?.(s.moduleId);
+      setTimeout(() => conversations.switchSession(s.id), 0);
     }
     onClose?.();
   };
@@ -190,34 +175,36 @@ export default function MobileDrawer({ open, onClose, conversations }) {
         <nav style={{ padding: '8px 0', flexShrink: 0, overflowY: 'auto' }}>
           {MODULES.map((m) => {
             const Icon = ICON_MAP[m.icon] || LayoutDashboard;
-            const to = m.id === 'dashboard' ? '/' : `/${m.id}`;
+            const isActive = activeModule === m.id;
             return (
-              <NavLink
+              <button
                 key={m.id}
-                to={to}
-                end={m.id === 'dashboard'}
+                type="button"
                 onClick={() => {
-                  // Clicking a module always lands in a fresh (staging)
-                  // state — recent chats can be resumed from the list.
-                  if (conversations && MODULE_ROUTE[m.id]) {
-                    conversations.goToStaging(m.id);
-                  }
+                  onSwitchModule?.(m.id);
                   onClose?.();
                 }}
-                style={({ isActive }) => ({
+                style={{
                   display: 'flex',
                   alignItems: 'center',
                   gap: '12px',
                   padding: '11px 16px',
+                  width: '100%',
+                  background: 'transparent',
                   borderLeft: isActive
                     ? '2px solid var(--text-primary)'
                     : '2px solid transparent',
+                  borderTop: 'none',
+                  borderRight: 'none',
+                  borderBottom: 'none',
                   color: isActive ? 'var(--text-primary)' : 'var(--text-tertiary)',
                   fontSize: '13px',
                   fontWeight: isActive ? 600 : 400,
                   letterSpacing: '-0.01em',
                   textDecoration: 'none',
-                })}
+                  textAlign: 'left',
+                  cursor: 'pointer',
+                }}
               >
                 <Icon size={16} strokeWidth={1.75} />
                 <span style={{ flex: 1 }}>{m.label}</span>
@@ -237,7 +224,7 @@ export default function MobileDrawer({ open, onClose, conversations }) {
                     Soon
                   </span>
                 )}
-              </NavLink>
+              </button>
             );
           })}
         </nav>

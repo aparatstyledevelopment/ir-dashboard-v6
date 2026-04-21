@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { Target, GitCompare } from 'lucide-react';
 import { useModuleConversation } from '../../hooks/useConversations';
@@ -62,25 +63,42 @@ export default function TargetingPage() {
     isAttached,
   } = useModuleConversation('targeting');
 
+  const openScreen = (screen) =>
+    artifacts.openArtifact({ type: 'screen', payload: { screen } });
+
+  const quickActions = [
+    {
+      id: 'qa.tgt.screener',
+      icon: Target,
+      label: 'Target screener',
+      sub: 'All AI-prioritized candidates',
+      onClick: () => openScreen('targeting-screener'),
+    },
+    {
+      id: 'qa.tgt.compare',
+      icon: GitCompare,
+      label: 'Compare owners',
+      sub: 'Peer holder overlap matrix',
+      onClick: () => openScreen('targeting-compare-owners'),
+    },
+  ];
+
+  useEffect(() => {
+    artifacts.setQuickActions(
+      quickActions,
+      'Targeting quick actions',
+      'Jump to a key view'
+    );
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   const handleReport = () => {
     const shares = resolveAttachedShares(attachments, messages);
     if (shares.length === 0) {
-      showToast(
-        'Attach cards first (use the + button), then send /report to generate a PDF.'
-      );
+      showToast('Attach cards first, then send /report.');
       return;
     }
-    const ok = openReportPdf(
-      shares,
-      `Targeting Report — ${shares.length} cards`
-    );
-    if (!ok) {
-      showToast('Could not open the print window. Check pop-up blockers.');
-      return;
-    }
-    showToast(
-      `Opening a ${shares.length}-card PDF report. Choose "Save as PDF" to download.`
-    );
+    openReportPdf(shares, `Targeting Report — ${shares.length} cards`);
+    showToast(`Opening a ${shares.length}-card PDF report.`);
   };
 
   const handleChatSubmit = createChatSubmitHandler({
@@ -92,27 +110,20 @@ export default function TargetingPage() {
     onReport: handleReport,
   });
 
-  const handleChipSelect = (chip) => {
+  const handleChipSelect = (chip) =>
     sendChipQuery(chip.id, chip.responseType, chip.label);
-  };
 
   const handleFollowUp = (chip) => {
     if (!chip) return;
-    if (typeof chip === 'string') {
-      sendTextQuery(chip);
-      return;
-    }
-    if (chip.id && chip.id.startsWith('l2.')) {
-      sendCatalogQuery(chip.id, chip.label);
-      return;
-    }
+    if (typeof chip === 'string') { sendTextQuery(chip); return; }
+    if (chip.id?.startsWith('l2.')) { sendCatalogQuery(chip.id, chip.label); return; }
     sendTextQuery(chip.label || String(chip));
   };
 
   const handleAttach = (ref) => {
     const result = attachCard(ref);
     if (!result.ok && result.reason === 'limit-reached') {
-      showToast('You can attach up to 5 cards at a time. Remove one first.');
+      showToast('You can attach up to 5 cards at a time.');
     }
   };
 
@@ -138,69 +149,22 @@ export default function TargetingPage() {
     return renderAnyResponse(message, cardProps);
   };
 
-  const openScreen = (screen) =>
-    artifacts.openArtifact({ type: 'screen', payload: { screen } });
-
-  const quickActions = [
-    {
-      id: 'qa.tgt.screener',
-      icon: Target,
-      label: 'Target screener',
-      sub: 'All AI-prioritized candidates',
-      onClick: () => openScreen('targeting-screener'),
-    },
-    {
-      id: 'qa.tgt.compare',
-      icon: GitCompare,
-      label: 'Compare owners',
-      sub: 'Peer holder overlap matrix',
-      onClick: () => openScreen('targeting-compare-owners'),
-    },
-  ];
-
   return (
-    <main
-      style={{
-        flex: 1,
-        display: 'flex',
-        minHeight: 0,
-        background: 'var(--bg)',
-      }}
-    >
+    <main style={{ flex: 1, display: 'flex', minHeight: 0, background: 'var(--bg)' }}>
       <QuickActionsPanel
         title="Targeting quick actions"
         subtitle="Jump to a key view"
         actions={quickActions}
+        mobileOnly
       />
-
-      <div
-        style={{
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          minWidth: 0,
-          position: 'relative',
-        }}
-      >
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, position: 'relative' }}>
         <ConversationShell
           briefing={<TargetingBriefing />}
-          chips={
-            <TargetingChips
-              onSelect={handleChipSelect}
-              isChipSpent={isChipSpent}
-              onShowToast={showToast}
-            />
-          }
+          chips={<TargetingChips onSelect={handleChipSelect} isChipSpent={isChipSpent} onShowToast={showToast} />}
           messages={messages}
           isTyping={isTyping}
           renderResponse={renderResponse}
-          chatInputSlot={
-            <ChatInput
-              onSubmit={handleChatSubmit}
-              attachments={attachments}
-              onRemoveAttachment={removeAttachment}
-            />
-          }
+          chatInputSlot={<ChatInput onSubmit={handleChatSubmit} attachments={attachments} onRemoveAttachment={removeAttachment} />}
         />
       </div>
     </main>

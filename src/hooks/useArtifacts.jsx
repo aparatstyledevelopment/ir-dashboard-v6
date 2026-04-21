@@ -1,44 +1,73 @@
-// Artifacts pane state — a global single-slot right-side pane that shows
-// full-screen data views (list screens, investor detail, card evidence)
-// without breaking the always-visible chat column.
+// Artifacts pane state.
 //
 // State shape:
 //   {
-//     open: boolean,
-//     item: { type, payload } | null,
-//     width: number  // pixels; user-adjustable via the drag handle
+//     paneVisible: boolean,       // whether the pane is showing at all
+//     item: { type, payload } | null,  // null = show quick actions (default)
+//     width: number,              // pixels; user-adjustable via drag handle
+//     quickActions: [],           // set by the active module page
+//     quickActionsTitle: string,
+//     quickActionsSub: string,
 //   }
 
 import { createContext, useCallback, useContext, useState } from 'react';
 
-const DEFAULT_WIDTH = 560;
+const DEFAULT_WIDTH = 520;
 const MIN_WIDTH = 340;
 
 const ArtifactsContext = createContext(null);
 
 export function useArtifacts() {
   const [state, setState] = useState({
-    open: false,
+    paneVisible: true,
     item: null,
     width: DEFAULT_WIDTH,
+    quickActions: [],
+    quickActionsTitle: 'Quick actions',
+    quickActionsSub: 'Jump to a key view',
   });
 
   const openArtifact = useCallback((item) => {
-    setState((prev) => ({ ...prev, open: true, item }));
+    setState((prev) => ({ ...prev, paneVisible: true, item }));
   }, []);
 
   const closeArtifact = useCallback(() => {
-    setState((prev) => ({ ...prev, open: false }));
-  }, []);
-
-  const setWidth = useCallback((w) => {
+    // Closing an artifact goes back to quick actions (item = null).
+    // If already on quick actions, collapse the pane entirely.
     setState((prev) => {
-      const next = Math.max(MIN_WIDTH, Math.round(w));
-      return { ...prev, width: next };
+      if (prev.item) return { ...prev, item: null };
+      return { ...prev, paneVisible: false };
     });
   }, []);
 
-  return { state, openArtifact, closeArtifact, setWidth };
+  const togglePane = useCallback(() => {
+    setState((prev) => ({ ...prev, paneVisible: !prev.paneVisible }));
+  }, []);
+
+  const setWidth = useCallback((w) => {
+    setState((prev) => ({
+      ...prev,
+      width: Math.max(MIN_WIDTH, Math.round(w)),
+    }));
+  }, []);
+
+  const setQuickActions = useCallback((actions, title, sub) => {
+    setState((prev) => ({
+      ...prev,
+      quickActions: actions || [],
+      quickActionsTitle: title || 'Quick actions',
+      quickActionsSub: sub || 'Jump to a key view',
+    }));
+  }, []);
+
+  return {
+    state,
+    openArtifact,
+    closeArtifact,
+    togglePane,
+    setWidth,
+    setQuickActions,
+  };
 }
 
 export function ArtifactsProvider({ value, children }) {
@@ -49,13 +78,11 @@ export function ArtifactsProvider({ value, children }) {
   );
 }
 
-// Any descendant of <ArtifactsProvider> can read + write the artifact
-// pane. Works both inside the Outlet and inside the pane itself.
 export function useArtifactsContext() {
   const ctx = useContext(ArtifactsContext);
   if (!ctx) {
     throw new Error(
-      'useArtifactsContext: must be used inside <ArtifactsProvider>. Did you wrap the app with RootLayout?'
+      'useArtifactsContext: must be used inside <ArtifactsProvider>.'
     );
   }
   return ctx;
