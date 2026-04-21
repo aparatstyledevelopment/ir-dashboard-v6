@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { X, ChevronRight, PanelRightClose } from 'lucide-react';
+import { X, ChevronRight, PanelRightClose, PanelRightOpen } from 'lucide-react';
 import ArtifactView from '../artifacts/ArtifactView';
 
 function QuickActionList({ actions, title, subtitle }) {
@@ -148,7 +148,11 @@ export default function ArtifactsPane({ artifacts }) {
         aria-label={item ? 'Back to quick actions' : 'Collapse panel'}
         title={item ? 'Back' : 'Collapse'}
       >
-        <X size={16} strokeWidth={1.75} />
+        {item ? (
+          <X size={16} strokeWidth={1.75} />
+        ) : (
+          <PanelRightOpen size={16} strokeWidth={1.5} />
+        )}
       </button>
 
       <div className="cb-artifacts-body">
