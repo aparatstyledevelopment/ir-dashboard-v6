@@ -138,6 +138,8 @@ export default function ConversationShell({
             display: 'flex',
             flexDirection: 'column',
             gap: isEmpty ? '18px' : '20px',
+            minWidth: 0,
+            overflow: 'hidden',
             ...(isEmpty ? { minHeight: '100%' } : {}),
           }}
         >

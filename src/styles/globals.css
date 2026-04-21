@@ -290,6 +290,18 @@ textarea {
   letter-spacing: -0.01em;
 }
 
+/* When share-menu lives inside the generic BottomSheet wrapper, reset
+ * the desktop dropdown positioning to static block layout. */
+.cb-bottom-sheet .cb-share-menu {
+  position: static;
+  width: 100%;
+  max-width: 100%;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  animation: none;
+}
+
 /* Mobile share sheet — rendered via a React portal to document.body so
  * it escapes any ancestor containing block (transformed cards etc.). */
 .cb-share-portal {
@@ -531,7 +543,7 @@ textarea {
  * height via --cb-overlay-h with a 30px breathing gap. */
 .cb-qa-fab {
   position: fixed;
-  bottom: calc(var(--cb-overlay-h, 64px) + 56px);
+  bottom: calc(var(--cb-overlay-h, 64px) + 24px);
   right: 22px;
   width: 46px;
   height: 46px;
@@ -1332,6 +1344,8 @@ textarea {
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 4px;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .cb-card-section {
