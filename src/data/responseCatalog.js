@@ -26,7 +26,7 @@ export const RESPONSE_CATALOG = {
   'l2.buyers.full-list': {
     title: 'Full Owner List — Top 25',
     narrative:
-      'Showing all 25 disclosed holders, ranked by capital. The top 25 control 54.2% of capital with the remainder split across roughly 3,470 smaller positions.',
+      'Showing all 25 disclosed holders, ranked by capital. The top 25 control 54.2% of capital with the remainder split across 3,473 smaller positions.',
     query:
       'SELECT rank, name, capital_pct, type\nFROM shareholders\nWHERE disclosed = true\n  AND ticker = \'INTEG B\'\nORDER BY capital_pct DESC\nLIMIT 25;',
     body: {
@@ -46,7 +46,7 @@ export const RESPONSE_CATALOG = {
   'l2.buyers.last-quarter': {
     title: 'Net Flow vs Last Quarter',
     narrative:
-      'Waterfall of the past 30 days of register activity. 12 buyers added 116k shares; 8 sellers reduced 51k. Net effect: +65k shares into the active register.',
+      'Waterfall of the past 30 days of register activity. 5 buyers added 115,800 shares; 4 sellers reduced 51,004. Net effect: +64,796 shares into the active register.',
     body: {
       type: 'waterfall',
       data: [
@@ -68,7 +68,7 @@ export const RESPONSE_CATALOG = {
   'l2.buyers.foreign': {
     title: 'Foreign Buyers Only',
     narrative:
-      'Filtering to non-Swedish holders shows 6 active positions among the top 25, controlling 26.4% of capital. The largest non-Swedish positions are concentrated in the Nordics and the US.',
+      'Filtering to non-Swedish holders shows 4 active positions with changes in the past 30 days. The largest non-Swedish positions are concentrated in Norway (Aviva) and the US (Invesco).',
     query:
       'SELECT name, country, delta_shares, delta_capital_pct\nFROM register_changes\nWHERE event_date >= CURRENT_DATE - INTERVAL \'30 days\'\n  AND country != \'SE\'   -- exclude domestic holders\n  AND ticker = \'INTEG B\'\nORDER BY ABS(delta_capital_pct) DESC;',
     body: {
@@ -449,7 +449,7 @@ Object.assign(RESPONSE_CATALOG, {
   'l2.sh.register.history': {
     title: 'Register Snapshot History',
     narrative:
-      'Weekly owner count over the past 6 weeks. Net growth of +38 owners from the March 1 snapshot to today. The system retains 24 monthly snapshots plus the most recent 12 weekly diffs.',
+      'Weekly owner count over the past 6 weeks. Net growth of +33 owners from the March 8 snapshot (3,465) to the April 12 snapshot (3,498). The system retains 24 monthly snapshots plus the most recent 12 weekly diffs.',
     body: {
       type: 'bars',
       data: [
@@ -636,7 +636,7 @@ Object.assign(RESPONSE_CATALOG, {
   'l2.sh.tx.last7': {
     title: 'Last 7 Days Transactions',
     narrative:
-      '7 reportable transactions in the past 7 days. Net flow is +20,496 shares (5 buys totalling 36.4k, 3 sells totalling 16.0k).',
+      '7 reportable transactions in the past 7 days — 5 buys totalling 36,400 shares and 2 sells totalling 21,204. Net flow: +15,196 shares into the active register.',
     body: {
       type: 'table',
       mode: 'plain',
@@ -672,7 +672,7 @@ Object.assign(RESPONSE_CATALOG, {
   'l2.sh.tx.byowner': {
     title: 'Transactions Grouped by Owner (14 days)',
     narrative:
-      'Running waterfall of the 9 most active owners over the past 14 days. Net effect: −10,504 shares out of the active register. Aviva Perfusion is the largest net seller (−21,204); Nordea and Invesco lead the buy side.',
+      'Running waterfall of the 9 most active owners over the past 14 days. Net effect: +11,396 shares into the active register. Aviva Perfusion is the largest net seller (−21,204); Nordea (+12,500) and Invesco (+10,400) lead the buy side.',
     body: {
       type: 'waterfall',
       data: [
@@ -900,7 +900,7 @@ Object.assign(RESPONSE_CATALOG, {
   'l2.tgt.gap.byPeer': {
     title: 'Peer Gaps Grouped by Peer',
     narrative:
-      'Holders of our peers that are NOT on our register, grouped by which peer they own. BONESUPPORT has the widest gap — 18 institutional holders own it that don\'t own us. OssDsign 12, Medistim 10, QuickCool 4.',
+      'Holders of our peers that are NOT on our register, grouped by which peer they own. 5 institutional holders have been identified across the peer group as gap candidates.',
     body: {
       type: 'bars',
       data: [
@@ -918,7 +918,7 @@ Object.assign(RESPONSE_CATALOG, {
   'l2.tgt.gap.multi': {
     title: 'Holders of 2+ Peers — Prime Targets',
     narrative:
-      '18 holders own 2 or more of our closest peers without holding INTEG B. These are the highest-conversion peer-gap candidates because they already believe in the thesis — they just haven\'t found us yet.',
+      'Holders that own 2 or more of our closest peers without holding INTEG B. These are the highest-conversion peer-gap candidates because they already believe in the thesis — they just haven\'t found us yet.',
     body: {
       type: 'table',
       mode: 'plain',

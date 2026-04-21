@@ -173,7 +173,7 @@ export default function ConversationShell({
         style={{
           flex: 1,
           overflowY: 'auto',
-          padding: `24px 16px ${overlayHeight}px`,
+          padding: `24px 16px ${overlayHeight + 24}px`,
         }}
       >
         <div

@@ -305,12 +305,11 @@ export default function MobileDrawer({
                     }}
                     title={`${s.title} · ${s.moduleId}`}
                   >
-                    <span
-                      className={`cb-sidebar-chat-tag cb-sidebar-chat-tag--${s.moduleId}`}
-                      aria-hidden
-                    >
-                      {MODULE_TAG[s.moduleId] || '·'}
-                    </span>
+                    <MessageSquare
+                      size={11}
+                      strokeWidth={1.75}
+                      className="cb-sidebar-chat-icon"
+                    />
                     <span className="cb-sidebar-chat-title">{s.title}</span>
                     <span className="cb-sidebar-chat-time">
                       {formatRelative(s.createdAt)}

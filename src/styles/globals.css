@@ -1597,7 +1597,7 @@ textarea {
 .cb-artifacts-toggle {
   position: fixed;
   top: 65px;
-  right: 6px;
+  right: 14px;
   width: 30px;
   height: 30px;
   border-radius: 6px;
@@ -1635,29 +1635,23 @@ textarea {
   }
 }
 
-/* "View source data" pill button — replaces the old underlined text link.
- * Sits at the bottom of response cards. */
-.cb-source-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+/* "Source" pill — inline text-only button that sits next to the 3-dot
+ * menu in the card header. Opens the evidence artifact pane. */
+.cb-source-pill {
   font-size: 11px;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: -0.01em;
   color: var(--surface-dark-text);
   background: var(--surface-dark);
   border: none;
   border-radius: 999px;
-  padding: 6px 12px 6px 10px;
+  padding: 4px 10px;
   cursor: pointer;
   transition: opacity 140ms ease;
+  white-space: nowrap;
 }
-.cb-source-btn:hover {
-  opacity: 0.82;
-}
-.cb-source-btn svg {
-  color: var(--surface-dark-text);
-  opacity: 0.65;
+.cb-source-pill:hover {
+  opacity: 0.78;
 }
 
 /* Evidence view sections (Query + Response) inside the artifacts pane. */

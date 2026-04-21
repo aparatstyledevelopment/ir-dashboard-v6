@@ -1,6 +1,5 @@
 import ChipGroup from '../../ui/ChipGroup';
 import CardMenu from '../../ui/CardMenu';
-import SourceDataLink from '../../shared/SourceDataLink';
 
 export default function ResponseCard({
   title,
@@ -22,8 +21,6 @@ export default function ResponseCard({
     typeof f === 'string' ? { id: `${title}-fu-${i}`, label: f } : f
   );
 
-  const hasMenu = Boolean(shareContent) || Boolean(onAttach);
-
   return (
     <article className="fade-in-up cb-card" style={{ borderRadius: '4px' }}>
       <header
@@ -41,16 +38,24 @@ export default function ResponseCard({
         }}
       >
         <span style={{ minWidth: 0, flex: 1 }}>{title}</span>
-        {hasMenu && (
-          <div className="cb-card-actions">
-            <CardMenu
-              shareContent={shareContent}
-              onShowToast={onShowToast}
-              onAttach={onAttach}
-              isAttached={isAttached}
-            />
-          </div>
-        )}
+        <div className="cb-card-actions">
+          {sourceModule && onSourceOpen && (
+            <button
+              type="button"
+              className="cb-source-pill"
+              onClick={() => onSourceOpen(sourceModule)}
+              title="View source data"
+            >
+              Source
+            </button>
+          )}
+          <CardMenu
+            shareContent={shareContent}
+            onShowToast={onShowToast}
+            onAttach={onAttach}
+            isAttached={isAttached}
+          />
+        </div>
       </header>
       <div style={{ padding: '14px 16px' }}>{children}</div>
       {normalized.length > 0 && (
@@ -69,11 +74,6 @@ export default function ResponseCard({
             onShowToast={onShowToast}
             isChipSpent={isChipSpent}
           />
-        </div>
-      )}
-      {sourceModule && (
-        <div style={{ padding: '0 16px 14px' }}>
-          <SourceDataLink module={sourceModule} onOpen={onSourceOpen} />
         </div>
       )}
     </article>

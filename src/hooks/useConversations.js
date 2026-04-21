@@ -167,6 +167,10 @@ export function useModuleConversation(moduleId) {
           title: s.title === 'New chat' && label ? label : s.title,
           spentChips: new Set([...s.spentChips, chipId]),
           isTyping: true,
+          messages: [
+            ...s.messages,
+            { id: nextMessageId(), kind: 'user', text: label || chipId },
+          ],
         }));
       });
       setTimeout(() => {
@@ -196,6 +200,10 @@ export function useModuleConversation(moduleId) {
           title: s.title === 'New chat' && label ? label : s.title,
           spentChips: new Set([...s.spentChips, catalogId]),
           isTyping: true,
+          messages: [
+            ...s.messages,
+            { id: nextMessageId(), kind: 'user', text: label || catalogId },
+          ],
         }));
       });
       setTimeout(() => {

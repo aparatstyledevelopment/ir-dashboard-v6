@@ -88,7 +88,7 @@ export const SHARE_MAP = {
   ownership: buildShareContent({
     title: 'Ownership Changes — Last 30 Days',
     narrative:
-      'Net buying activity has been moderate over the past 30 days, with 12 owners increasing positions and 8 decreasing. The largest single move was Nordea Investment Funds adding 45,000 shares.',
+      'Net buying activity has been moderate over the past 30 days, with 5 owners increasing positions and 4 decreasing. The largest single move was Nordea Investment Funds adding 45,000 shares. Net effect: +64,796 shares into the active register.',
     sourceQuery:
       'SELECT name, country, delta_shares, delta_capital_pct, direction\nFROM register_changes\nWHERE event_date >= CURRENT_DATE - INTERVAL \'30 days\'\nORDER BY ABS(delta_capital_pct) DESC;',
     columns: [
@@ -135,7 +135,7 @@ export const SHARE_MAP = {
   insider: buildShareContent({
     title: 'Insider & PDMR Activity',
     narrative:
-      'No new PDMR transactions in the past 14 days. Total insider ownership is 23.95% of capital, dominated by Richard Brännemark at 23.19%.',
+      '3 PDMR notifications filed in 2026 — two acquisitions (3,500 shares) and one disposal (5,000 shares). Total insider ownership is 23.95% of capital, dominated by Richard Brännemark at 23.19%.',
     sourceQuery:
       'SELECT event_date, person, role, type, shares, price, value_sek\nFROM insider_transactions\nWHERE event_date >= CURRENT_DATE - INTERVAL \'90 days\'\nORDER BY event_date DESC;',
     columns: [
@@ -238,7 +238,7 @@ export const SHARE_MAP = {
   'sh.daily': buildShareContent({
     title: 'Recent Register Transactions',
     narrative:
-      '10 reportable transactions over the past 14 days. Net flow: +11,396 shares into the active register.',
+      '10 reportable transactions over the past 14 days — 7 buys totalling 40,500 shares and 3 sells totalling 29,104. Net flow: +11,396 shares into the active register.',
     sourceQuery:
       'SELECT event_date AS "date", owner, country, type, shares, value_sek\nFROM register_transactions\nWHERE event_date >= CURRENT_DATE - INTERVAL \'14 days\'\nORDER BY event_date DESC;',
     columns: [
@@ -272,7 +272,7 @@ export const SHARE_MAP = {
   'tgt.priority': buildShareContent({
     title: 'Prioritized Targets',
     narrative:
-      'Top 8 AI-prioritized targets. Polar Capital Healthcare leads with a 92/100 fit score — already holds 3 of our 5 closest peers.',
+      '15 AI-prioritized targets — 6 hot, 6 warm, 3 cold. Polar Capital Healthcare leads with a 92/100 fit score — already holds 3 of our closest peers.',
     sourceQuery:
       'SELECT name, firm, type, country, aum, priority, ai_score AS score, rationale\nFROM investor_candidates\nWHERE holds_ticker = \'INTEG B\' = false\nORDER BY ai_score DESC\nLIMIT 25;',
     columns: [
@@ -290,7 +290,7 @@ export const SHARE_MAP = {
   'tgt.lookalike': buildShareContent({
     title: 'Lookalike Holders',
     narrative:
-      '6 candidates match our current holder DNA on at least 2 traits (peer overlap, type, style, geography).',
+      '9 candidates hold at least one of our closest peers and are rated hot or warm. Strongest overlaps: Polar Capital (3 peers), Allianz (2 peers), abrdn (2 peers), Evli (2 peers).',
     sourceQuery:
       'SELECT name, country, string_agg(peer_ticker, \'; \') AS peers_joined, ai_score AS score, priority\nFROM investor_candidates\nJOIN peer_holdings USING (investor_id)\nWHERE peer_holdings_count >= 1\nGROUP BY investor_id\nORDER BY ai_score DESC;',
     columns: [
@@ -305,7 +305,7 @@ export const SHARE_MAP = {
   'tgt.peergaps': buildShareContent({
     title: 'Peer Holders — Gap Analysis',
     narrative:
-      '47 institutional holders own at least one of our 5 closest peers but not INTEG B. 18 of them hold 2 or more peers — highest-conversion candidates.',
+      '5 institutional holders from our peer-gap dataset own at least one of our closest peers but not INTEG B. These are the highest-conversion candidates for IR outreach.',
     sourceQuery:
       'SELECT peer_ticker AS peer, holder, country, holding_pct, status\nFROM peer_holdings\nWHERE peer_ticker IN (SELECT ticker FROM peer_group WHERE anchor = \'INTEG B\')\n  AND holder NOT IN (SELECT name FROM shareholders WHERE ticker = \'INTEG B\')\nORDER BY holding_pct DESC;',
     columns: [
