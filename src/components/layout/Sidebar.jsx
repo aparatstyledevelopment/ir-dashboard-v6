@@ -58,6 +58,8 @@ export default function Sidebar({
   conversations,
   activeModule,
   onSwitchModule,
+  onOpenSettings,
+  onOpenProfile,
 }) {
   const state = conversations?.state;
   const globalList = state
@@ -201,10 +203,25 @@ export default function Sidebar({
       )}
 
       <div className="cb-sidebar-footer">
-        <button type="button" className="cb-icon-btn" aria-label="Settings">
+        <button
+          type="button"
+          className="cb-icon-btn"
+          aria-label="Settings"
+          title="Settings"
+          onClick={onOpenSettings}
+        >
           <Settings size={15} strokeWidth={1.75} />
         </button>
-        <div className="cb-sidebar-mf">MF</div>
+        <button
+          type="button"
+          className="cb-sidebar-mf"
+          aria-label="Profile"
+          title="Profile"
+          onClick={onOpenProfile}
+          style={{ cursor: 'pointer', border: 'none', background: 'none', padding: 0 }}
+        >
+          MF
+        </button>
       </div>
     </aside>
   );

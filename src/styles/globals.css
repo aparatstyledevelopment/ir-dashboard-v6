@@ -1050,6 +1050,37 @@ textarea {
   color: var(--text-primary);
 }
 
+/* Settings page rows */
+.cb-settings-section {
+  margin-bottom: 28px;
+}
+.cb-settings-section-title {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  margin: 0 0 8px;
+}
+.cb-settings-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--border);
+}
+.cb-settings-row-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: var(--bar-track);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+}
+
 /* Top bar layout */
 .cb-topbar {
   height: 52px;

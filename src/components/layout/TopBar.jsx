@@ -1,9 +1,20 @@
+import { useState } from 'react';
 import { Menu, Search, Bell } from 'lucide-react';
 import { COMPANY } from '../../data/company';
 
-export default function TopBar({ onOpenDrawer }) {
+export default function TopBar({ onOpenDrawer, onOpenNotifications, onSearch }) {
+  const [query, setQuery] = useState('');
   const isUp = COMPANY.change >= 0;
   const arrow = isUp ? '▲' : '▼';
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const q = query.trim();
+    if (q) {
+      onSearch?.(q);
+      setQuery('');
+    }
+  };
 
   return (
     <header className="cb-topbar">
@@ -41,10 +52,14 @@ export default function TopBar({ onOpenDrawer }) {
           className="cb-topbar-search-btn"
           aria-label="Search"
           title="Search"
+          onClick={() => {
+            const q = prompt('Search owners, contacts, reports…');
+            if (q?.trim()) onSearch?.(q.trim());
+          }}
         >
           <Search size={15} strokeWidth={1.75} />
         </button>
-        <div className="cb-topbar-search">
+        <form className="cb-topbar-search" onSubmit={handleSubmit}>
           <Search
             size={14}
             strokeWidth={1.75}
@@ -52,15 +67,18 @@ export default function TopBar({ onOpenDrawer }) {
           />
           <input
             type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
             placeholder="Search owners, contacts, reports…"
             aria-label="Search the platform"
           />
-        </div>
+        </form>
         <button
           type="button"
           aria-label="Notifications"
           title="Notifications"
           className="cb-topbar-notif"
+          onClick={onOpenNotifications}
         >
           <Bell size={16} strokeWidth={1.75} />
           <span className="cb-topbar-notif-dot" />
