@@ -184,7 +184,7 @@ export function useModuleConversation(moduleId) {
             ],
           }))
         );
-      }, 800);
+      }, 1400);
     },
     [moduleId, setState]
   );
@@ -223,7 +223,7 @@ export function useModuleConversation(moduleId) {
             ],
           }))
         );
-      }, 800);
+      }, 1400);
     },
     [moduleId, setState]
   );
@@ -323,7 +323,7 @@ export function useModuleConversation(moduleId) {
             };
           })
         );
-      }, 800);
+      }, 1400);
     },
     [moduleId, setState]
   );

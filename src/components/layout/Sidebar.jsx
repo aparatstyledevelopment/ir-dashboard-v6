@@ -137,15 +137,6 @@ export default function Sidebar({
         <div className="cb-sidebar-chats">
           <div className="cb-sidebar-chats-header">
             <span>Recent chats</span>
-            <button
-              type="button"
-              className="cb-sidebar-new-chat"
-              onClick={handleNewChat}
-              aria-label="Start a new chat"
-              title="New chat"
-            >
-              <Plus size={12} strokeWidth={2} />
-            </button>
           </div>
           {populated.length === 0 ? (
             <div className="cb-sidebar-chats-empty">

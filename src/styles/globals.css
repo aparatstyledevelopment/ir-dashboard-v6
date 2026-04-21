@@ -151,7 +151,7 @@ textarea {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  bottom: calc(var(--cb-overlay-h, 64px) + 14px);
+  bottom: calc(var(--cb-overlay-h, 64px) + 24px);
   width: 36px;
   height: 36px;
   border-radius: 50%;
@@ -200,10 +200,8 @@ textarea {
   transition: all 140ms ease;
   padding: 0;
 }
-/* The lucide Share2 glyph sits slightly to the right of its box;
- * nudge it back left so it looks centered in the circular button. */
 .cb-share-btn svg {
-  transform: translateX(-1px);
+  transform: translateX(0.5px);
 }
 .cb-share-btn:hover {
   border-color: var(--text-primary);
@@ -828,14 +826,13 @@ textarea {
 
 .cb-soon-badge {
   display: none;
-  font-size: 9px;
+  font-size: 8px;
   font-weight: 500;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: var(--text-tertiary);
-  border: 1px solid var(--border);
-  padding: 1px 6px;
-  border-radius: 999px;
+  color: var(--border);
+  border: none;
+  padding: 0;
   flex-shrink: 0;
 }
 @media (min-width: 1024px) {
@@ -1506,7 +1503,6 @@ textarea {
   background: var(--bg);
   border-left: 1px solid var(--border);
   min-width: 340px;
-  height: 100%;
   animation: artifactsSlideIn 200ms ease-out both;
 }
 @keyframes artifactsSlideIn {

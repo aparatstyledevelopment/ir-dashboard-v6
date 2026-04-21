@@ -53,18 +53,19 @@ export default function RootLayout() {
           }}
         >
           <TopBar onOpenDrawer={() => setDrawerOpen(true)} />
-          <Outlet
-            context={{
-              showToast,
-              conversations,
-              artifacts,
-              activeModule,
-              switchModule,
-            }}
-          />
+          <div style={{ flex: 1, display: 'flex', minHeight: 0 }}>
+            <Outlet
+              context={{
+                showToast,
+                conversations,
+                artifacts,
+                activeModule,
+                switchModule,
+              }}
+            />
+            <ArtifactsPane artifacts={artifacts} />
+          </div>
         </div>
-
-        <ArtifactsPane artifacts={artifacts} />
 
         <Toast message={toast} onDismiss={() => setToast(null)} />
       </div>
