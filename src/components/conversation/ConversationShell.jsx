@@ -55,12 +55,8 @@ export default function ConversationShell({
   const [overlayHeight, setOverlayHeight] = useState(64);
   const SCROLL_THRESHOLD = 120;
 
-  // Empty state: no messages AND not currently typing. We center the
-  // briefing + chips + chat input vertically (like ChatGPT / Claude home).
   const isEmpty = messages.length === 0 && !isTyping;
 
-  // Scroll to bottom only when a new message arrives or typing starts.
-  // First render never auto-scrolls so navigating back preserves position.
   useEffect(() => {
     const isFirstRun = prevMessageCount.current === messages.length && !isTyping;
     if (isFirstRun) {
@@ -73,7 +69,6 @@ export default function ConversationShell({
     prevMessageCount.current = messages.length;
   }, [messages.length, isTyping]);
 
-  // Show / hide the jump-to-bottom FAB (only in conversation mode).
   useLayoutEffect(() => {
     if (isEmpty) {
       setShowJumpDown(false);
@@ -91,16 +86,7 @@ export default function ConversationShell({
     return () => el.removeEventListener('scroll', handleScroll);
   }, [isEmpty]);
 
-  // Track the chat overlay's live height in conversation mode. In empty
-  // mode there is no fixed overlay — we set a small sentinel so the FABs
-  // still have a sane bottom anchor if they're showing for any reason.
   useLayoutEffect(() => {
-    if (isEmpty) {
-      document.documentElement.style.setProperty('--cb-overlay-h', '20px');
-      return () => {
-        document.documentElement.style.removeProperty('--cb-overlay-h');
-      };
-    }
     const el = overlayRef.current;
     if (!el || typeof ResizeObserver === 'undefined') return undefined;
     const setVar = (h) => {
@@ -122,53 +108,22 @@ export default function ConversationShell({
       ro.disconnect();
       document.documentElement.style.removeProperty('--cb-overlay-h');
     };
-  }, [isEmpty]);
+  }, []);
 
   const jumpToBottom = () => {
-    endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    const el = scrollRef.current;
+    if (el) {
+      el.scrollTop = el.scrollHeight;
+    }
   };
-
-  // ---------------- Empty / staging layout (vertically centered) ----------
-
-  if (isEmpty) {
-    return (
-      <div
-        className="cb-empty-shell"
-        style={{
-          flex: 1,
-          minHeight: 0,
-          overflowY: 'auto',
-          padding: '24px 16px',
-        }}
-      >
-        <div className="cb-empty-center">
-          <div
-            style={{
-              width: '100%',
-              maxWidth: '720px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '18px',
-            }}
-          >
-            {briefing}
-            {chips}
-            {chatInputSlot && (
-              <div className="cb-empty-chat-slot">{chatInputSlot}</div>
-            )}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // ---------------- Conversation layout (fixed-bottom overlay) ------------
 
   return (
     <>
       <div
         ref={scrollRef}
-        className="conversation-scroll"
+        className={
+          'conversation-scroll' + (isEmpty ? ' conversation-scroll--empty' : '')
+        }
         style={{
           flex: 1,
           overflowY: 'auto',
@@ -176,12 +131,14 @@ export default function ConversationShell({
         }}
       >
         <div
+          className={isEmpty ? 'cb-empty-center' : undefined}
           style={{
             maxWidth: '720px',
             margin: '0 auto',
             display: 'flex',
             flexDirection: 'column',
-            gap: '20px',
+            gap: isEmpty ? '18px' : '20px',
+            ...(isEmpty ? { minHeight: '100%' } : {}),
           }}
         >
           {briefing}
@@ -205,7 +162,7 @@ export default function ConversationShell({
 
           {isTyping && <TypingIndicator />}
 
-          <div ref={endRef} />
+          {!isEmpty && <div ref={endRef} />}
         </div>
       </div>
 

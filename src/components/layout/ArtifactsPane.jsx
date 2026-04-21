@@ -43,9 +43,11 @@ export default function ArtifactsPane({ artifacts }) {
   const { state, closeArtifact, setWidth, togglePane } = artifacts;
   const { paneVisible, item, width, quickActions, quickActionsTitle, quickActionsSub } = state;
   const paneRef = useRef(null);
+  const bodyRef = useRef(null);
   const dragStartRef = useRef(null);
   const [isMobile, setIsMobile] = useState(false);
   const [dragging, setDragging] = useState(false);
+  const [bodyScrolled, setBodyScrolled] = useState(false);
 
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 767px)');
@@ -105,6 +107,16 @@ export default function ArtifactsPane({ artifacts }) {
     };
   }, [dragging, setWidth]);
 
+  // Track scroll position on the artifact body to add shadow to close btn.
+  useEffect(() => {
+    const el = bodyRef.current;
+    if (!el) return undefined;
+    const onScroll = () => setBodyScrolled(el.scrollTop > 2);
+    onScroll();
+    el.addEventListener('scroll', onScroll, { passive: true });
+    return () => el.removeEventListener('scroll', onScroll);
+  });
+
   // Desktop: always render, visibility controlled by paneVisible.
   // Mobile: only render when an actual artifact item is open.
   if (isMobile && !item) return null;
@@ -157,7 +169,10 @@ export default function ArtifactsPane({ artifacts }) {
 
       <button
         type="button"
-        className="cb-icon-btn cb-artifacts-close"
+        className={
+          'cb-icon-btn cb-artifacts-close' +
+          (bodyScrolled ? ' is-scrolled' : '')
+        }
         onClick={item ? closeArtifact : togglePane}
         aria-label={item ? 'Back to quick actions' : 'Collapse panel'}
         title={item ? 'Back' : 'Collapse'}
@@ -169,7 +184,7 @@ export default function ArtifactsPane({ artifacts }) {
         )}
       </button>
 
-      <div className="cb-artifacts-body">
+      <div className="cb-artifacts-body" ref={bodyRef}>
         {item ? (
           <ArtifactView item={item} />
         ) : showingQuickActions ? (

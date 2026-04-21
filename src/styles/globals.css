@@ -26,6 +26,7 @@ body,
   height: 100%;
   margin: 0;
   padding: 0;
+  overflow-x: hidden;
 }
 
 body {
@@ -137,6 +138,7 @@ textarea {
 
 .conversation-scroll {
   scrollbar-gutter: stable both-edges;
+  overflow-x: hidden;
 }
 
 .cb-input-gutter {
@@ -1226,6 +1228,34 @@ textarea {
   border: 1.5px solid var(--bg);
 }
 
+/* Generic bottom sheet — swipeable, with safe area */
+.cb-bottom-sheet {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  background: var(--bg);
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  border: 1px solid var(--border);
+  border-bottom: none;
+  max-height: 70vh;
+  overflow-y: auto;
+  animation: sheetSlideUp 220ms ease-out both;
+  z-index: 1;
+}
+.cb-bottom-sheet-handle {
+  width: 36px;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  margin: 10px auto 4px;
+  cursor: grab;
+}
+.cb-bottom-sheet-safe {
+  height: env(safe-area-inset-bottom, 12px);
+  min-height: 12px;
+}
+
 /* Mobile search overlay — full-width bar at top */
 .cb-mobile-search-overlay {
   position: fixed;
@@ -1545,28 +1575,17 @@ textarea {
   letter-spacing: -0.01em;
 }
 
-/* Empty / staging state: vertically-centered column holding the collapsed
- * briefing, smart chips, and the chat input — inline, not fixed. Mimics
- * the home screens of modern AI assistants. */
-.cb-empty-shell {
-  scrollbar-gutter: stable both-edges;
-}
-/* Desktop: center content vertically. Mobile: top-aligned so nothing
- * clips above the fold when the briefing card is tall. */
+/* Empty / staging state: on desktop, briefing + chips are vertically
+ * centered in the scroll area. On mobile, top-aligned so nothing clips.
+ * The chatbox is ALWAYS in the fixed overlay at the bottom. */
 .cb-empty-center {
-  min-height: 100%;
-  display: flex;
-  align-items: center;
   justify-content: center;
 }
 @media (max-width: 639px) {
   .cb-empty-center {
-    align-items: flex-start;
-    padding-bottom: 80px;
+    justify-content: flex-start;
+    padding-bottom: 24px;
   }
-}
-.cb-empty-chat-slot {
-  margin-top: 4px;
 }
 
 /* ----- Artifacts pane (right side, resizable) ----- */
@@ -1653,6 +1672,10 @@ textarea {
 .cb-artifacts-close:hover {
   color: var(--text-primary);
   border-color: var(--text-primary);
+}
+.cb-artifacts-close.is-scrolled {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  transition: box-shadow 200ms ease;
 }
 
 .cb-artifacts-body {

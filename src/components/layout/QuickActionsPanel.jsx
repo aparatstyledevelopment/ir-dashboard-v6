@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ChevronRight, LayoutGrid } from 'lucide-react';
+import BottomSheet from '../ui/BottomSheet';
 
 function QuickActionList({ actions, onItemClick }) {
   return (
@@ -49,16 +50,16 @@ export default function QuickActionsPanel({
 
   return (
     <>
-      {/* Desktop: hidden when mobileOnly (quick actions live in artifacts pane) */}
-      <aside className="cb-quickactions" style={mobileOnly ? { display: 'none' } : undefined}>
-        <div className="cb-qa-header">
-          <h3>{title}</h3>
-          <p>{subtitle}</p>
-        </div>
-        <QuickActionList actions={actions} />
-      </aside>
+      {!mobileOnly && (
+        <aside className="cb-quickactions">
+          <div className="cb-qa-header">
+            <h3>{title}</h3>
+            <p>{subtitle}</p>
+          </div>
+          <QuickActionList actions={actions} />
+        </aside>
+      )}
 
-      {/* Mobile: floating button + bottom sheet */}
       <button
         type="button"
         className="cb-qa-fab"
@@ -68,29 +69,16 @@ export default function QuickActionsPanel({
         <LayoutGrid size={18} strokeWidth={1.75} />
       </button>
 
-      {sheetOpen && (
-        <div
-          className="cb-qa-sheet-overlay"
-          onClick={() => setSheetOpen(false)}
-        >
-          <div
-            className="cb-qa-sheet"
-            onClick={(e) => e.stopPropagation()}
-            role="dialog"
-            aria-label="Quick actions"
-          >
-            <div className="cb-qa-sheet-handle" />
-            <div className="cb-qa-header">
-              <h3>{title}</h3>
-              <p>{subtitle}</p>
-            </div>
-            <QuickActionList
-              actions={actions}
-              onItemClick={() => setSheetOpen(false)}
-            />
-          </div>
+      <BottomSheet open={sheetOpen} onClose={() => setSheetOpen(false)}>
+        <div className="cb-qa-header">
+          <h3>{title}</h3>
+          <p>{subtitle}</p>
         </div>
-      )}
+        <QuickActionList
+          actions={actions}
+          onItemClick={() => setSheetOpen(false)}
+        />
+      </BottomSheet>
     </>
   );
 }

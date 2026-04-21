@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
 import {
   MoreVertical,
   ClipboardCopy,
@@ -10,6 +9,7 @@ import {
 } from 'lucide-react';
 import { downloadCsv, slugifyForFile } from '../../utils/csv';
 import { openCardPdf } from '../../utils/pdf';
+import BottomSheet from './BottomSheet';
 
 async function copyToClipboard(text) {
   try {
@@ -196,37 +196,20 @@ export default function CardMenu({
     onAttach?.();
   };
 
-  const mobileSheet =
-    open && isMobile
-      ? createPortal(
-          <div
-            ref={containerRef}
-            className="cb-share-portal"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div
-              className="cb-share-backdrop"
-              onClick={() => setOpen(false)}
-            />
-            <div
-              className="cb-share-menu"
-              role="menu"
-              aria-label="Card options"
-            >
-              <div className="cb-share-sheet-handle" />
-              <MenuItems
-                shareContent={shareContent}
-                onCopy={handleCopy}
-                onDownloadCsv={handleDownloadCsv}
-                onDownloadPdf={handleDownloadPdf}
-                onAttach={onAttach ? handleAttach : undefined}
-                isAttached={isAttached}
-              />
-            </div>
-          </div>,
-          document.body
-        )
-      : null;
+  const mobileSheet = isMobile ? (
+    <BottomSheet open={open} onClose={() => setOpen(false)}>
+      <div className="cb-share-menu" role="menu" aria-label="Card options">
+        <MenuItems
+          shareContent={shareContent}
+          onCopy={handleCopy}
+          onDownloadCsv={handleDownloadCsv}
+          onDownloadPdf={handleDownloadPdf}
+          onAttach={onAttach ? handleAttach : undefined}
+          isAttached={isAttached}
+        />
+      </div>
+    </BottomSheet>
+  ) : null;
 
   const desktopMenu =
     open && !isMobile ? (

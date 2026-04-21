@@ -1,8 +1,8 @@
 import {
   X,
-  Plus,
   MessageSquare,
   Trash2,
+  Settings,
   LayoutDashboard,
   Users,
   Target,
@@ -54,6 +54,8 @@ export default function MobileDrawer({
   conversations,
   activeModule,
   onSwitchModule,
+  onOpenSettings,
+  onOpenProfile,
 }) {
   const isModuleWithConversation =
     activeModule === 'dashboard' ||
@@ -211,14 +213,11 @@ export default function MobileDrawer({
                 {!m.active && (
                   <span
                     style={{
-                      fontSize: '9px',
+                      fontSize: '8px',
                       fontWeight: 500,
-                      letterSpacing: '0.05em',
+                      letterSpacing: '0.04em',
                       textTransform: 'uppercase',
-                      color: 'var(--text-tertiary)',
-                      border: '1px solid var(--border)',
-                      padding: '1px 6px',
-                      borderRadius: '999px',
+                      color: 'var(--border)',
                     }}
                   >
                     Soon
@@ -242,9 +241,6 @@ export default function MobileDrawer({
           >
             <div
               style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
                 padding: '0 18px 10px',
                 fontSize: '10px',
                 fontWeight: 600,
@@ -253,37 +249,11 @@ export default function MobileDrawer({
                 color: 'var(--text-tertiary)',
               }}
             >
-              <span>Recent chats</span>
-              <button
-                type="button"
-                className="cb-sidebar-new-chat"
-                onClick={handleNewChat}
-                aria-label="Start a new chat"
-                title="New chat"
-              >
-                <Plus size={12} strokeWidth={2} />
-              </button>
+              Recent chats
             </div>
             {populated.length === 0 ? (
               <div className="cb-sidebar-chats-empty">
-                <MessageSquare
-                  size={16}
-                  strokeWidth={1.5}
-                  style={{
-                    color: 'var(--text-tertiary)',
-                    margin: '0 auto 6px',
-                  }}
-                />
-                <div>No recent chats yet.</div>
-                <div
-                  style={{
-                    color: 'var(--text-tertiary)',
-                    marginTop: '2px',
-                    fontSize: '10px',
-                  }}
-                >
-                  Ask something to start.
-                </div>
+                No recent chats yet. Ask something to start.
               </div>
             ) : (
               <div style={{ flex: 1, overflowY: 'auto' }}>
@@ -329,6 +299,55 @@ export default function MobileDrawer({
             )}
           </div>
         )}
+
+        <div
+          style={{
+            padding: '14px 16px',
+            borderTop: '1px solid var(--border)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexShrink: 0,
+          }}
+        >
+          <button
+            type="button"
+            className="cb-icon-btn"
+            aria-label="Settings"
+            title="Settings"
+            onClick={() => {
+              onOpenSettings?.();
+              onClose?.();
+            }}
+          >
+            <Settings size={15} strokeWidth={1.75} />
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              onOpenProfile?.();
+              onClose?.();
+            }}
+            aria-label="Profile"
+            title="Profile"
+            style={{
+              width: '28px',
+              height: '28px',
+              borderRadius: '50%',
+              background: 'var(--surface-dark)',
+              color: 'var(--surface-dark-text)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '10px',
+              fontWeight: 600,
+              border: 'none',
+              cursor: 'pointer',
+            }}
+          >
+            MF
+          </button>
+        </div>
       </aside>
     </div>
   );

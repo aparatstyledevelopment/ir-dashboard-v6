@@ -51,6 +51,8 @@ export default function RootLayout() {
           conversations={conversations}
           activeModule={activeModule}
           onSwitchModule={switchModule}
+          onOpenSettings={() => { setPage('settings'); setDrawerOpen(false); }}
+          onOpenProfile={() => { setPage('profile'); setDrawerOpen(false); }}
         />
 
         <div
