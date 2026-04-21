@@ -1,11 +1,10 @@
-import { Link } from 'react-router-dom';
-import ListScreen from '../../../components/screen/ListScreen';
+import ListScreen from '../../screen/ListScreen';
 import { DAILY_TRANSACTIONS } from '../../../data/dailyTransactions';
 import { flagFor } from '../../../utils/countryFlags';
 import { formatDateShort, formatNumber } from '../../../utils/formatters';
-import { slugify } from '../../../utils/slug';
+import InvestorLink from '../InvestorLink';
 
-export default function DailyTransactionsListPage() {
+export default function DailyTransactionsView() {
   const columns = [
     {
       header: 'Date',
@@ -16,11 +15,7 @@ export default function DailyTransactionsListPage() {
     {
       header: 'Owner',
       key: 'owner',
-      render: (r) => (
-        <Link to={`/investor/${slugify(r.owner)}`} className="cb-link">
-          {r.owner}
-        </Link>
-      ),
+      render: (r) => <InvestorLink name={r.owner} />,
     },
     {
       header: 'Country',
@@ -62,10 +57,9 @@ export default function DailyTransactionsListPage() {
 
   return (
     <ListScreen
+      inArtifact
       title="Daily transactions T+2"
       subtitle="Reported register activity for the past 14 days. Transactions settle T+2."
-      backTo="/shareholders"
-      backLabel="Back to Shareholders"
       searchPlaceholder="Search by owner, country, or type…"
       searchFields={['owner', 'country', 'type']}
       columns={columns}

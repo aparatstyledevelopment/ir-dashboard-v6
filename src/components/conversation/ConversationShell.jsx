@@ -55,6 +55,10 @@ export default function ConversationShell({
   const [overlayHeight, setOverlayHeight] = useState(64);
   const SCROLL_THRESHOLD = 120;
 
+  // Empty state: no messages AND not currently typing. We center the
+  // briefing + chips + chat input vertically (like ChatGPT / Claude home).
+  const isEmpty = messages.length === 0 && !isTyping;
+
   // Scroll to bottom only when a new message arrives or typing starts.
   // First render never auto-scrolls so navigating back preserves position.
   useEffect(() => {
@@ -69,8 +73,12 @@ export default function ConversationShell({
     prevMessageCount.current = messages.length;
   }, [messages.length, isTyping]);
 
-  // Show / hide the jump-to-bottom FAB.
+  // Show / hide the jump-to-bottom FAB (only in conversation mode).
   useLayoutEffect(() => {
+    if (isEmpty) {
+      setShowJumpDown(false);
+      return undefined;
+    }
     const el = scrollRef.current;
     if (!el) return undefined;
     const handleScroll = () => {
@@ -81,14 +89,18 @@ export default function ConversationShell({
     handleScroll();
     el.addEventListener('scroll', handleScroll, { passive: true });
     return () => el.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [isEmpty]);
 
-  // Track the chat overlay's live height. When attachments appear the
-  // pill grows; we use this to set the conversation's bottom padding AND
-  // to expose the height as a CSS variable so the jump-to-bottom and
-  // quick-actions FABs can stack right above the chat box regardless of
-  // how tall it is.
+  // Track the chat overlay's live height in conversation mode. In empty
+  // mode there is no fixed overlay — we set a small sentinel so the FABs
+  // still have a sane bottom anchor if they're showing for any reason.
   useLayoutEffect(() => {
+    if (isEmpty) {
+      document.documentElement.style.setProperty('--cb-overlay-h', '20px');
+      return () => {
+        document.documentElement.style.removeProperty('--cb-overlay-h');
+      };
+    }
     const el = overlayRef.current;
     if (!el || typeof ResizeObserver === 'undefined') return undefined;
     const setVar = (h) => {
@@ -103,7 +115,6 @@ export default function ConversationShell({
       }
     });
     ro.observe(el);
-    // Initialize immediately so the first paint has the right value.
     const initial = Math.max(48, Math.round(el.getBoundingClientRect().height));
     setOverlayHeight(initial);
     setVar(initial);
@@ -111,11 +122,48 @@ export default function ConversationShell({
       ro.disconnect();
       document.documentElement.style.removeProperty('--cb-overlay-h');
     };
-  }, []);
+  }, [isEmpty]);
 
   const jumpToBottom = () => {
     endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
   };
+
+  // ---------------- Empty / staging layout (vertically centered) ----------
+
+  if (isEmpty) {
+    return (
+      <div
+        className="cb-empty-shell"
+        style={{
+          flex: 1,
+          minHeight: 0,
+          overflowY: 'auto',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '24px 16px',
+        }}
+      >
+        <div
+          style={{
+            width: '100%',
+            maxWidth: '720px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '18px',
+          }}
+        >
+          {briefing}
+          {chips}
+          {chatInputSlot && (
+            <div className="cb-empty-chat-slot">{chatInputSlot}</div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // ---------------- Conversation layout (fixed-bottom overlay) ------------
 
   return (
     <>
@@ -125,8 +173,6 @@ export default function ConversationShell({
         style={{
           flex: 1,
           overflowY: 'auto',
-          // Bottom padding tracks the chat overlay's live height so the
-          // last message stops exactly at the chat box top.
           padding: `24px 16px ${overlayHeight}px`,
         }}
       >

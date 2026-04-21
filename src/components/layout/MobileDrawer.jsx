@@ -1,4 +1,4 @@
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
   X,
   Plus,
@@ -38,6 +38,18 @@ const MODULE_LABEL = {
   targeting: 'Targeting',
 };
 
+const MODULE_TAG = {
+  dashboard: 'D',
+  shareholders: 'S',
+  targeting: 'T',
+};
+
+const MODULE_ROUTE = {
+  dashboard: '/',
+  shareholders: '/shareholders',
+  targeting: '/targeting',
+};
+
 function getModuleFromPath(pathname) {
   if (pathname === '/') return 'dashboard';
   const segments = pathname.split('/').filter(Boolean);
@@ -57,90 +69,50 @@ function formatRelative(ts) {
 
 export default function MobileDrawer({ open, onClose, conversations }) {
   const location = useLocation();
+  const navigate = useNavigate();
   const contextModule =
     location.state?.contextModule || getModuleFromPath(location.pathname);
-  const moduleLabel = MODULE_LABEL[contextModule] || '';
   const isModuleWithConversation = Boolean(MODULE_LABEL[contextModule]);
 
-  const slot = conversations?.slots?.[contextModule];
-  const sessionList = slot
-    ? slot.sessionOrder
-        .map((id) => slot.sessions[id])
+  const state = conversations?.state;
+  const globalList = state
+    ? state.sessionOrder
+        .map((id) => state.sessions[id])
         .filter(Boolean)
         .map((s) => ({
           id: s.id,
           title: s.title,
+          moduleId: s.moduleId,
           createdAt: s.createdAt,
           messageCount: s.messages.length,
-          isActive: s.id === slot.activeSessionId,
+          isActive: state.activeByModule[s.moduleId] === s.id,
         }))
     : [];
-  const populated = sessionList.filter(
+  const populated = globalList.filter(
     (s) => s.messageCount > 0 || s.title !== 'New chat'
   );
 
   const handleNewChat = () => {
     if (!conversations) return;
-    const id = `s-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-    const fresh = {
-      id,
-      title: 'New chat',
-      createdAt: Date.now(),
-      messages: [],
-      isTyping: false,
-      spentChips: new Set(),
-      attachments: [],
-    };
-    conversations.updateSlot(contextModule, (c) => ({
-      ...c,
-      activeSessionId: id,
-      sessionOrder: [id, ...c.sessionOrder],
-      sessions: { ...c.sessions, [id]: fresh },
-    }));
+    conversations.goToStaging(contextModule);
     onClose?.();
   };
 
-  const handleSwitchSession = (id) => {
+  const handleSwitchSession = (s) => {
     if (!conversations) return;
-    conversations.updateSlot(contextModule, (c) =>
-      c.sessions[id] ? { ...c, activeSessionId: id } : c
-    );
+    conversations.switchSession(s.id);
+    const target = MODULE_ROUTE[s.moduleId];
+    const here = MODULE_ROUTE[contextModule];
+    if (target && target !== here) {
+      navigate(target);
+    }
     onClose?.();
   };
 
   const handleArchiveSession = (id, e) => {
     e?.stopPropagation();
     if (!conversations) return;
-    conversations.updateSlot(contextModule, (c) => {
-      if (!c.sessions[id]) return c;
-      const nextSessions = { ...c.sessions };
-      delete nextSessions[id];
-      const nextOrder = c.sessionOrder.filter((sid) => sid !== id);
-      if (nextOrder.length === 0) {
-        const fresh = {
-          id: `s-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-          title: 'New chat',
-          createdAt: Date.now(),
-          messages: [],
-          isTyping: false,
-          spentChips: new Set(),
-          attachments: [],
-        };
-        return {
-          activeSessionId: fresh.id,
-          sessionOrder: [fresh.id],
-          sessions: { [fresh.id]: fresh },
-        };
-      }
-      const nextActive =
-        c.activeSessionId === id ? nextOrder[0] : c.activeSessionId;
-      return {
-        ...c,
-        activeSessionId: nextActive,
-        sessionOrder: nextOrder,
-        sessions: nextSessions,
-      };
-    });
+    conversations.deleteSession(id);
   };
 
   if (!open) return null;
@@ -287,7 +259,7 @@ export default function MobileDrawer({ open, onClose, conversations }) {
                 color: 'var(--text-tertiary)',
               }}
             >
-              <span>Recent {moduleLabel} chats</span>
+              <span>Recent chats</span>
               <button
                 type="button"
                 className="cb-sidebar-new-chat"
@@ -308,7 +280,7 @@ export default function MobileDrawer({ open, onClose, conversations }) {
                     margin: '0 auto 6px',
                   }}
                 />
-                <div>No recent {moduleLabel.toLowerCase()} chats yet.</div>
+                <div>No recent chats yet.</div>
                 <div
                   style={{
                     color: 'var(--text-tertiary)',
@@ -330,20 +302,21 @@ export default function MobileDrawer({ open, onClose, conversations }) {
                     }
                     role="button"
                     tabIndex={0}
-                    onClick={() => handleSwitchSession(s.id)}
+                    onClick={() => handleSwitchSession(s)}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' || e.key === ' ') {
                         e.preventDefault();
-                        handleSwitchSession(s.id);
+                        handleSwitchSession(s);
                       }
                     }}
-                    title={s.title}
+                    title={`${s.title} · ${s.moduleId}`}
                   >
-                    <MessageSquare
-                      size={11}
-                      strokeWidth={1.75}
-                      className="cb-sidebar-chat-icon"
-                    />
+                    <span
+                      className={`cb-sidebar-chat-tag cb-sidebar-chat-tag--${s.moduleId}`}
+                      aria-hidden
+                    >
+                      {MODULE_TAG[s.moduleId] || '·'}
+                    </span>
                     <span className="cb-sidebar-chat-title">{s.title}</span>
                     <span className="cb-sidebar-chat-time">
                       {formatRelative(s.createdAt)}

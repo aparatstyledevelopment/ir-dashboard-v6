@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   Users,
@@ -36,6 +36,18 @@ const PATH_MODULE_OVERRIDES = {
   '/crm': 'crm',
 };
 
+const MODULE_TAG = {
+  dashboard: 'D',
+  shareholders: 'S',
+  targeting: 'T',
+};
+
+const MODULE_ROUTE = {
+  dashboard: '/',
+  shareholders: '/shareholders',
+  targeting: '/targeting',
+};
+
 function getModuleFromPath(pathname) {
   if (pathname === '/') return 'dashboard';
   const segments = pathname.split('/').filter(Boolean);
@@ -58,107 +70,58 @@ function formatRelative(ts) {
 
 export default function Sidebar({ conversations }) {
   const location = useLocation();
+  const navigate = useNavigate();
   const contextModule =
     location.state?.contextModule || getModuleFromPath(location.pathname);
 
-  // Read session list for the active module directly from slots. We do
-  // this without useModuleConversation() because the Sidebar lives outside
-  // the routed <Outlet> and therefore can't use outlet context.
-  const slot = conversations?.slots?.[contextModule];
-  const sessionList = slot
-    ? slot.sessionOrder
-        .map((id) => slot.sessions[id])
+  // Global list across all modules, ordered by recency.
+  const state = conversations?.state;
+  const globalList = state
+    ? state.sessionOrder
+        .map((id) => state.sessions[id])
         .filter(Boolean)
         .map((s) => ({
           id: s.id,
           title: s.title,
+          moduleId: s.moduleId,
           createdAt: s.createdAt,
           messageCount: s.messages.length,
-          isActive: s.id === slot.activeSessionId,
+          isActive: state.activeByModule[s.moduleId] === s.id,
         }))
     : [];
-
-  const handleNewChat = () => {
-    if (!conversations) return;
-    // Importing nextSessionId logic here would circular-import the hook,
-    // so we inline a fresh session creation matching the hook's shape.
-    const id = `s-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-    const fresh = {
-      id,
-      title: 'New chat',
-      createdAt: Date.now(),
-      messages: [],
-      isTyping: false,
-      spentChips: new Set(),
-      attachments: [],
-    };
-    conversations.updateSlot(contextModule, (c) => ({
-      ...c,
-      activeSessionId: id,
-      sessionOrder: [id, ...c.sessionOrder],
-      sessions: { ...c.sessions, [id]: fresh },
-    }));
-  };
-
-  const handleSwitchSession = (id) => {
-    if (!conversations) return;
-    conversations.updateSlot(contextModule, (c) =>
-      c.sessions[id] ? { ...c, activeSessionId: id } : c
-    );
-  };
-
-  const handleArchiveSession = (id, e) => {
-    e?.stopPropagation();
-    if (!conversations) return;
-    conversations.updateSlot(contextModule, (c) => {
-      if (!c.sessions[id]) return c;
-      const nextSessions = { ...c.sessions };
-      delete nextSessions[id];
-      const nextOrder = c.sessionOrder.filter((sid) => sid !== id);
-      if (nextOrder.length === 0) {
-        // Always keep at least one (empty) session so the slot is
-        // ready for the next message.
-        const fresh = {
-          id: `s-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-          title: 'New chat',
-          createdAt: Date.now(),
-          messages: [],
-          isTyping: false,
-          spentChips: new Set(),
-          attachments: [],
-        };
-        return {
-          activeSessionId: fresh.id,
-          sessionOrder: [fresh.id],
-          sessions: { [fresh.id]: fresh },
-        };
-      }
-      const nextActive =
-        c.activeSessionId === id ? nextOrder[0] : c.activeSessionId;
-      return {
-        ...c,
-        activeSessionId: nextActive,
-        sessionOrder: nextOrder,
-        sessions: nextSessions,
-      };
-    });
-  };
+  // Hide blank placeholders if any slipped in.
+  const populated = globalList.filter(
+    (s) => s.messageCount > 0 || s.title !== 'New chat'
+  );
 
   const isModuleWithConversation =
     contextModule === 'dashboard' ||
     contextModule === 'shareholders' ||
     contextModule === 'targeting';
 
-  const MODULE_LABEL = {
-    dashboard: 'Dashboard',
-    shareholders: 'Shareholders',
-    targeting: 'Targeting',
+  const handleNewChat = () => {
+    if (!conversations) return;
+    // Put the current module back into staging — shows the collapsed
+    // briefing. A real session is only minted on the first interaction.
+    conversations.goToStaging(contextModule);
   };
-  const moduleLabel = MODULE_LABEL[contextModule] || '';
-  // Hide the default empty "New chat" placeholder from the visible list.
-  const populated = sessionList.filter(
-    (s) => s.messageCount > 0 || s.title !== 'New chat'
-  );
+
+  const handleSwitchSession = (s) => {
+    if (!conversations) return;
+    conversations.switchSession(s.id);
+    // If the chat belongs to a different module, route there.
+    const target = MODULE_ROUTE[s.moduleId];
+    const here = MODULE_ROUTE[contextModule];
+    if (target && target !== here) {
+      navigate(target);
+    }
+  };
+
+  const handleArchiveSession = (id, e) => {
+    e?.stopPropagation();
+    if (!conversations) return;
+    conversations.deleteSession(id);
+  };
 
   return (
     <aside className="cb-sidebar">
@@ -193,7 +156,7 @@ export default function Sidebar({ conversations }) {
       {isModuleWithConversation && (
         <div className="cb-sidebar-chats">
           <div className="cb-sidebar-chats-header">
-            <span>Recent {moduleLabel} chats</span>
+            <span>Recent chats</span>
             <button
               type="button"
               className="cb-sidebar-new-chat"
@@ -211,7 +174,7 @@ export default function Sidebar({ conversations }) {
                 strokeWidth={1.5}
                 style={{ color: 'var(--text-tertiary)', margin: '0 auto 6px' }}
               />
-              <div>No recent {moduleLabel.toLowerCase()} chats yet.</div>
+              <div>No recent chats yet.</div>
               <div
                 style={{
                   color: 'var(--text-tertiary)',
@@ -224,28 +187,29 @@ export default function Sidebar({ conversations }) {
             </div>
           ) : (
             <div className="cb-sidebar-chat-list">
-              {populated.slice(0, 6).map((s) => (
+              {populated.slice(0, 10).map((s) => (
                 <div
                   key={s.id}
                   className={
                     'cb-sidebar-chat-item' + (s.isActive ? ' is-active' : '')
                   }
-                  onClick={() => handleSwitchSession(s.id)}
+                  onClick={() => handleSwitchSession(s)}
                   role="button"
                   tabIndex={0}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
                       e.preventDefault();
-                      handleSwitchSession(s.id);
+                      handleSwitchSession(s);
                     }
                   }}
-                  title={s.title}
+                  title={`${s.title} · ${s.moduleId}`}
                 >
-                  <MessageSquare
-                    size={11}
-                    strokeWidth={1.75}
-                    className="cb-sidebar-chat-icon"
-                  />
+                  <span
+                    className={`cb-sidebar-chat-tag cb-sidebar-chat-tag--${s.moduleId}`}
+                    aria-hidden
+                  >
+                    {MODULE_TAG[s.moduleId] || '·'}
+                  </span>
                   <span className="cb-sidebar-chat-title">{s.title}</span>
                   <span className="cb-sidebar-chat-time">
                     {formatRelative(s.createdAt)}

@@ -1,13 +1,12 @@
-import { Link } from 'react-router-dom';
 import ResponseCard from '../../dashboard/responses/ResponseCard';
 import DataTable from '../../ui/DataTable';
+import InvestorLink from '../../artifacts/InvestorLink';
 import { DAILY_TRANSACTIONS } from '../../../data/dailyTransactions';
 import {
   formatDateShort,
   formatNumber,
 } from '../../../utils/formatters';
 import { flagFor } from '../../../utils/countryFlags';
-import { slugify } from '../../../utils/slug';
 import { buildShareContent } from '../../../utils/shareContent';
 
 const SHARE = buildShareContent({
@@ -43,11 +42,7 @@ export default function DailyTransactionsCard({
     {
       header: 'Owner',
       key: 'owner',
-      render: (r) => (
-        <Link to={`/investor/${slugify(r.owner)}`} className="cb-link">
-          {r.owner}
-        </Link>
-      ),
+      render: (r) => <InvestorLink name={r.owner} />,
     },
     {
       header: 'Country',

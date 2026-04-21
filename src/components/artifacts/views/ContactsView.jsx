@@ -1,4 +1,4 @@
-import ListScreen from '../../../components/screen/ListScreen';
+import ListScreen from '../../screen/ListScreen';
 import { CONTACTS } from '../../../data/contacts';
 import { flagFor } from '../../../utils/countryFlags';
 import { formatDateShort } from '../../../utils/formatters';
@@ -15,19 +15,13 @@ const SENTIMENT_LABEL = {
   negative: '● Negative',
 };
 
-export default function PeopleListPage() {
+export default function ContactsView() {
   const columns = [
-    {
-      header: 'Name',
-      key: 'name',
-      weight: 500,
-    },
+    { header: 'Name', key: 'name', weight: 500 },
     {
       header: 'Firm',
       key: 'firm',
-      render: (r) => (
-        <span style={{ color: 'var(--text-secondary)' }}>{r.firm}</span>
-      ),
+      render: (r) => <span style={{ color: 'var(--text-secondary)' }}>{r.firm}</span>,
     },
     {
       header: 'Role',
@@ -76,10 +70,9 @@ export default function PeopleListPage() {
 
   return (
     <ListScreen
+      inArtifact
       title="All contacts"
       subtitle={`${CONTACTS.length} tracked contacts across ${new Set(CONTACTS.map((c) => c.firm)).size} firms`}
-      backTo="/"
-      backLabel="Back to Dashboard"
       searchPlaceholder="Search by name, firm, role, or tag…"
       searchFields={['name', 'firm', 'role', 'country', 'tier']}
       columns={columns}

@@ -1,11 +1,10 @@
-import { Link } from 'react-router-dom';
-import ListScreen from '../../../components/screen/ListScreen';
+import ListScreen from '../../screen/ListScreen';
 import { TOP_HOLDERS } from '../../../data/holders';
 import { flagFor } from '../../../utils/countryFlags';
 import { formatPct } from '../../../utils/formatters';
-import { slugify } from '../../../utils/slug';
+import InvestorLink from '../InvestorLink';
 
-export default function OwnersListPage() {
+export default function ShareholderRegisterView() {
   const columns = [
     {
       header: '#',
@@ -18,11 +17,7 @@ export default function OwnersListPage() {
     {
       header: 'Owner',
       key: 'name',
-      render: (r) => (
-        <Link to={`/investor/${slugify(r.name)}`} className="cb-link">
-          {r.name}
-        </Link>
-      ),
+      render: (r) => <InvestorLink name={r.name} />,
     },
     {
       header: 'Country',
@@ -59,10 +54,9 @@ export default function OwnersListPage() {
 
   return (
     <ListScreen
+      inArtifact
       title="All shareholders"
       subtitle="3,498 identified holders · Top 25 shown below · remaining 3,473 holders combine to 45.8% of capital"
-      backTo="/shareholders"
-      backLabel="Back to Shareholders"
       searchPlaceholder="Search by name, country, or type…"
       searchFields={['name', 'country', 'type']}
       columns={columns}

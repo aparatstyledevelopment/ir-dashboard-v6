@@ -1,8 +1,14 @@
 import { useMemo, useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Search } from 'lucide-react';
 import DataTable from '../ui/DataTable';
 
+// Reusable list screen shell.
+//
+// Modes:
+//   default         → full-page route, wraps content in <main> + back link
+//   inArtifact      → skips <main> wrapper + back link; intended for the
+//                     artifacts pane on the right side.
 export default function ListScreen({
   title,
   subtitle,
@@ -15,13 +21,12 @@ export default function ListScreen({
   emptyMessage = 'No matches',
   toolbarExtras,
   children,
+  inArtifact = false,
 }) {
   const location = useLocation();
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
 
-  // Prefer explicit props, then location.state, then fallbacks.
-  const backTo = backToProp || location.state?.backTo || '/';
   const backLabel =
     backLabelProp || location.state?.backLabel || 'Back to Dashboard';
 
@@ -49,63 +54,71 @@ export default function ListScreen({
     );
   }, [query, rows, searchFields]);
 
+  const body = (
+    <div className={inArtifact ? 'cb-screen-inner cb-screen-inner--pane' : 'cb-screen-inner'}>
+      {!inArtifact && (
+        <button
+          type="button"
+          onClick={handleBack}
+          className="cb-screen-back"
+          style={{
+            background: 'transparent',
+            border: 'none',
+            padding: 0,
+            cursor: 'pointer',
+          }}
+        >
+          <ArrowLeft size={12} strokeWidth={2} />
+          {backLabel}
+        </button>
+      )}
+
+      <header className="cb-screen-header">
+        <h1>{title}</h1>
+        {subtitle && <p>{subtitle}</p>}
+      </header>
+
+      <div className="cb-screen-toolbar">
+        {searchFields.length > 0 && (
+          <div className="cb-screen-search">
+            <Search
+              size={13}
+              strokeWidth={1.75}
+              style={{ color: 'var(--text-tertiary)' }}
+            />
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={searchPlaceholder}
+            />
+          </div>
+        )}
+        <span className="cb-screen-meta">
+          {filtered.length} of {rows.length}
+        </span>
+        {toolbarExtras}
+      </div>
+
+      {children}
+
+      {columns && filtered.length > 0 ? (
+        <div style={{ marginTop: '2px' }}>
+          <DataTable columns={columns} rows={filtered} />
+        </div>
+      ) : columns ? (
+        <div className="cb-screen-empty">{emptyMessage}</div>
+      ) : null}
+    </div>
+  );
+
+  if (inArtifact) {
+    return body;
+  }
+
   return (
     <main className="cb-screen">
-      <div className="cb-screen-scroll">
-        <div className="cb-screen-inner">
-          <button
-            type="button"
-            onClick={handleBack}
-            className="cb-screen-back"
-            style={{
-              background: 'transparent',
-              border: 'none',
-              padding: 0,
-              cursor: 'pointer',
-            }}
-          >
-            <ArrowLeft size={12} strokeWidth={2} />
-            {backLabel}
-          </button>
-
-          <header className="cb-screen-header">
-            <h1>{title}</h1>
-            {subtitle && <p>{subtitle}</p>}
-          </header>
-
-          <div className="cb-screen-toolbar">
-            {searchFields.length > 0 && (
-              <div className="cb-screen-search">
-                <Search
-                  size={13}
-                  strokeWidth={1.75}
-                  style={{ color: 'var(--text-tertiary)' }}
-                />
-                <input
-                  type="text"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder={searchPlaceholder}
-                />
-              </div>
-            )}
-            <span className="cb-screen-meta">
-              {filtered.length} of {rows.length}
-            </span>
-            {toolbarExtras}
-          </div>
-
-          {children}
-
-          {columns && filtered.length > 0 ? (
-            <div style={{ marginTop: '2px' }}>
-              <DataTable columns={columns} rows={filtered} />
-            </div>
-          ) : columns ? (
-            <div className="cb-screen-empty">{emptyMessage}</div>
-          ) : null}
-        </div>
-      </div>
+      <div className="cb-screen-scroll">{body}</div>
     </main>
   );
 }

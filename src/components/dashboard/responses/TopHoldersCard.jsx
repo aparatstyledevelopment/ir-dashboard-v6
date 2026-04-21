@@ -1,11 +1,10 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 import ResponseCard from './ResponseCard';
 import DataTable from '../../ui/DataTable';
 import Sparkline from '../../ui/Sparkline';
+import InvestorLink from '../../artifacts/InvestorLink';
 import { TOP_HOLDERS } from '../../../data/holders';
 import { formatPct } from '../../../utils/formatters';
-import { slugify } from '../../../utils/slug';
 import { buildShareContent } from '../../../utils/shareContent';
 
 const SHARE = buildShareContent({
@@ -47,11 +46,7 @@ export default function TopHoldersCard({
     {
       header: 'Owner',
       key: 'name',
-      render: (r) => (
-        <Link to={`/investor/${slugify(r.name)}`} className="cb-link">
-          {r.name}
-        </Link>
-      ),
+      render: (r) => <InvestorLink name={r.name} />,
     },
     {
       header: 'Capital %',

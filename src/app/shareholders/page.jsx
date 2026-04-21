@@ -1,4 +1,4 @@
-import { useOutletContext, useNavigate } from 'react-router-dom';
+import { useOutletContext } from 'react-router-dom';
 import { Users, ArrowDownUp, Lock, ArrowUpDown } from 'lucide-react';
 import { useModuleConversation } from '../../hooks/useConversations';
 import { createChatSubmitHandler } from '../../utils/slashCommands';
@@ -45,8 +45,7 @@ function getMessageTitle(message) {
 }
 
 export default function ShareholdersPage() {
-  const { showToast } = useOutletContext();
-  const navigate = useNavigate();
+  const { showToast, artifacts } = useOutletContext();
   const {
     messages,
     isTyping,
@@ -110,12 +109,6 @@ export default function ShareholdersPage() {
     sendTextQuery(chip.label || String(chip));
   };
 
-  const handleSourceOpen = (moduleName) => {
-    showToast(
-      `In the full platform, this opens the ${moduleName} data view. Coming soon.`
-    );
-  };
-
   const handleAttach = (ref) => {
     const result = attachCard(ref);
     if (!result.ok && result.reason === 'limit-reached') {
@@ -125,7 +118,6 @@ export default function ShareholdersPage() {
 
   const sharedProps = {
     onFollowUp: handleFollowUp,
-    onSourceOpen: handleSourceOpen,
     onShowToast: showToast,
     isChipSpent,
   };
@@ -135,20 +127,19 @@ export default function ShareholdersPage() {
     const ref = { id: message.id, title: getMessageTitle(message) };
     const cardProps = {
       ...sharedProps,
+      onSourceOpen: (moduleName) =>
+        artifacts.openArtifact({
+          type: 'evidence',
+          payload: { message, sourceModule: moduleName },
+        }),
       onAttach: attachable ? () => handleAttach(ref) : undefined,
       isAttached: attachable ? isAttached(message.id) : false,
     };
     return renderAnyResponse(message, cardProps);
   };
 
-  const navFromShareholders = (to) =>
-    navigate(to, {
-      state: {
-        contextModule: 'shareholders',
-        backTo: '/shareholders',
-        backLabel: 'Back to Shareholders',
-      },
-    });
+  const openScreen = (screen) =>
+    artifacts.openArtifact({ type: 'screen', payload: { screen } });
 
   const quickActions = [
     {
@@ -156,28 +147,28 @@ export default function ShareholdersPage() {
       icon: Users,
       label: 'Full shareholder register',
       sub: '3,498 identified holders',
-      onClick: () => navFromShareholders('/shareholders/owners'),
+      onClick: () => openScreen('shareholders-owners'),
     },
     {
       id: 'qa.sh.daily',
       icon: ArrowDownUp,
       label: 'Daily transactions (T+2)',
       sub: 'Last 14 days of register flow',
-      onClick: () => navFromShareholders('/shareholders/daily-transactions'),
+      onClick: () => openScreen('shareholders-daily-transactions'),
     },
     {
       id: 'qa.sh.changes',
       icon: ArrowUpDown,
       label: 'Owner changes (30d)',
       sub: 'Net moves over the last month',
-      onClick: () => navFromShareholders('/shareholders/owner-changes'),
+      onClick: () => openScreen('shareholders-owner-changes'),
     },
     {
       id: 'qa.sh.lockup',
       icon: Lock,
       label: 'Lock-up agreements',
       sub: 'Active agreements & expiry',
-      onClick: () => navFromShareholders('/shareholders/lockups'),
+      onClick: () => openScreen('shareholders-lockups'),
     },
   ];
 

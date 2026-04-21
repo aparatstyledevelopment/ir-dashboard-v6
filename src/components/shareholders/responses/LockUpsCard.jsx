@@ -1,13 +1,12 @@
-import { Link } from 'react-router-dom';
 import ResponseCard from '../../dashboard/responses/ResponseCard';
 import DataTable from '../../ui/DataTable';
+import InvestorLink from '../../artifacts/InvestorLink';
 import { LOCKUPS } from '../../../data/lockups';
 import {
   formatDateShort,
   formatNumber,
   formatPct,
 } from '../../../utils/formatters';
-import { slugify } from '../../../utils/slug';
 import { buildShareContent } from '../../../utils/shareContent';
 
 const SHARE = buildShareContent({
@@ -37,11 +36,7 @@ export default function LockUpsCard({
     {
       header: 'Person',
       key: 'person',
-      render: (r) => (
-        <Link to={`/investor/${slugify(r.person)}`} className="cb-link">
-          {r.person}
-        </Link>
-      ),
+      render: (r) => <InvestorLink name={r.person} />,
     },
     {
       header: 'Role',

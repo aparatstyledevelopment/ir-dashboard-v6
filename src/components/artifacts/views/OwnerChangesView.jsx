@@ -1,20 +1,15 @@
-import { Link } from 'react-router-dom';
-import ListScreen from '../../../components/screen/ListScreen';
+import ListScreen from '../../screen/ListScreen';
 import { OWNERSHIP_CHANGES } from '../../../data/ownershipChanges';
 import { flagFor } from '../../../utils/countryFlags';
 import { formatSignedInt, formatSignedPct } from '../../../utils/formatters';
-import { slugify } from '../../../utils/slug';
+import InvestorLink from '../InvestorLink';
 
-export default function OwnerChangesListPage() {
+export default function OwnerChangesView() {
   const columns = [
     {
       header: 'Owner',
       key: 'name',
-      render: (r) => (
-        <Link to={`/investor/${slugify(r.name)}`} className="cb-link">
-          {r.name}
-        </Link>
-      ),
+      render: (r) => <InvestorLink name={r.name} />,
     },
     {
       header: 'Country',
@@ -46,15 +41,11 @@ export default function OwnerChangesListPage() {
       width: '96px',
       render: (r) =>
         r.direction === 'increase' ? (
-          <span
-            style={{ color: 'var(--positive)', fontWeight: 600, fontSize: '11px' }}
-          >
+          <span style={{ color: 'var(--positive)', fontWeight: 600, fontSize: '11px' }}>
             ▲ BUY
           </span>
         ) : (
-          <span
-            style={{ color: 'var(--negative)', fontWeight: 600, fontSize: '11px' }}
-          >
+          <span style={{ color: 'var(--negative)', fontWeight: 600, fontSize: '11px' }}>
             ▼ SELL
           </span>
         ),
@@ -63,6 +54,7 @@ export default function OwnerChangesListPage() {
 
   return (
     <ListScreen
+      inArtifact
       title="Owner changes"
       subtitle="Net ownership moves over the past 30 days — 12 holders increased, 8 reduced, net +65k shares."
       searchPlaceholder="Search by owner or country…"

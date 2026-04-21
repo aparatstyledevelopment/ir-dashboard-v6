@@ -1,32 +1,41 @@
 // Conversation state for ALL modules, hoisted to the root layout so it
-// survives navigation between sibling routes. Each module holds an
-// ordered list of sessions, plus an active session id. All chip / chat
-// actions operate on the active session of the active module.
+// survives navigation between sibling routes.
 //
-// Slot shape:
+// Unified (global) store shape:
 //   {
-//     activeSessionId: 's-3',
-//     sessionOrder: ['s-3', 's-2', 's-1'],           // newest first
 //     sessions: {
-//       's-3': {
-//         id, title, createdAt,
+//       [id]: {
+//         id, moduleId, title, createdAt,
 //         messages: [], isTyping: false,
 //         spentChips: Set, attachments: [],
 //       },
 //     },
+//     sessionOrder: [id, id, ...],            // newest first, GLOBAL across modules
+//     activeByModule: {
+//       dashboard:    'id' | null,            // null === staging (no session yet)
+//       shareholders: 'id' | null,
+//       targeting:    'id' | null,
+//     },
 //   }
+//
+// A module is in "staging" when its activeByModule entry is null. In that
+// state the UI shows the collapsed briefing but no session exists. The
+// first write-action (chip, text, catalog, attach) implicitly creates a
+// session tagged with that moduleId, adds it to the global sessionOrder,
+// then applies the action — committing the stage.
 
 import { useCallback, useMemo, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 
 let messageCounter = 0;
 let sessionCounter = 0;
-const nextId = () => `m-${++messageCounter}-${Date.now()}`;
+const nextMessageId = () => `m-${++messageCounter}-${Date.now()}`;
 const nextSessionId = () => `s-${++sessionCounter}-${Date.now()}`;
 
-function emptySession(title = 'New chat') {
+function makeSession(moduleId, title = 'New chat') {
   return {
     id: nextSessionId(),
+    moduleId,
     title,
     createdAt: Date.now(),
     messages: [],
@@ -36,300 +45,380 @@ function emptySession(title = 'New chat') {
   };
 }
 
-function emptySlot() {
-  const s = emptySession();
+// Pure helper: ensure the given module has an active session. Returns a
+// tuple of [nextState, activeSessionId]. If the module is already out of
+// staging, the state is returned unchanged.
+function ensureActive(state, moduleId, titleHint) {
+  const current = state.activeByModule[moduleId];
+  if (current && state.sessions[current]) {
+    return [state, current];
+  }
+  const fresh = makeSession(
+    moduleId,
+    titleHint ? String(titleHint).slice(0, 42) : 'New chat'
+  );
+  return [
+    {
+      ...state,
+      sessions: { ...state.sessions, [fresh.id]: fresh },
+      sessionOrder: [fresh.id, ...state.sessionOrder],
+      activeByModule: { ...state.activeByModule, [moduleId]: fresh.id },
+    },
+    fresh.id,
+  ];
+}
+
+// Pure helper: patch a single session in the state tree.
+function patchSession(state, sessionId, patch) {
+  const s = state.sessions[sessionId];
+  if (!s) return state;
   return {
-    activeSessionId: s.id,
-    sessionOrder: [s.id],
-    sessions: { [s.id]: s },
+    ...state,
+    sessions: {
+      ...state.sessions,
+      [sessionId]: typeof patch === 'function' ? patch(s) : { ...s, ...patch },
+    },
   };
 }
 
 export function useConversations() {
-  const [slots, setSlots] = useState({});
+  const [state, setState] = useState(() => ({
+    sessions: {},
+    sessionOrder: [],
+    activeByModule: {},
+  }));
 
-  const updateSlot = useCallback((moduleId, updater) => {
-    setSlots((prev) => {
-      const current = prev[moduleId] || emptySlot();
-      return { ...prev, [moduleId]: updater(current) };
+  // Global writers that don't depend on any specific module ---------------
+
+  const switchSession = useCallback((id) => {
+    setState((prev) => {
+      const s = prev.sessions[id];
+      if (!s) return prev;
+      return {
+        ...prev,
+        activeByModule: { ...prev.activeByModule, [s.moduleId]: id },
+      };
     });
   }, []);
 
-  return { slots, updateSlot };
+  const deleteSession = useCallback((id) => {
+    setState((prev) => {
+      const s = prev.sessions[id];
+      if (!s) return prev;
+      const nextSessions = { ...prev.sessions };
+      delete nextSessions[id];
+      const nextOrder = prev.sessionOrder.filter((sid) => sid !== id);
+      const nextActive = { ...prev.activeByModule };
+      // If this session was active for its module, drop back to staging.
+      if (nextActive[s.moduleId] === id) {
+        nextActive[s.moduleId] = null;
+      }
+      return {
+        sessions: nextSessions,
+        sessionOrder: nextOrder,
+        activeByModule: nextActive,
+      };
+    });
+  }, []);
+
+  // Put a module back into staging (no active session, show briefing).
+  const goToStaging = useCallback((moduleId) => {
+    setState((prev) => ({
+      ...prev,
+      activeByModule: { ...prev.activeByModule, [moduleId]: null },
+    }));
+  }, []);
+
+  return {
+    state,
+    setState,
+    switchSession,
+    deleteSession,
+    goToStaging,
+  };
 }
 
+// ---------------------------------------------------------------------------
+// Module-scoped API used by page components.
+
 export function useModuleConversation(moduleId) {
-  const { conversations } = useOutletContext();
+  const ctx = useOutletContext();
+  const conversations = ctx?.conversations;
   if (!conversations) {
     throw new Error(
       'useModuleConversation: outlet context missing `conversations`. Did you wrap pages in RootLayout?'
     );
   }
-  const { slots, updateSlot } = conversations;
-  const slot = slots[moduleId] || emptySlot();
-  const session = slot.sessions[slot.activeSessionId] || emptySession();
+  const { state, setState, switchSession, deleteSession, goToStaging } =
+    conversations;
+  const activeId = state.activeByModule[moduleId] || null;
+  const session = activeId ? state.sessions[activeId] : null;
 
-  // Helper: update the active session of the current slot.
-  const updateActiveSession = useCallback(
-    (updater) => {
-      updateSlot(moduleId, (c) => {
-        const cur = c.sessions[c.activeSessionId];
-        const next = updater(cur);
-        return {
-          ...c,
-          sessions: { ...c.sessions, [c.activeSessionId]: next },
-        };
-      });
-    },
-    [moduleId, updateSlot]
-  );
+  // ----- Writers -----
 
   const sendChipQuery = useCallback(
     (chipId, responseType, label) => {
-      updateActiveSession((s) => ({
-        ...s,
-        title: s.title === 'New chat' && label ? label : s.title,
-        spentChips: new Set([...s.spentChips, chipId]),
-        isTyping: true,
-      }));
-      setTimeout(() => {
-        updateActiveSession((s) => ({
+      let committedId;
+      setState((prev) => {
+        const [next, id] = ensureActive(prev, moduleId, label);
+        committedId = id;
+        return patchSession(next, id, (s) => ({
           ...s,
-          isTyping: false,
-          messages: [
-            ...s.messages,
-            { id: nextId(), kind: 'response', responseType, label },
-          ],
+          title: s.title === 'New chat' && label ? label : s.title,
+          spentChips: new Set([...s.spentChips, chipId]),
+          isTyping: true,
         }));
+      });
+      setTimeout(() => {
+        setState((prev) =>
+          patchSession(prev, committedId, (s) => ({
+            ...s,
+            isTyping: false,
+            messages: [
+              ...s.messages,
+              { id: nextMessageId(), kind: 'response', responseType, label },
+            ],
+          }))
+        );
       }, 800);
     },
-    [updateActiveSession]
+    [moduleId, setState]
   );
 
   const sendCatalogQuery = useCallback(
     (catalogId, label) => {
-      updateActiveSession((s) => ({
-        ...s,
-        title: s.title === 'New chat' && label ? label : s.title,
-        spentChips: new Set([...s.spentChips, catalogId]),
-        isTyping: true,
-      }));
-      setTimeout(() => {
-        updateActiveSession((s) => ({
+      let committedId;
+      setState((prev) => {
+        const [next, id] = ensureActive(prev, moduleId, label);
+        committedId = id;
+        return patchSession(next, id, (s) => ({
           ...s,
-          isTyping: false,
-          messages: [
-            ...s.messages,
-            {
-              id: nextId(),
-              kind: 'response',
-              responseType: 'catalog',
-              catalogId,
-              label,
-            },
-          ],
-        }));
-      }, 800);
-    },
-    [updateActiveSession]
-  );
-
-  // Append a batch of response messages without typing simulation.
-  // Used by slash commands like /all to materialize a set of cards at
-  // once. Each item should look like { responseType, ... extraFields }.
-  const sendBulkResponses = useCallback(
-    (items) => {
-      if (!items || items.length === 0) return;
-      updateActiveSession((s) => ({
-        ...s,
-        title:
-          s.title === 'New chat' ? `/all — ${items.length} cards` : s.title,
-        messages: [
-          ...s.messages,
-          ...items.map((item) => ({
-            id: nextId(),
-            kind: 'response',
-            ...item,
-          })),
-        ],
-      }));
-    },
-    [updateActiveSession]
-  );
-
-  const sendTextQuery = useCallback(
-    (text) => {
-      const trimmed = (text || '').trim();
-      updateActiveSession((s) => {
-        const attached = s.attachments || [];
-        if (!trimmed && attached.length === 0) return s;
-        const nextTitle =
-          s.title === 'New chat'
-            ? trimmed.slice(0, 42) || `${attached.length} cards`
-            : s.title;
-        return {
-          ...s,
-          title: nextTitle,
-          messages: [
-            ...s.messages,
-            {
-              id: nextId(),
-              kind: 'user',
-              text: trimmed,
-              attachments: attached.length ? [...attached] : undefined,
-            },
-          ],
+          title: s.title === 'New chat' && label ? label : s.title,
+          spentChips: new Set([...s.spentChips, catalogId]),
           isTyping: true,
-          attachments: [],
-        };
+        }));
       });
       setTimeout(() => {
-        updateActiveSession((s) => {
-          const lastUser = [...s.messages]
-            .reverse()
-            .find((m) => m.kind === 'user');
-          const attached = lastUser?.attachments || [];
-          return {
+        setState((prev) =>
+          patchSession(prev, committedId, (s) => ({
             ...s,
             isTyping: false,
             messages: [
               ...s.messages,
               {
-                id: nextId(),
+                id: nextMessageId(),
                 kind: 'response',
-                responseType: 'generic',
-                query: lastUser?.text || '',
-                attachments: attached.length ? [...attached] : undefined,
+                responseType: 'catalog',
+                catalogId,
+                label,
               },
             ],
-          };
-        });
+          }))
+        );
       }, 800);
     },
-    [updateActiveSession]
+    [moduleId, setState]
+  );
+
+  const sendBulkResponses = useCallback(
+    (items) => {
+      if (!items || items.length === 0) return;
+      setState((prev) => {
+        const [next, id] = ensureActive(prev, moduleId, `/all — ${items.length} cards`);
+        return patchSession(next, id, (s) => ({
+          ...s,
+          title:
+            s.title === 'New chat' ? `/all — ${items.length} cards` : s.title,
+          messages: [
+            ...s.messages,
+            ...items.map((item) => ({
+              id: nextMessageId(),
+              kind: 'response',
+              ...item,
+            })),
+          ],
+        }));
+      });
+    },
+    [moduleId, setState]
+  );
+
+  const sendTextQuery = useCallback(
+    (text) => {
+      const trimmed = (text || '').trim();
+      let committedId;
+      let attachedSnapshot = [];
+      setState((prev) => {
+        // Peek attachments from staged/active session before committing.
+        const existing = prev.activeByModule[moduleId]
+          ? prev.sessions[prev.activeByModule[moduleId]]
+          : null;
+        const current = existing?.attachments || [];
+        if (!trimmed && current.length === 0) return prev;
+
+        const [next, id] = ensureActive(
+          prev,
+          moduleId,
+          trimmed || `${current.length} cards`
+        );
+        committedId = id;
+        // Re-read attachments after ensuring (it could be a fresh session
+        // with zero attachments if we just committed from staging).
+        const freshSession = next.sessions[id];
+        attachedSnapshot = freshSession.attachments || [];
+
+        return patchSession(next, id, (s) => {
+          const nextTitle =
+            s.title === 'New chat'
+              ? trimmed.slice(0, 42) || `${attachedSnapshot.length} cards`
+              : s.title;
+          return {
+            ...s,
+            title: nextTitle,
+            messages: [
+              ...s.messages,
+              {
+                id: nextMessageId(),
+                kind: 'user',
+                text: trimmed,
+                attachments: attachedSnapshot.length
+                  ? [...attachedSnapshot]
+                  : undefined,
+              },
+            ],
+            isTyping: true,
+            attachments: [],
+          };
+        });
+      });
+      if (!committedId) return;
+      setTimeout(() => {
+        setState((prev) =>
+          patchSession(prev, committedId, (s) => {
+            const lastUser = [...s.messages]
+              .reverse()
+              .find((m) => m.kind === 'user');
+            const attached = lastUser?.attachments || [];
+            return {
+              ...s,
+              isTyping: false,
+              messages: [
+                ...s.messages,
+                {
+                  id: nextMessageId(),
+                  kind: 'response',
+                  responseType: 'generic',
+                  query: lastUser?.text || '',
+                  attachments: attached.length ? [...attached] : undefined,
+                },
+              ],
+            };
+          })
+        );
+      }, 800);
+    },
+    [moduleId, setState]
   );
 
   const clearActiveSession = useCallback(() => {
-    updateActiveSession((s) => ({
-      ...s,
-      messages: [],
-      attachments: [],
-      spentChips: new Set(),
-      title: 'New chat',
-    }));
-  }, [updateActiveSession]);
+    // Clearing a session resets its contents back to empty.
+    setState((prev) => {
+      const id = prev.activeByModule[moduleId];
+      if (!id) return prev;
+      return patchSession(prev, id, (s) => ({
+        ...s,
+        messages: [],
+        attachments: [],
+        spentChips: new Set(),
+        title: 'New chat',
+      }));
+    });
+  }, [moduleId, setState]);
 
   const attachCard = useCallback(
     (ref) => {
-      const current = session.attachments;
-      if (current.find((a) => a.id === ref.id)) {
-        return { ok: true, reason: 'already-attached' };
-      }
-      if (current.length >= 5) {
-        return { ok: false, reason: 'limit-reached' };
-      }
-      updateActiveSession((s) => {
-        if (s.attachments.find((a) => a.id === ref.id)) return s;
-        if (s.attachments.length >= 5) return s;
-        return { ...s, attachments: [...s.attachments, ref] };
+      // Staging → commit a session, then attach.
+      let result = { ok: true, reason: 'attached' };
+      setState((prev) => {
+        const [next, id] = ensureActive(prev, moduleId);
+        const s = next.sessions[id];
+        if (s.attachments.find((a) => a.id === ref.id)) {
+          result = { ok: true, reason: 'already-attached' };
+          return next;
+        }
+        if (s.attachments.length >= 5) {
+          result = { ok: false, reason: 'limit-reached' };
+          return next;
+        }
+        return patchSession(next, id, (ss) => ({
+          ...ss,
+          attachments: [...ss.attachments, ref],
+        }));
       });
-      return { ok: true, reason: 'attached' };
+      return result;
     },
-    [session.attachments, updateActiveSession]
+    [moduleId, setState]
   );
 
   const removeAttachment = useCallback(
     (refId) => {
-      updateActiveSession((s) => ({
-        ...s,
-        attachments: s.attachments.filter((a) => a.id !== refId),
-      }));
+      setState((prev) => {
+        const id = prev.activeByModule[moduleId];
+        if (!id) return prev;
+        return patchSession(prev, id, (s) => ({
+          ...s,
+          attachments: s.attachments.filter((a) => a.id !== refId),
+        }));
+      });
     },
-    [updateActiveSession]
+    [moduleId, setState]
   );
 
   const isAttached = useCallback(
-    (refId) => session.attachments.some((a) => a.id === refId),
-    [session.attachments]
+    (refId) => {
+      if (!session) return false;
+      return session.attachments.some((a) => a.id === refId);
+    },
+    [session]
   );
 
   const isChipSpent = useCallback(
-    (chipId) => session.spentChips.has(chipId),
-    [session.spentChips]
+    (chipId) => {
+      if (!session) return false;
+      return session.spentChips.has(chipId);
+    },
+    [session]
   );
 
-  // ----- Session management API -----
-
-  const sessionList = useMemo(
-    () =>
-      slot.sessionOrder
-        .map((id) => slot.sessions[id])
-        .filter(Boolean)
-        .map((s) => ({
-          id: s.id,
-          title: s.title,
-          createdAt: s.createdAt,
-          messageCount: s.messages.length,
-          isActive: s.id === slot.activeSessionId,
-        })),
-    [slot.sessionOrder, slot.sessions, slot.activeSessionId]
-  );
-
+  // `createSession` is called by the sidebar's "New chat" button — per
+  // product spec, this puts the module back into staging rather than
+  // eagerly creating an empty session.
   const createSession = useCallback(() => {
-    const s = emptySession();
-    updateSlot(moduleId, (c) => ({
-      ...c,
-      activeSessionId: s.id,
-      sessionOrder: [s.id, ...c.sessionOrder],
-      sessions: { ...c.sessions, [s.id]: s },
-    }));
-    return s.id;
-  }, [moduleId, updateSlot]);
+    goToStaging(moduleId);
+  }, [moduleId, goToStaging]);
 
-  const switchSession = useCallback(
-    (id) => {
-      updateSlot(moduleId, (c) =>
-        c.sessions[id] ? { ...c, activeSessionId: id } : c
-      );
-    },
-    [moduleId, updateSlot]
-  );
-
-  const deleteSession = useCallback(
-    (id) => {
-      updateSlot(moduleId, (c) => {
-        if (!c.sessions[id]) return c;
-        const nextSessions = { ...c.sessions };
-        delete nextSessions[id];
-        const nextOrder = c.sessionOrder.filter((sid) => sid !== id);
-        // Ensure at least one session exists.
-        if (nextOrder.length === 0) {
-          const fresh = emptySession();
-          return {
-            activeSessionId: fresh.id,
-            sessionOrder: [fresh.id],
-            sessions: { [fresh.id]: fresh },
-          };
-        }
-        const nextActive =
-          c.activeSessionId === id ? nextOrder[0] : c.activeSessionId;
-        return {
-          ...c,
-          activeSessionId: nextActive,
-          sessionOrder: nextOrder,
-          sessions: nextSessions,
-        };
-      });
-    },
-    [moduleId, updateSlot]
-  );
+  // Session list scoped to this module (used as a fallback in a few
+  // places; the sidebar now uses the GLOBAL list).
+  const sessionList = useMemo(() => {
+    return state.sessionOrder
+      .map((id) => state.sessions[id])
+      .filter((s) => s && s.moduleId === moduleId)
+      .map((s) => ({
+        id: s.id,
+        title: s.title,
+        createdAt: s.createdAt,
+        messageCount: s.messages.length,
+        isActive: s.id === activeId,
+      }));
+  }, [state.sessionOrder, state.sessions, activeId, moduleId]);
 
   return {
-    // Active session data
-    messages: session.messages,
-    isTyping: session.isTyping,
-    attachments: session.attachments,
-    // Active session actions
+    // Active session data (empty fields when in staging)
+    messages: session?.messages || [],
+    isTyping: session?.isTyping || false,
+    attachments: session?.attachments || [],
+    isStaging: !session,
+    // Writers
     sendChipQuery,
     sendCatalogQuery,
     sendTextQuery,
@@ -341,8 +430,8 @@ export function useModuleConversation(moduleId) {
     isAttached,
     // Session management
     sessionList,
-    activeSessionId: slot.activeSessionId,
-    createSession,
+    activeSessionId: activeId,
+    createSession, // → staging
     switchSession,
     deleteSession,
   };

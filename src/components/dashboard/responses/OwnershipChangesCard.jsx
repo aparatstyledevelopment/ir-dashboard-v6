@@ -1,10 +1,9 @@
-import { Link } from 'react-router-dom';
 import ResponseCard from './ResponseCard';
 import DataTable from '../../ui/DataTable';
+import InvestorLink from '../../artifacts/InvestorLink';
 import { OWNERSHIP_CHANGES } from '../../../data/ownershipChanges';
 import { flagFor } from '../../../utils/countryFlags';
 import { formatSignedInt, formatSignedPct } from '../../../utils/formatters';
-import { slugify } from '../../../utils/slug';
 import { buildShareContent } from '../../../utils/shareContent';
 
 const SHARE = buildShareContent({
@@ -33,11 +32,7 @@ export default function OwnershipChangesCard({
     {
       header: 'Owner',
       key: 'name',
-      render: (r) => (
-        <Link to={`/investor/${slugify(r.name)}`} className="cb-link">
-          {r.name}
-        </Link>
-      ),
+      render: (r) => <InvestorLink name={r.name} />,
     },
     {
       header: 'Country',

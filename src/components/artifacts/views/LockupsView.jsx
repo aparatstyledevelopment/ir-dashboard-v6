@@ -1,19 +1,14 @@
-import { Link } from 'react-router-dom';
-import ListScreen from '../../../components/screen/ListScreen';
+import ListScreen from '../../screen/ListScreen';
 import { LOCKUPS, LOCKUP_SUMMARY } from '../../../data/lockups';
 import { formatDateShort, formatNumber, formatPct } from '../../../utils/formatters';
-import { slugify } from '../../../utils/slug';
+import InvestorLink from '../InvestorLink';
 
-export default function LockupsListPage() {
+export default function LockupsView() {
   const columns = [
     {
       header: 'Person',
       key: 'person',
-      render: (r) => (
-        <Link to={`/investor/${slugify(r.person)}`} className="cb-link">
-          {r.person}
-        </Link>
-      ),
+      render: (r) => <InvestorLink name={r.person} />,
     },
     {
       header: 'Role',
@@ -54,10 +49,9 @@ export default function LockupsListPage() {
 
   return (
     <ListScreen
+      inArtifact
       title="Lock-ups"
       subtitle={`${LOCKUP_SUMMARY.activeAgreements} active agreements · ${formatNumber(LOCKUP_SUMMARY.totalShares)} shares locked (${LOCKUP_SUMMARY.pctOfCapital}% of capital) · next expiry ${formatDateShort(LOCKUP_SUMMARY.nextExpiryDate)}`}
-      backTo="/shareholders"
-      backLabel="Back to Shareholders"
       searchPlaceholder="Search by person, role, or type…"
       searchFields={['person', 'role', 'type']}
       columns={columns}

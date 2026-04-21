@@ -1,8 +1,6 @@
-import { Link } from 'react-router-dom';
-import ListScreen from '../../../components/screen/ListScreen';
+import ListScreen from '../../screen/ListScreen';
 import { PEER_OVERLAP } from '../../../data/targets';
 
-// Grid cell styling
 const cellBase = {
   padding: '9px 10px',
   borderBottom: '1px solid var(--border)',
@@ -11,9 +9,10 @@ const cellBase = {
   textAlign: 'center',
 };
 
-export default function CompareOwnersListPage() {
+export default function CompareOwnersView() {
   return (
     <ListScreen
+      inArtifact
       title="Compare owners"
       subtitle="Peer overlap matrix — which funds own which peers, including INTEG B. ✓ marks ownership."
       searchFields={[]}
@@ -55,9 +54,7 @@ export default function CompareOwnersListPage() {
                   style={{
                     ...cellBase,
                     color:
-                      p === 'INTEG B'
-                        ? 'var(--text-primary)'
-                        : 'var(--text-tertiary)',
+                      p === 'INTEG B' ? 'var(--text-primary)' : 'var(--text-tertiary)',
                     fontWeight: p === 'INTEG B' ? 600 : 500,
                     fontSize: '11px',
                     padding: '10px 14px',
@@ -78,9 +75,7 @@ export default function CompareOwnersListPage() {
                     fontWeight: 500,
                     padding: '11px 14px',
                     borderBottom:
-                      ri === PEER_OVERLAP.funds.length - 1
-                        ? 'none'
-                        : '1px solid var(--border)',
+                      ri === PEER_OVERLAP.funds.length - 1 ? 'none' : '1px solid var(--border)',
                   }}
                 >
                   {f.name}
@@ -115,9 +110,8 @@ export default function CompareOwnersListPage() {
           letterSpacing: '-0.01em',
         }}
       >
-        Rows are institutional holders · columns are the 5 closest medtech
-        peers including us · the 4 non-INTEG-B columns surface "peer gap"
-        candidates we don't yet hold.
+        Rows are institutional holders · columns are the 5 closest medtech peers including
+        us · the 4 non-INTEG-B columns surface "peer gap" candidates we don't yet hold.
       </p>
     </ListScreen>
   );

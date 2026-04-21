@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom';
 import ResponseCard from './ResponseCard';
 import DataTable from '../../ui/DataTable';
 import BarChart from '../../ui/BarChart';
@@ -7,10 +6,10 @@ import ProgressRing from '../../ui/ProgressRing';
 import StackedBar from '../../ui/StackedBar';
 import BubbleCluster from '../../ui/BubbleCluster';
 import WaterfallChart from '../../ui/WaterfallChart';
+import InvestorLink from '../../artifacts/InvestorLink';
 import { getCatalogEntry } from '../../../data/responseCatalog';
 import { shareContentFromCatalogEntry } from '../../../utils/shareContent';
 import { flagFor } from '../../../utils/countryFlags';
-import { slugify } from '../../../utils/slug';
 import {
   formatPct,
   formatSignedInt,
@@ -43,11 +42,7 @@ function buildColumns(specCols, mode) {
   return specCols.map((col) => {
     let render;
     if (col.key === 'name' && mode && mode.endsWith('with-link')) {
-      render = (r) => (
-        <Link to={`/investor/${slugify(r.name)}`} className="cb-link">
-          {r.name}
-        </Link>
-      );
+      render = (r) => <InvestorLink name={r.name} />;
     } else if (col.key === 'country') {
       render = (r) => (
         <span style={{ fontSize: '13px' }} title={r.country}>

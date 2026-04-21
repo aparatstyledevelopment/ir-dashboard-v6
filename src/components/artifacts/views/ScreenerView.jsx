@@ -1,4 +1,4 @@
-import ListScreen from '../../../components/screen/ListScreen';
+import ListScreen from '../../screen/ListScreen';
 import { TARGETS } from '../../../data/targets';
 import { flagFor } from '../../../utils/countryFlags';
 
@@ -8,19 +8,13 @@ const PRIORITY_COLOR = {
   Cold: 'var(--text-tertiary)',
 };
 
-export default function ScreenerListPage() {
+export default function ScreenerView() {
   const columns = [
-    {
-      header: 'Target',
-      key: 'name',
-      weight: 500,
-    },
+    { header: 'Target', key: 'name', weight: 500 },
     {
       header: 'Firm',
       key: 'firm',
-      render: (r) => (
-        <span style={{ color: 'var(--text-secondary)' }}>{r.firm}</span>
-      ),
+      render: (r) => <span style={{ color: 'var(--text-secondary)' }}>{r.firm}</span>,
     },
     {
       header: 'Type',
@@ -68,10 +62,9 @@ export default function ScreenerListPage() {
 
   return (
     <ListScreen
+      inArtifact
       title="Targeting screener"
       subtitle={`${TARGETS.length} candidate investors ranked by AI fit score · ${TARGETS.filter((t) => t.priority === 'Hot').length} hot · ${TARGETS.filter((t) => t.priority === 'Warm').length} warm · ${TARGETS.filter((t) => t.priority === 'Cold').length} cold`}
-      backTo="/targeting"
-      backLabel="Back to Targeting"
       searchPlaceholder="Search by name, firm, country, or type…"
       searchFields={['name', 'firm', 'type', 'country', 'priority']}
       columns={columns}

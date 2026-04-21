@@ -1,4 +1,4 @@
-import { useOutletContext, useNavigate } from 'react-router-dom';
+import { useOutletContext } from 'react-router-dom';
 import {
   Users,
   ArrowDownUp,
@@ -54,8 +54,7 @@ function getMessageTitle(message) {
 }
 
 export default function DashboardPage() {
-  const { showToast } = useOutletContext();
-  const navigate = useNavigate();
+  const { showToast, artifacts } = useOutletContext();
   const {
     messages,
     isTyping,
@@ -101,7 +100,6 @@ export default function DashboardPage() {
     showToast,
     onReport: handleReport,
   });
-  // DASHBOARD_L1_TYPES still imported for future use.
   void DASHBOARD_L1_TYPES;
 
   const handleChipSelect = (chip) => {
@@ -121,15 +119,14 @@ export default function DashboardPage() {
     sendTextQuery(chip.label || String(chip));
   };
 
-  const handleSourceOpen = (moduleName) => {
-    showToast(
-      `In the full platform, this opens the ${moduleName} data view. Coming soon.`
-    );
-  };
-
   const sharedProps = {
     onFollowUp: handleFollowUp,
-    onSourceOpen: handleSourceOpen,
+    onSourceOpen: (moduleName, message) => {
+      artifacts.openArtifact({
+        type: 'evidence',
+        payload: { message, sourceModule: moduleName },
+      });
+    },
     onShowToast: showToast,
     isChipSpent,
   };
@@ -146,20 +143,20 @@ export default function DashboardPage() {
     const ref = { id: message.id, title: getMessageTitle(message) };
     const cardProps = {
       ...sharedProps,
+      message,
+      onSourceOpen: (moduleName) =>
+        artifacts.openArtifact({
+          type: 'evidence',
+          payload: { message, sourceModule: moduleName },
+        }),
       onAttach: attachable ? () => handleAttach(ref) : undefined,
       isAttached: attachable ? isAttached(message.id) : false,
     };
     return renderAnyResponse(message, cardProps);
   };
 
-  const navFromDashboard = (to) =>
-    navigate(to, {
-      state: {
-        contextModule: 'dashboard',
-        backTo: '/',
-        backLabel: 'Back to Dashboard',
-      },
-    });
+  const openScreen = (screen) =>
+    artifacts.openArtifact({ type: 'screen', payload: { screen } });
 
   const quickActions = [
     {
@@ -167,35 +164,35 @@ export default function DashboardPage() {
       icon: Users,
       label: 'All shareholders',
       sub: '3,498 identified holders',
-      onClick: () => navFromDashboard('/shareholders/owners'),
+      onClick: () => openScreen('shareholders-owners'),
     },
     {
       id: 'qa.dash.contacts',
       icon: Mail,
       label: 'All contacts',
       sub: 'IR CRM database',
-      onClick: () => navFromDashboard('/crm/people'),
+      onClick: () => openScreen('crm-people'),
     },
     {
       id: 'qa.dash.transactions',
       icon: ArrowDownUp,
       label: 'Daily transactions',
       sub: 'Register flow (T+2)',
-      onClick: () => navFromDashboard('/shareholders/daily-transactions'),
+      onClick: () => openScreen('shareholders-daily-transactions'),
     },
     {
       id: 'qa.dash.lockups',
       icon: Lock,
       label: 'Lock-up agreements',
       sub: 'Active lock-ups & expiry',
-      onClick: () => navFromDashboard('/shareholders/lockups'),
+      onClick: () => openScreen('shareholders-lockups'),
     },
     {
       id: 'qa.dash.targets',
       icon: Target,
       label: 'Targeting screener',
       sub: 'AI-prioritized prospects',
-      onClick: () => navFromDashboard('/targeting/screener'),
+      onClick: () => openScreen('targeting-screener'),
     },
   ];
 

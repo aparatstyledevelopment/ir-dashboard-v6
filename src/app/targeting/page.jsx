@@ -1,4 +1,4 @@
-import { useOutletContext, useNavigate } from 'react-router-dom';
+import { useOutletContext } from 'react-router-dom';
 import { Target, GitCompare } from 'lucide-react';
 import { useModuleConversation } from '../../hooks/useConversations';
 import { createChatSubmitHandler } from '../../utils/slashCommands';
@@ -45,8 +45,7 @@ function getMessageTitle(message) {
 }
 
 export default function TargetingPage() {
-  const { showToast } = useOutletContext();
-  const navigate = useNavigate();
+  const { showToast, artifacts } = useOutletContext();
   const {
     messages,
     isTyping,
@@ -110,12 +109,6 @@ export default function TargetingPage() {
     sendTextQuery(chip.label || String(chip));
   };
 
-  const handleSourceOpen = (moduleName) => {
-    showToast(
-      `In the full platform, this opens the ${moduleName} data view. Coming soon.`
-    );
-  };
-
   const handleAttach = (ref) => {
     const result = attachCard(ref);
     if (!result.ok && result.reason === 'limit-reached') {
@@ -125,7 +118,6 @@ export default function TargetingPage() {
 
   const sharedProps = {
     onFollowUp: handleFollowUp,
-    onSourceOpen: handleSourceOpen,
     onShowToast: showToast,
     isChipSpent,
   };
@@ -135,20 +127,19 @@ export default function TargetingPage() {
     const ref = { id: message.id, title: getMessageTitle(message) };
     const cardProps = {
       ...sharedProps,
+      onSourceOpen: (moduleName) =>
+        artifacts.openArtifact({
+          type: 'evidence',
+          payload: { message, sourceModule: moduleName },
+        }),
       onAttach: attachable ? () => handleAttach(ref) : undefined,
       isAttached: attachable ? isAttached(message.id) : false,
     };
     return renderAnyResponse(message, cardProps);
   };
 
-  const navFromTargeting = (to) =>
-    navigate(to, {
-      state: {
-        contextModule: 'targeting',
-        backTo: '/targeting',
-        backLabel: 'Back to Targeting',
-      },
-    });
+  const openScreen = (screen) =>
+    artifacts.openArtifact({ type: 'screen', payload: { screen } });
 
   const quickActions = [
     {
@@ -156,14 +147,14 @@ export default function TargetingPage() {
       icon: Target,
       label: 'Target screener',
       sub: 'All AI-prioritized candidates',
-      onClick: () => navFromTargeting('/targeting/screener'),
+      onClick: () => openScreen('targeting-screener'),
     },
     {
       id: 'qa.tgt.compare',
       icon: GitCompare,
       label: 'Compare owners',
       sub: 'Peer holder overlap matrix',
-      onClick: () => navFromTargeting('/targeting/compare-owners'),
+      onClick: () => openScreen('targeting-compare-owners'),
     },
   ];
 
