@@ -144,6 +144,14 @@ export default function Sidebar({ conversations }) {
               to={to}
               title={m.label}
               className={'cb-sidebar-link' + (isActive ? ' is-active' : '')}
+              onClick={() => {
+                // Clicking a module always lands the user in a fresh
+                // (staging) state. To resume an earlier chat they can
+                // pick it from the recent-chats list below.
+                if (conversations && MODULE_ROUTE[m.id]) {
+                  conversations.goToStaging(m.id);
+                }
+              }}
             >
               <Icon size={15} strokeWidth={1.75} />
               <span className="cb-sidebar-label">{m.label}</span>

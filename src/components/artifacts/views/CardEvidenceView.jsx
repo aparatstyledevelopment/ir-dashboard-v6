@@ -1,17 +1,29 @@
-import { ExternalLink } from 'lucide-react';
+import { Database, Code2 } from 'lucide-react';
 import { resolveShareFromMessage } from '../../../utils/resolveShare';
 import DataTable from '../../ui/DataTable';
 
-// Renders the source-data evidence for a given response card. We lean on
-// the existing shareContent pipeline because it already provides a
-// consistent {title, narrative, columns, rows, text, csv} view of every
-// card in the system.
+function cellValue(row, col) {
+  if (col.key) return row[col.key];
+  if (typeof col.value === 'function') return col.value(row);
+  return '';
+}
+
+function renderCell(row, col) {
+  const raw = cellValue(row, col);
+  if (typeof col.format === 'function') {
+    return col.format(raw, row);
+  }
+  if (raw === null || raw === undefined) return '';
+  return raw;
+}
+
+// Evidence view for any response card: shows the (pseudo-)query that
+// produced the data and the raw table the card was derived from.
 export default function CardEvidenceView({ message, sourceModule }) {
   const share = message ? resolveShareFromMessage(message) : null;
   const title = share?.title || 'Source data';
 
-  const hasTable =
-    share?.columns && share.rows && share.columns.length > 0 && share.rows.length > 0;
+  const hasTable = share?.columns && share?.rows && share.rows.length > 0;
 
   const tableColumns = hasTable
     ? share.columns.map((c) => ({
@@ -19,7 +31,7 @@ export default function CardEvidenceView({ message, sourceModule }) {
         key: c.key,
         align: c.align,
         nowrap: c.nowrap,
-        render: (row) => row[c.key],
+        render: (row) => renderCell(row, c),
       }))
     : [];
 
@@ -29,7 +41,7 @@ export default function CardEvidenceView({ message, sourceModule }) {
         <h1>{title}</h1>
         {sourceModule && (
           <p>
-            Source: <strong style={{ color: 'var(--text-secondary)' }}>{sourceModule}</strong>
+            Source data view · <strong style={{ color: 'var(--text-secondary)' }}>{sourceModule}</strong>
           </p>
         )}
       </header>
@@ -40,7 +52,7 @@ export default function CardEvidenceView({ message, sourceModule }) {
             fontSize: '12.5px',
             color: 'var(--text-secondary)',
             lineHeight: 1.65,
-            margin: '0 0 14px',
+            margin: '0 0 12px',
             letterSpacing: '-0.01em',
           }}
         >
@@ -48,50 +60,36 @@ export default function CardEvidenceView({ message, sourceModule }) {
         </p>
       )}
 
-      {hasTable ? (
-        <div style={{ marginTop: '2px' }}>
-          <DataTable columns={tableColumns} rows={share.rows} />
-        </div>
-      ) : share?.text ? (
-        <pre
-          style={{
-            whiteSpace: 'pre-wrap',
-            fontFamily: 'inherit',
-            fontSize: '12.5px',
-            color: 'var(--text-secondary)',
-            background: 'var(--bar-track)',
-            border: '1px solid var(--border)',
-            borderRadius: '4px',
-            padding: '12px 14px',
-            margin: 0,
-            letterSpacing: '-0.01em',
-            lineHeight: 1.55,
-          }}
-        >
-          {share.text}
-        </pre>
-      ) : (
-        <div className="cb-screen-empty">
-          No structured source data is available for this card.
-        </div>
+      {share?.sourceQuery && (
+        <section className="cb-evidence-section">
+          <div className="cb-evidence-section-head">
+            <Code2 size={12} strokeWidth={1.75} />
+            <span>Query</span>
+          </div>
+          <pre className="cb-evidence-query">{share.sourceQuery}</pre>
+        </section>
       )}
 
-      {sourceModule && (
-        <p
-          style={{
-            marginTop: '14px',
-            fontSize: '11px',
-            color: 'var(--text-tertiary)',
-            letterSpacing: '-0.01em',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '6px',
-          }}
-        >
-          <ExternalLink size={11} strokeWidth={1.75} />
-          In the full platform, this opens the {sourceModule} data view.
-        </p>
-      )}
+      <section className="cb-evidence-section">
+        <div className="cb-evidence-section-head">
+          <Database size={12} strokeWidth={1.75} />
+          <span>Response</span>
+          {hasTable && (
+            <span className="cb-evidence-section-count">
+              {share.rows.length} row{share.rows.length === 1 ? '' : 's'}
+            </span>
+          )}
+        </div>
+        {hasTable ? (
+          <DataTable columns={tableColumns} rows={share.rows} />
+        ) : share?.text ? (
+          <pre className="cb-evidence-query">{share.text}</pre>
+        ) : (
+          <div className="cb-screen-empty">
+            No structured source data is available for this card.
+          </div>
+        )}
+      </section>
     </div>
   );
 }

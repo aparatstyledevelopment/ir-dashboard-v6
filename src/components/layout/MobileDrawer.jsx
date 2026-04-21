@@ -196,7 +196,14 @@ export default function MobileDrawer({ open, onClose, conversations }) {
                 key={m.id}
                 to={to}
                 end={m.id === 'dashboard'}
-                onClick={onClose}
+                onClick={() => {
+                  // Clicking a module always lands in a fresh (staging)
+                  // state — recent chats can be resumed from the list.
+                  if (conversations && MODULE_ROUTE[m.id]) {
+                    conversations.goToStaging(m.id);
+                  }
+                  onClose?.();
+                }}
                 style={({ isActive }) => ({
                   display: 'flex',
                   alignItems: 'center',
