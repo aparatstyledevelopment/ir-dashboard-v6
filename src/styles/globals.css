@@ -113,21 +113,28 @@ textarea {
   animation: toastIn 220ms ease-out both;
 }
 
-/* Custom thin scrollbar for conversation area. scrollbar-gutter is set
- * to `stable both-edges` so the 6px gutter is reserved symmetrically,
- * keeping content centered within the scroll container. .cb-chat-overlay
- * below mirrors the same 6px reservation on both sides so the input
- * pill lines up exactly with the conversation content above. */
-.conversation-scroll::-webkit-scrollbar {
-  width: 6px;
+/* Global thin scrollbar — rectangular, light, narrow. Applied to all
+ * scrollable areas via *, then conversation-scroll adds gutter. */
+*::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
 }
-.conversation-scroll::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 3px;
+*::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.12);
+  border-radius: 0;
 }
-.conversation-scroll::-webkit-scrollbar-track {
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.22);
+}
+*::-webkit-scrollbar-track {
   background: transparent;
 }
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.12) transparent;
+}
+
 .conversation-scroll {
   scrollbar-gutter: stable both-edges;
 }
@@ -1699,8 +1706,8 @@ textarea {
  * and is hidden where the chat box sits. */
 .cb-chat-overlay {
   position: absolute;
-  left: 6px;
-  right: 6px; /* match the symmetric scrollbar-gutter on the conversation */
+  left: 4px;
+  right: 4px;
   bottom: 0;
   background: var(--bg);
   /* No padding-top on purpose. The chat box pill sits flush against the
