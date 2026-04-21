@@ -1624,14 +1624,14 @@ textarea {
 /* Pane variant of the list screen inner padding (tighter top so the close
  * button doesn't overlap the title). */
 .cb-screen-inner--pane {
-  padding: 44px 20px 24px;
+  padding: 52px 20px 24px;
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 @media (max-width: 639px) {
   .cb-screen-inner--pane {
-    padding: 44px 14px 24px;
+    padding: 52px 14px 24px;
   }
 }
 
