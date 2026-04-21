@@ -142,21 +142,7 @@ export default function Sidebar({
           </div>
           {populated.length === 0 ? (
             <div className="cb-sidebar-chats-empty">
-              <MessageSquare
-                size={16}
-                strokeWidth={1.5}
-                style={{ color: 'var(--text-tertiary)', margin: '0 auto 6px' }}
-              />
-              <div>No recent chats yet.</div>
-              <div
-                style={{
-                  color: 'var(--text-tertiary)',
-                  marginTop: '2px',
-                  fontSize: '10px',
-                }}
-              >
-                Ask something to start.
-              </div>
+              No recent chats yet. Ask something to start.
             </div>
           ) : (
             <div className="cb-sidebar-chat-list">

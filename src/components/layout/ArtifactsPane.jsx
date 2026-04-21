@@ -64,6 +64,20 @@ export default function ArtifactsPane({ artifacts }) {
     return () => window.removeEventListener('keydown', onKey);
   }, [item, closeArtifact]);
 
+  // Mobile: push a history entry when an artifact opens so the browser
+  // back button closes the pane instead of navigating away.
+  useEffect(() => {
+    if (!isMobile || !item) return undefined;
+    window.history.pushState({ artifact: true }, '');
+    const onPopState = () => {
+      closeArtifact();
+    };
+    window.addEventListener('popstate', onPopState);
+    return () => {
+      window.removeEventListener('popstate', onPopState);
+    };
+  }, [isMobile, item, closeArtifact]);
+
   useEffect(() => {
     if (!dragging) return undefined;
     const onMove = (e) => {

@@ -138,26 +138,25 @@ export default function ConversationShell({
           flex: 1,
           minHeight: 0,
           overflowY: 'auto',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
           padding: '24px 16px',
         }}
       >
-        <div
-          style={{
-            width: '100%',
-            maxWidth: '720px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '18px',
-          }}
-        >
-          {briefing}
-          {chips}
-          {chatInputSlot && (
-            <div className="cb-empty-chat-slot">{chatInputSlot}</div>
-          )}
+        <div className="cb-empty-center">
+          <div
+            style={{
+              width: '100%',
+              maxWidth: '720px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '18px',
+            }}
+          >
+            {briefing}
+            {chips}
+            {chatInputSlot && (
+              <div className="cb-empty-chat-slot">{chatInputSlot}</div>
+            )}
+          </div>
         </div>
       </div>
     );
