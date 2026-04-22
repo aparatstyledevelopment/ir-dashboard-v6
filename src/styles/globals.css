@@ -2147,7 +2147,6 @@ textarea {
 .cb-report-generating {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
   padding: 10px 14px;
   background: var(--bar-track);
   border-radius: 14px;
@@ -2156,14 +2155,6 @@ textarea {
   letter-spacing: -0.01em;
   line-height: 1.5;
   max-width: 100%;
-}
-.cb-report-generating-spinner {
-  color: var(--text-secondary);
-  flex-shrink: 0;
-  animation: cbReportSpin 1s linear infinite;
-}
-@keyframes cbReportSpin {
-  to { transform: rotate(360deg); }
 }
 
 /* Document tile (attached report). Modeled on the Claude chat
