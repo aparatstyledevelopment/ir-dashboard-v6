@@ -85,7 +85,12 @@ export function renderAnyResponse(message, sharedProps) {
     return <ReportGeneratingCard reportId={message.reportId} />;
   }
   if (message.responseType === 'report-ready') {
-    return <ReportReadyCard reportId={message.reportId} />;
+    return (
+      <ReportReadyCard
+        reportId={message.reportId}
+        onFollowUp={sharedProps?.onFollowUp}
+      />
+    );
   }
   if (message.responseType === 'generic') {
     return (

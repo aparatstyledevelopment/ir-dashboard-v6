@@ -1,6 +1,7 @@
 import { Database, Code2 } from 'lucide-react';
 import { resolveShareFromMessage } from '../../../utils/resolveShare';
 import DataTable from '../../ui/DataTable';
+import SqlCode from '../../ui/SqlCode';
 
 function cellValue(row, col) {
   if (col.key) return row[col.key];
@@ -68,7 +69,7 @@ export default function CardEvidenceView({ message, sourceModule }) {
             <div className="cb-evidence-desc">{share.sourceDescription}</div>
           )}
           {share.sourceQuery && (
-            <pre className="cb-evidence-query">{share.sourceQuery}</pre>
+            <SqlCode code={share.sourceQuery} className="cb-evidence-query" />
           )}
         </section>
       )}

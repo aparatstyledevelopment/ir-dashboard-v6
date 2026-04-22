@@ -8,7 +8,14 @@
 //   valueFormatter: (v) => string used in legend
 //   highlightKey: optional key to bold in legend
 
-const GRAY_SCALE = ['#111111', '#3B3B3B', '#666666', '#8E8E8E', '#B4B4B4', '#D6D6D6'];
+const CHART_PALETTE = [
+  'var(--chart-1)',
+  'var(--chart-2)',
+  'var(--chart-3)',
+  'var(--chart-4)',
+  'var(--chart-5)',
+  'var(--chart-6)',
+];
 
 export default function DonutChart({
   data,
@@ -29,7 +36,7 @@ export default function DonutChart({
   const segments = data.map((d, i) => {
     const portion = d.value / total;
     const len = portion * circumference;
-    const color = d.color || GRAY_SCALE[i % GRAY_SCALE.length];
+    const color = d.color || CHART_PALETTE[i % CHART_PALETTE.length];
     const el = (
       <circle
         key={d.key || i}
@@ -86,7 +93,7 @@ export default function DonutChart({
               <div
                 className="tabular"
                 style={{
-                  fontSize: '20px',
+                  fontSize: '14px',
                   fontWeight: 600,
                   color: 'var(--text-primary)',
                   letterSpacing: '-0.02em',
@@ -99,9 +106,9 @@ export default function DonutChart({
             {centerLabel && (
               <div
                 style={{
-                  fontSize: '10px',
+                  fontSize: '8.5px',
                   color: 'var(--text-tertiary)',
-                  marginTop: '4px',
+                  marginTop: '3px',
                   letterSpacing: '0.04em',
                   textTransform: 'uppercase',
                 }}

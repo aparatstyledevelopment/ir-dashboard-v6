@@ -84,16 +84,27 @@ function QuickActionsDialog({ moduleId, anchorRect, onItemClick, onClose }) {
 
   if (!config || !anchorRect) return null;
 
+  // The dialog is portaled to body, which carries the interface-size
+  // `zoom` factor. getBoundingClientRect returns coordinates in the
+  // zoomed (rendered) viewport space, but CSS `left`/`top` applied to
+  // an element inside a zoomed container are multiplied by the zoom.
+  // Divide the anchor rect and window dimensions by the zoom factor so
+  // the dialog lands where we actually want it.
+  const zoom =
+    parseFloat(getComputedStyle(document.body).zoom) || 1;
+  const anchorLeft = anchorRect.left / zoom;
+  const anchorRight = anchorRect.right / zoom;
+  const anchorTop = anchorRect.top / zoom;
   const DIALOG_W = 240;
   const GAP = 20;
-  const vw = window.innerWidth;
-  const vh = window.innerHeight;
-  let left = anchorRect.right + GAP;
+  const vw = window.innerWidth / zoom;
+  const vh = window.innerHeight / zoom;
+  let left = anchorRight + GAP;
   if (left + DIALOG_W > vw - 8) {
     // Fall back to opening to the left of the sidebar if there's not room.
-    left = Math.max(8, anchorRect.left - DIALOG_W - GAP);
+    left = Math.max(8, anchorLeft - DIALOG_W - GAP);
   }
-  let top = anchorRect.top - 4;
+  let top = anchorTop - 4;
   // Dialog height is variable; clamp to viewport.
   const estHeight = 60 + config.items.length * 48;
   if (top + estHeight > vh - 8) {
