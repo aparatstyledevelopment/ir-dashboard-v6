@@ -2,8 +2,6 @@ import BriefingCard from '../shared/BriefingCard';
 import DonutChart from '../ui/DonutChart';
 import BarChart from '../ui/BarChart';
 import Sparkline from '../ui/Sparkline';
-import StackedBar from '../ui/StackedBar';
-import ProgressRing from '../ui/ProgressRing';
 import { dayName, formatPct } from '../../utils/formatters';
 
 const PRICE_HISTORY = [14.80, 15.10, 14.95, 15.30, 15.55, 15.38, 15.60, 15.85, 15.70, 16.05, 16.16];
@@ -44,71 +42,17 @@ export default function MorningBriefing() {
   const day = dayName(new Date());
 
   const teaser = (
-    <>
-      <p style={{ margin: '0 0 16px' }}>
-        <span className="cb-strong">INTEG B</span>{' '}
-        <span className="cb-pos">▲ 5.07%</span> at{' '}
-        <span className="cb-num">16.16 SEK</span>. Owners:{' '}
-        <span className="cb-num">3,498</span>{' '}
-        <span className="cb-pos">(+124 YoY)</span>. Foreign{' '}
-        <span className="cb-num">20.08%</span>{' '}
-        <span className="cb-neg">(−1.3pp)</span>. Short{' '}
-        <span className="cb-num">2.1%</span>. Q1 2026 earnings expected in{' '}
-        <span className="cb-strong">~3 weeks</span>.
-      </p>
-      <div className="cb-briefing-charts">
-        <div className="cb-briefing-chart">
-          <div className="cb-briefing-chart-title">Price (30d)</div>
-          <Sparkline
-            data={PRICE_HISTORY}
-            width="100%"
-            viewWidth={200}
-            height={48}
-            strokeWidth={1.5}
-            color="var(--text-primary)"
-            fill
-          />
-        </div>
-        <div className="cb-briefing-chart">
-          <div className="cb-briefing-chart-title">Top 5 holders</div>
-          <BarChart data={TOP_5_HOLDERS} valueFormatter={(v) => formatPct(v, 2)} />
-        </div>
-        <div className="cb-briefing-chart">
-          <div className="cb-briefing-chart-title">Ownership by type</div>
-          <DonutChart
-            data={OWNER_TYPE}
-            size={80}
-            centerValue="5"
-            centerLabel="types"
-          />
-        </div>
-        <div className="cb-briefing-chart">
-          <div className="cb-briefing-chart-title">Geography</div>
-          <DonutChart
-            data={GEO_SPLIT}
-            size={80}
-            centerValue="68%"
-            centerLabel="Sweden"
-          />
-        </div>
-        <div className="cb-briefing-chart">
-          <div className="cb-briefing-chart-title">Owner count (12mo)</div>
-          <Sparkline
-            data={OWNER_TREND}
-            width="100%"
-            viewWidth={200}
-            height={48}
-            strokeWidth={1.5}
-            color="var(--positive)"
-            fill
-          />
-        </div>
-        <div className="cb-briefing-chart">
-          <div className="cb-briefing-chart-title">Short interest trend</div>
-          <BarChart data={SHORT_TREND} valueFormatter={(v) => formatPct(v, 1)} />
-        </div>
-      </div>
-    </>
+    <p style={{ margin: 0 }}>
+      <span className="cb-strong">INTEG B</span>{' '}
+      <span className="cb-pos">▲ 5.07%</span> at{' '}
+      <span className="cb-num">16.16 SEK</span>. Owners:{' '}
+      <span className="cb-num">3,498</span>{' '}
+      <span className="cb-pos">(+124 YoY)</span>. Foreign{' '}
+      <span className="cb-num">20.08%</span>{' '}
+      <span className="cb-neg">(−1.3pp)</span>. Short{' '}
+      <span className="cb-num">2.1%</span>. Q1 2026 earnings expected in{' '}
+      <span className="cb-strong">~3 weeks</span>.
+    </p>
   );
 
   return (
@@ -159,6 +103,62 @@ export default function MorningBriefing() {
           <span className="cb-strong">Q1 2026 earnings</span> expected within
           three weeks. Quiet period approaching.
         </p>
+      </section>
+
+      <section>
+        <h3 className="cb-section-head">Charts</h3>
+        <div className="cb-briefing-charts">
+          <div className="cb-briefing-chart">
+            <div className="cb-briefing-chart-title">Price (30d)</div>
+            <Sparkline
+              data={PRICE_HISTORY}
+              width="100%"
+              viewWidth={400}
+              height={60}
+              strokeWidth={1.5}
+              color="var(--text-primary)"
+              fill
+            />
+          </div>
+          <div className="cb-briefing-chart">
+            <div className="cb-briefing-chart-title">Top 5 holders</div>
+            <BarChart data={TOP_5_HOLDERS} valueFormatter={(v) => formatPct(v, 2)} />
+          </div>
+          <div className="cb-briefing-chart">
+            <div className="cb-briefing-chart-title">Ownership by type</div>
+            <DonutChart
+              data={OWNER_TYPE}
+              size={120}
+              centerValue="5"
+              centerLabel="types"
+            />
+          </div>
+          <div className="cb-briefing-chart">
+            <div className="cb-briefing-chart-title">Geography</div>
+            <DonutChart
+              data={GEO_SPLIT}
+              size={120}
+              centerValue="68%"
+              centerLabel="Sweden"
+            />
+          </div>
+          <div className="cb-briefing-chart">
+            <div className="cb-briefing-chart-title">Owner count (12mo)</div>
+            <Sparkline
+              data={OWNER_TREND}
+              width="100%"
+              viewWidth={400}
+              height={60}
+              strokeWidth={1.5}
+              color="var(--positive)"
+              fill
+            />
+          </div>
+          <div className="cb-briefing-chart">
+            <div className="cb-briefing-chart-title">Short interest trend</div>
+            <BarChart data={SHORT_TREND} valueFormatter={(v) => formatPct(v, 1)} />
+          </div>
+        </div>
       </section>
     </BriefingCard>
   );

@@ -28,50 +28,17 @@ const OUTREACH_STATUS = [
 
 export default function TargetingBriefing() {
   const teaser = (
-    <>
-      <p style={{ margin: '0 0 16px' }}>
-        <span className="cb-num">{TARGETS_SUMMARY.total}</span> candidate targets
-        · <span className="cb-pos">{TARGETS_SUMMARY.hot} Hot</span> /{' '}
-        <span className="cb-num">{TARGETS_SUMMARY.warm} Warm</span> /{' '}
-        <span style={{ color: 'var(--text-tertiary)' }}>
-          {TARGETS_SUMMARY.cold} Cold
-        </span>{' '}
-        · Avg score <span className="cb-num">{TARGETS_SUMMARY.avgScore}/100</span>{' '}
-        · <span className="cb-pos">+2 wins</span> in Q1 ·{' '}
-        <span className="cb-num">9</span> open roadshow slots.
-      </p>
-      <div className="cb-briefing-charts">
-        <div className="cb-briefing-chart">
-          <div className="cb-briefing-chart-title">Priority split</div>
-          <DonutChart
-            data={PRIORITY_SPLIT}
-            size={80}
-            centerValue={String(TARGETS_SUMMARY.total)}
-            centerLabel="targets"
-          />
-        </div>
-        <div className="cb-briefing-chart">
-          <div className="cb-briefing-chart-title">Top AI scores</div>
-          <BarChart
-            data={TOP_SCORES}
-            valueFormatter={(v) => `${v}/100`}
-          />
-        </div>
-        <div className="cb-briefing-chart">
-          <div className="cb-briefing-chart-title">Avg fit score</div>
-          <ProgressRing
-            value={TARGETS_SUMMARY.avgScore}
-            max={100}
-            size={80}
-            label={`${TARGETS_SUMMARY.avgScore}/100`}
-          />
-        </div>
-        <div className="cb-briefing-chart">
-          <div className="cb-briefing-chart-title">Outreach status</div>
-          <StackedBar data={OUTREACH_STATUS} />
-        </div>
-      </div>
-    </>
+    <p style={{ margin: 0 }}>
+      <span className="cb-num">{TARGETS_SUMMARY.total}</span> candidate targets
+      · <span className="cb-pos">{TARGETS_SUMMARY.hot} Hot</span> /{' '}
+      <span className="cb-num">{TARGETS_SUMMARY.warm} Warm</span> /{' '}
+      <span style={{ color: 'var(--text-tertiary)' }}>
+        {TARGETS_SUMMARY.cold} Cold
+      </span>{' '}
+      · Avg score <span className="cb-num">{TARGETS_SUMMARY.avgScore}/100</span>{' '}
+      · <span className="cb-pos">+2 wins</span> in Q1 ·{' '}
+      <span className="cb-num">9</span> open roadshow slots.
+    </p>
   );
 
   return (
@@ -118,6 +85,49 @@ export default function TargetingBriefing() {
           19 slots booked · <span className="cb-num">9</span> open across London
           and Stockholm.
         </p>
+      </section>
+
+      <section>
+        <h3 className="cb-section-head">Charts</h3>
+        <div className="cb-briefing-charts">
+          <div className="cb-briefing-chart">
+            <div className="cb-briefing-chart-title">Priority split</div>
+            <DonutChart
+              data={PRIORITY_SPLIT}
+              size={120}
+              centerValue={String(TARGETS_SUMMARY.total)}
+              centerLabel="targets"
+            />
+          </div>
+          <div className="cb-briefing-chart">
+            <div className="cb-briefing-chart-title">Top AI scores</div>
+            <BarChart
+              data={TOP_SCORES}
+              valueFormatter={(v) => `${v}/100`}
+            />
+          </div>
+          <div
+            className="cb-briefing-chart"
+            style={{ alignItems: 'center' }}
+          >
+            <div
+              className="cb-briefing-chart-title"
+              style={{ alignSelf: 'flex-start' }}
+            >
+              Avg fit score
+            </div>
+            <ProgressRing
+              value={TARGETS_SUMMARY.avgScore}
+              max={100}
+              size={120}
+              label={`${TARGETS_SUMMARY.avgScore}/100`}
+            />
+          </div>
+          <div className="cb-briefing-chart">
+            <div className="cb-briefing-chart-title">Outreach status</div>
+            <StackedBar data={OUTREACH_STATUS} />
+          </div>
+        </div>
       </section>
     </BriefingCard>
   );

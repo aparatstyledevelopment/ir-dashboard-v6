@@ -30,51 +30,14 @@ const NET_FLOW = [
 
 export default function ShareholdersBriefing() {
   const teaser = (
-    <>
-      <p style={{ margin: '0 0 16px' }}>
-        <span className="cb-num">3,498</span> identified holders · Top 25 control{' '}
-        <span className="cb-num">54.2%</span> · Founder + Aviva ={' '}
-        <span className="cb-num">44.32%</span> · Foreign{' '}
-        <span className="cb-num">20.08%</span> · Locked-up{' '}
-        <span className="cb-num">14.15%</span> ·{' '}
-        <span className="cb-pos">+33 new holders</span> in the past 6 weeks.
-      </p>
-      <div className="cb-briefing-charts">
-        <div className="cb-briefing-chart">
-          <div className="cb-briefing-chart-title">Owner count (12mo)</div>
-          <Sparkline
-            data={OWNER_TREND}
-            width="100%"
-            viewWidth={200}
-            height={48}
-            strokeWidth={1.5}
-            color="var(--positive)"
-            fill
-          />
-        </div>
-        <div className="cb-briefing-chart">
-          <div className="cb-briefing-chart-title">Geography</div>
-          <DonutChart
-            data={GEO_BREAKDOWN}
-            size={80}
-            centerValue="5"
-            centerLabel="countries"
-          />
-        </div>
-        <div className="cb-briefing-chart">
-          <div className="cb-briefing-chart-title">By investor type</div>
-          <StackedBar data={TYPE_BREAKDOWN} />
-        </div>
-        <div className="cb-briefing-chart">
-          <div className="cb-briefing-chart-title">30d net flow</div>
-          <BarChart
-            data={NET_FLOW}
-            baseline="zero"
-            valueFormatter={(v) => `${formatNumber(v)} holders`}
-          />
-        </div>
-      </div>
-    </>
+    <p style={{ margin: 0 }}>
+      <span className="cb-num">3,498</span> identified holders · Top 25 control{' '}
+      <span className="cb-num">54.2%</span> · Founder + Aviva ={' '}
+      <span className="cb-num">44.32%</span> · Foreign{' '}
+      <span className="cb-num">20.08%</span> · Locked-up{' '}
+      <span className="cb-num">14.15%</span> ·{' '}
+      <span className="cb-pos">+33 new holders</span> in the past 6 weeks.
+    </p>
   );
 
   return (
@@ -124,6 +87,45 @@ export default function ShareholdersBriefing() {
           <span className="cb-num">14.15%</span>). Next expiry:{' '}
           <span className="cb-strong">June 30, 2026</span>.
         </p>
+      </section>
+
+      <section>
+        <h3 className="cb-section-head">Charts</h3>
+        <div className="cb-briefing-charts">
+          <div className="cb-briefing-chart">
+            <div className="cb-briefing-chart-title">Owner count (12mo)</div>
+            <Sparkline
+              data={OWNER_TREND}
+              width="100%"
+              viewWidth={400}
+              height={60}
+              strokeWidth={1.5}
+              color="var(--positive)"
+              fill
+            />
+          </div>
+          <div className="cb-briefing-chart">
+            <div className="cb-briefing-chart-title">Geography</div>
+            <DonutChart
+              data={GEO_BREAKDOWN}
+              size={120}
+              centerValue="5"
+              centerLabel="countries"
+            />
+          </div>
+          <div className="cb-briefing-chart">
+            <div className="cb-briefing-chart-title">By investor type</div>
+            <StackedBar data={TYPE_BREAKDOWN} />
+          </div>
+          <div className="cb-briefing-chart">
+            <div className="cb-briefing-chart-title">30d net flow</div>
+            <BarChart
+              data={NET_FLOW}
+              baseline="zero"
+              valueFormatter={(v) => `${formatNumber(v)} holders`}
+            />
+          </div>
+        </div>
       </section>
     </BriefingCard>
   );
