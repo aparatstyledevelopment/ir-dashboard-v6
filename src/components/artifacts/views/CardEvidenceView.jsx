@@ -17,8 +17,6 @@ function renderCell(row, col) {
   return raw;
 }
 
-// Evidence view for any response card: shows the (pseudo-)query that
-// produced the data and the raw table the card was derived from.
 export default function CardEvidenceView({ message, sourceModule }) {
   const share = message ? resolveShareFromMessage(message) : null;
   const title = share?.title || 'Source data';
@@ -60,13 +58,18 @@ export default function CardEvidenceView({ message, sourceModule }) {
         </p>
       )}
 
-      {share?.sourceQuery && (
+      {(share?.sourceDescription || share?.sourceQuery) && (
         <section className="cb-evidence-section">
           <div className="cb-evidence-section-head">
             <Code2 size={12} strokeWidth={1.75} />
             <span>Query</span>
           </div>
-          <pre className="cb-evidence-query">{share.sourceQuery}</pre>
+          {share.sourceDescription && (
+            <div className="cb-evidence-desc">{share.sourceDescription}</div>
+          )}
+          {share.sourceQuery && (
+            <pre className="cb-evidence-query">{share.sourceQuery}</pre>
+          )}
         </section>
       )}
 

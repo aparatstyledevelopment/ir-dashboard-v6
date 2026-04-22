@@ -22,6 +22,7 @@ export function buildShareContent({
   title,
   narrative,
   sourceQuery,
+  sourceDescription,
   columns,
   rows,
 }) {
@@ -42,6 +43,7 @@ export function buildShareContent({
     title,
     narrative: narrative || null,
     sourceQuery: sourceQuery || null,
+    sourceDescription: sourceDescription || null,
     columns: hasTable ? columns : null,
     rows: hasTable ? rows : null,
     text: [title, narrative].filter(Boolean).join('\n\n'),
@@ -165,11 +167,38 @@ function deriveSourceQuery(entry) {
   return `-- ${title}\nSELECT *\nFROM ${src};`;
 }
 
+function deriveSourceDescription(entry) {
+  if (entry?.sourceDescription) return entry.sourceDescription;
+  if (!entry) return null;
+  const title = entry.title || '';
+  const body = entry.body;
+  const src = entry.source || '';
+  const prefix = `Fetches ${title.toLowerCase()}`;
+  if (body?.type === 'table') {
+    const count = Array.isArray(body.rows) ? body.rows.length : 0;
+    return `${prefix}. Returns ${count} row${count === 1 ? '' : 's'} from the ${src || 'dataset'} with columns for ${(body.columns || []).map((c) => c.header).join(', ')}.`;
+  }
+  if (body?.type === 'bars' || body?.type === 'donut' || body?.type === 'stacked') {
+    return `${prefix}. Breaks down the data into labeled segments sorted by value, sourced from ${src || 'the dataset'}.`;
+  }
+  if (body?.type === 'waterfall') {
+    return `${prefix}. Shows incremental changes (positive and negative) that sum to the net result, sourced from ${src || 'the dataset'}.`;
+  }
+  if (body?.type === 'bubbles') {
+    return `${prefix}. Plots each item by two dimensions with size indicating magnitude, sourced from ${src || 'the dataset'}.`;
+  }
+  if (body?.type === 'metrics' || body?.type === 'kv') {
+    return `${prefix}. Returns key summary metrics from ${src || 'the dataset'}.`;
+  }
+  return `${prefix} from ${src || 'the dataset'}.`;
+}
+
 export function shareContentFromCatalogEntry(entry) {
   if (!entry) return null;
   const title = entry.title || 'Card';
   const narrative = entry.narrative || '';
   const sourceQuery = deriveSourceQuery(entry);
+  const sourceDescription = deriveSourceDescription(entry);
   const { columns, rows } = bodyToStructured(entry.body);
 
   let csv = null;
@@ -193,6 +222,7 @@ export function shareContentFromCatalogEntry(entry) {
     title,
     narrative: narrative || null,
     sourceQuery,
+    sourceDescription,
     columns,
     rows,
     text,
