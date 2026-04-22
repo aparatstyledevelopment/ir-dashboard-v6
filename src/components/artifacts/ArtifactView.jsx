@@ -7,6 +7,7 @@ import ScreenerView from './views/ScreenerView';
 import CompareOwnersView from './views/CompareOwnersView';
 import ContactsView from './views/ContactsView';
 import CardEvidenceView from './views/CardEvidenceView';
+import ReportView from './views/ReportView';
 
 const SCREEN_VIEWS = {
   'shareholders-owners': ShareholderRegisterView,
@@ -45,6 +46,10 @@ export default function ArtifactView({ item }) {
         sourceModule={payload?.sourceModule}
       />
     );
+  }
+
+  if (type === 'report') {
+    return <ReportView reportId={payload?.reportId} />;
   }
 
   return null;

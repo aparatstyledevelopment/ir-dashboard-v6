@@ -398,6 +398,68 @@ export function useModuleConversation(moduleId) {
     [session]
   );
 
+  // Generate a module-specific report in two visible stages. Stage 1
+  // appends a short "generating…" AI message. Stage 2 (a few seconds
+  // later) appends a second AI message with the attached document tile.
+  const sendReportQuery = useCallback(
+    (reportId, chipId, label) => {
+      let committedId;
+      setState((prev) => {
+        const [next, id] = ensureActive(prev, moduleId, label);
+        committedId = id;
+        return patchSession(next, id, (s) => ({
+          ...s,
+          title: s.title === 'New chat' && label ? label : s.title,
+          spentChips: chipId
+            ? new Set([...s.spentChips, chipId])
+            : s.spentChips,
+          isTyping: true,
+          messages: [
+            ...s.messages,
+            { id: nextMessageId(), kind: 'user', text: label || 'Create report' },
+          ],
+        }));
+      });
+      // Stage 1: "Generating your report about ..." — keep typing indicator.
+      setTimeout(() => {
+        setState((prev) =>
+          patchSession(prev, committedId, (s) => ({
+            ...s,
+            isTyping: true,
+            messages: [
+              ...s.messages,
+              {
+                id: nextMessageId(),
+                kind: 'response',
+                responseType: 'report-generating',
+                reportId,
+              },
+            ],
+          }))
+        );
+      }, 700);
+      // Stage 2: report is ready — attach the document tile + stop typing.
+      setTimeout(() => {
+        setState((prev) =>
+          patchSession(prev, committedId, (s) => ({
+            ...s,
+            isTyping: false,
+            messages: [
+              ...s.messages,
+              {
+                id: nextMessageId(),
+                kind: 'response',
+                responseType: 'report-ready',
+                reportId,
+              },
+            ],
+          }))
+        );
+      }, 4200);
+    },
+    [moduleId, setState]
+  );
+
   // `createSession` is called by the sidebar's "New chat" button — per
   // product spec, this puts the module back into staging rather than
   // eagerly creating an empty session.
@@ -431,6 +493,7 @@ export function useModuleConversation(moduleId) {
     sendCatalogQuery,
     sendTextQuery,
     sendBulkResponses,
+    sendReportQuery,
     clearActiveSession,
     isChipSpent,
     attachCard,

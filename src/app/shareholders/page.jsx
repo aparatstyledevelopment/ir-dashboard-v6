@@ -54,6 +54,7 @@ export default function ShareholdersPage() {
     sendCatalogQuery,
     sendTextQuery,
     sendBulkResponses,
+    sendReportQuery,
     clearActiveSession,
     createSession,
     isChipSpent,
@@ -90,8 +91,13 @@ export default function ShareholdersPage() {
     onReport: handleReport,
   });
 
-  const handleChipSelect = (chip) =>
+  const handleChipSelect = (chip) => {
+    if (chip.kind === 'report') {
+      sendReportQuery(chip.reportId, chip.id, chip.label);
+      return;
+    }
     sendChipQuery(chip.id, chip.responseType, chip.label);
+  };
 
   const handleFollowUp = (chip) => {
     if (!chip) return;

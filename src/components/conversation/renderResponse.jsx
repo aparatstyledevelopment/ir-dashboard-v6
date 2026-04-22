@@ -25,6 +25,8 @@ import RecentExitsCard from '../targeting/responses/RecentExitsCard';
 
 import GenericResponseCard from '../dashboard/responses/GenericResponseCard';
 import DynamicResponseCard from '../dashboard/responses/DynamicResponseCard';
+import ReportGeneratingCard from '../shared/ReportGeneratingCard';
+import ReportReadyCard from '../shared/ReportReadyCard';
 
 const L1_COMPONENTS = {
   // Dashboard
@@ -79,6 +81,12 @@ export const TARGETING_L1_TYPES = [
 
 export function renderAnyResponse(message, sharedProps) {
   if (!message) return null;
+  if (message.responseType === 'report-generating') {
+    return <ReportGeneratingCard reportId={message.reportId} />;
+  }
+  if (message.responseType === 'report-ready') {
+    return <ReportReadyCard reportId={message.reportId} />;
+  }
   if (message.responseType === 'generic') {
     return (
       <GenericResponseCard

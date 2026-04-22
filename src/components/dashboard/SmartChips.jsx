@@ -1,6 +1,7 @@
 import ChipGroup from '../ui/ChipGroup';
 
 export const TOP_CHIPS = [
+  { id: 'create-report', label: 'Create report', kind: 'report', reportId: 'dashboard' },
   { id: 'buyers', label: "Who's been buying?", responseType: 'ownership' },
   { id: 'top25', label: 'Show me top 25 holders', responseType: 'topHolders' },
   { id: 'liquidity', label: 'Liquidity vs peers', responseType: 'liquidity' },

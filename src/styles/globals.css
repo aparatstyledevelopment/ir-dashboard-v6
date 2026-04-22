@@ -2140,3 +2140,275 @@ textarea {
 .cb-chat-send.is-active:hover {
   transform: scale(1.06);
 }
+
+/* ----- Report response cards + report article ----- */
+
+/* Inline "Generating your report..." bubble — minimal AI message. */
+.cb-report-generating {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--bar-track);
+  border-radius: 14px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  letter-spacing: -0.01em;
+  line-height: 1.5;
+  max-width: 100%;
+}
+.cb-report-generating-spinner {
+  color: var(--text-secondary);
+  flex-shrink: 0;
+  animation: cbReportSpin 1s linear infinite;
+}
+@keyframes cbReportSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* Document tile (attached report). Modeled on the Claude chat
+ * document tile: light border, icon-body-CTA layout, whole-card click. */
+.cb-report-tile {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 12px 14px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 140ms ease, background 140ms ease,
+    box-shadow 140ms ease;
+  color: var(--text-primary);
+  font-family: inherit;
+}
+.cb-report-tile:hover {
+  border-color: var(--text-primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+.cb-report-tile-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
+  background: var(--bar-track);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.cb-report-tile:hover .cb-report-tile-icon {
+  color: var(--text-primary);
+}
+.cb-report-tile-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.cb-report-tile-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cb-report-tile-sub {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  letter-spacing: -0.01em;
+}
+.cb-report-tile-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--text-primary);
+  background: var(--bg);
+  letter-spacing: -0.01em;
+  flex-shrink: 0;
+  transition: all 140ms ease;
+}
+.cb-report-tile:hover .cb-report-tile-cta {
+  background: var(--surface-dark);
+  color: var(--surface-dark-text);
+  border-color: var(--surface-dark);
+}
+
+/* Full-screen article view rendered inside the artifacts pane / QA page. */
+.cb-report {
+  max-width: 760px;
+  margin: 0 auto;
+  color: var(--text-primary);
+}
+.cb-report-head {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 22px;
+  margin-bottom: 24px;
+}
+.cb-report-kicker {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  margin-bottom: 10px;
+}
+.cb-report-title {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  color: var(--text-primary);
+  margin: 0 0 14px;
+}
+.cb-report-lede {
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  letter-spacing: -0.01em;
+  margin: 0 0 18px;
+}
+.cb-report-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+@media (max-width: 639px) {
+  .cb-report-stats { grid-template-columns: repeat(2, 1fr); }
+}
+.cb-report-stat {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.cb-report-stat-value {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+.cb-report-stat-label {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+.cb-report-section {
+  margin: 0 0 26px;
+}
+.cb-report-section h2 {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin: 0 0 12px;
+}
+.cb-report-section p {
+  font-size: 13.5px;
+  line-height: 1.75;
+  color: var(--text-secondary);
+  letter-spacing: -0.01em;
+  margin: 0 0 14px;
+}
+.cb-report-section p:last-child { margin-bottom: 0; }
+.cb-report-section strong { color: var(--text-primary); font-weight: 600; }
+
+.cb-report-chart {
+  margin: 16px 0;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.cb-report-chart figcaption {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.cb-report-callout {
+  margin: 14px 0;
+  padding: 12px 14px;
+  border-left: 3px solid var(--text-primary);
+  background: var(--bar-track);
+  border-radius: 0 6px 6px 0;
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+.cb-report-callout strong { font-weight: 600; }
+
+.cb-report-list {
+  margin: 10px 0 0;
+  padding-left: 18px;
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  letter-spacing: -0.01em;
+}
+.cb-report-list li { margin-bottom: 4px; }
+
+.cb-report-table-wrap {
+  margin: 14px 0;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow-x: auto;
+}
+.cb-report-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+.cb-report-table th,
+.cb-report-table td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  letter-spacing: -0.01em;
+  vertical-align: top;
+}
+.cb-report-table th {
+  font-weight: 600;
+  color: var(--text-tertiary);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: var(--bar-track);
+}
+.cb-report-table tr:last-child td { border-bottom: none; }
+.cb-report-table td.cb-pos,
+.cb-report-table td.cb-neg { font-variant-numeric: tabular-nums; }
+
+.cb-report-footer {
+  margin-top: 28px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--text-tertiary);
+  line-height: 1.6;
+  letter-spacing: -0.01em;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
