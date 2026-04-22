@@ -33,17 +33,22 @@ body {
   background: var(--bg);
   color: var(--text-primary);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: var(--cb-base-size, 12px);
+  font-size: 12px;
   font-weight: 400;
   letter-spacing: -0.01em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/* Interface size uses CSS zoom so every pixel measurement — fonts,
+ * padding, icons, borders, charts, fixed overlays — scales together
+ * without re-laying out or breaking relative positions. Mirrors what
+ * Chrome's Ctrl+Plus zoom does. */
 body.cb-size-medium {
-  --cb-base-size: 13.5px;
+  zoom: 1.12;
 }
 body.cb-size-large {
-  --cb-base-size: 15px;
+  zoom: 1.25;
 }
 
 button {
@@ -738,16 +743,41 @@ textarea {
   border-right: 1px solid var(--border);
   flex-shrink: 0;
   width: 56px;
+  position: relative;
 }
 @media (min-width: 640px) {
   .cb-sidebar {
     display: flex;
   }
 }
+.cb-sidebar.is-dragging {
+  user-select: none;
+}
+
+/* Drag handle on the right edge of the sidebar — only usable on desktop
+ * where the user-set width actually applies. */
+.cb-sidebar-resizer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: -3px;
+  width: 6px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: col-resize;
+  z-index: 5;
+  transition: background 120ms ease;
+  display: none;
+}
 @media (min-width: 1024px) {
-  .cb-sidebar {
-    width: 208px;
+  .cb-sidebar-resizer {
+    display: block;
   }
+}
+.cb-sidebar-resizer:hover,
+.cb-sidebar.is-dragging .cb-sidebar-resizer {
+  background: rgba(0, 0, 0, 0.12);
 }
 
 .cb-sidebar-header {
@@ -877,17 +907,17 @@ textarea {
   }
 }
 
-/* Quick-actions popover dialog from sidebar */
+/* Quick-actions popover dialog from sidebar — rendered into document.body
+ * via a portal so it escapes the sidebar's overflow clipping. Coords are
+ * set inline by JS from the trigger button's bounding rect. */
 .cb-sidebar-qa-dialog {
-  position: absolute;
-  left: 100%;
-  top: -4px;
+  position: fixed;
   width: 240px;
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 8px;
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.14);
-  z-index: 100;
+  z-index: 200;
   overflow: hidden;
   animation: shareMenuIn 140ms ease-out both;
 }
@@ -1043,6 +1073,21 @@ textarea {
   transition: all 140ms ease;
   position: relative;
 }
+/* Desktop sidebar rows are two-line (title + category). Top-align the
+ * row contents and push the time to the bottom so it sits on the same
+ * baseline as the category label. */
+.cb-sidebar .cb-sidebar-chat-item {
+  align-items: flex-start;
+}
+.cb-sidebar .cb-sidebar-chat-icon {
+  margin-top: 3px;
+}
+.cb-sidebar-chat-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
 .cb-sidebar-chat-archive {
   position: absolute;
   right: 10px;
@@ -1060,6 +1105,11 @@ textarea {
   color: var(--text-tertiary);
   padding: 0;
   z-index: 2;
+}
+.cb-sidebar .cb-sidebar-chat-archive {
+  top: auto;
+  transform: none;
+  bottom: 8px;
 }
 .cb-sidebar-chat-item:hover .cb-sidebar-chat-archive {
   display: flex;
@@ -1134,6 +1184,12 @@ textarea {
   color: var(--text-tertiary);
   font-variant-numeric: tabular-nums;
   flex-shrink: 0;
+}
+/* Desktop sidebar: bottom-align with the category line. */
+.cb-sidebar .cb-sidebar-chat-time {
+  align-self: flex-end;
+  line-height: 1;
+  padding-bottom: 1px;
 }
 
 .cb-sidebar-chats-empty {
@@ -1811,26 +1867,21 @@ textarea {
   padding: 0;
 }
 
-/* Briefing chart grid — 2×2 or 2×3 grid of mini charts inside the
- * collapsed briefing teaser. */
+/* Briefing charts — one chart per row; widths equal, heights vary. */
 .cb-briefing-charts {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 12px;
   margin-top: 4px;
-}
-@media (min-width: 640px) {
-  .cb-briefing-charts {
-    grid-template-columns: 1fr 1fr 1fr;
-  }
 }
 .cb-briefing-chart {
   border: 1px solid var(--border);
   border-radius: 6px;
-  padding: 10px;
+  padding: 12px 14px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
+  width: 100%;
   min-width: 0;
   overflow: hidden;
 }

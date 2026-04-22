@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
   LayoutDashboard,
   Users,
@@ -40,6 +41,10 @@ const MODULE_LABEL = {
   targeting: 'Targeting',
 };
 
+const SIDEBAR_MIN = 180;
+const SIDEBAR_MAX = 360;
+const SIDEBAR_DEFAULT = 208;
+
 function formatRelative(ts) {
   const delta = Date.now() - ts;
   const m = Math.floor(delta / 60000);
@@ -51,27 +56,56 @@ function formatRelative(ts) {
   return `${d}d`;
 }
 
-function QuickActionsDialog({ moduleId, onItemClick, onClose }) {
+function QuickActionsDialog({ moduleId, anchorRect, onItemClick, onClose }) {
   const ref = useRef(null);
   const config = QUICK_ACTIONS[moduleId];
 
   useEffect(() => {
     const onClickOut = (e) => {
-      if (ref.current && !ref.current.contains(e.target)) onClose();
+      if (!ref.current || ref.current.contains(e.target)) return;
+      // Ignore clicks on any QA trigger button — their own onClick handler
+      // is responsible for toggling the dialog, so closing here too would
+      // immediately reopen the dialog via the trigger's onClick.
+      if (e.target.closest?.('.cb-sidebar-qa-trigger')) return;
+      onClose();
     };
     const onKey = (e) => { if (e.key === 'Escape') onClose(); };
-    document.addEventListener('mousedown', onClickOut);
+    // Defer by one tick so the triggering click doesn't immediately close it.
+    const t = setTimeout(() => {
+      document.addEventListener('mousedown', onClickOut);
+    }, 0);
     document.addEventListener('keydown', onKey);
     return () => {
+      clearTimeout(t);
       document.removeEventListener('mousedown', onClickOut);
       document.removeEventListener('keydown', onKey);
     };
   }, [onClose]);
 
-  if (!config) return null;
+  if (!config || !anchorRect) return null;
 
-  return (
-    <div ref={ref} className="cb-sidebar-qa-dialog">
+  const DIALOG_W = 240;
+  const GAP = 8;
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  let left = anchorRect.right + GAP;
+  if (left + DIALOG_W > vw - 8) {
+    // Fall back to opening to the left of the sidebar if there's not room.
+    left = Math.max(8, anchorRect.left - DIALOG_W - GAP);
+  }
+  let top = anchorRect.top - 4;
+  // Dialog height is variable; clamp to viewport.
+  const estHeight = 60 + config.items.length * 48;
+  if (top + estHeight > vh - 8) {
+    top = Math.max(8, vh - 8 - estHeight);
+  }
+
+  return createPortal(
+    <div
+      ref={ref}
+      className="cb-sidebar-qa-dialog"
+      style={{ top: `${top}px`, left: `${left}px` }}
+    >
       <div className="cb-sidebar-qa-dialog-head">{config.title}</div>
       {config.items.map((item) => {
         const Icon = item.icon;
@@ -94,7 +128,8 @@ function QuickActionsDialog({ moduleId, onItemClick, onClose }) {
           </button>
         );
       })}
-    </div>
+    </div>,
+    document.body
   );
 }
 
@@ -106,7 +141,71 @@ export default function Sidebar({
   onOpenProfile,
   onOpenQuickAction,
 }) {
-  const [qaDialog, setQaDialog] = useState(null);
+  const [qaDialog, setQaDialog] = useState(null); // { moduleId, rect }
+  const triggerRefs = useRef({});
+  const [width, setWidth] = useState(() => {
+    try {
+      const raw = localStorage.getItem('cb-sidebar-w');
+      const n = raw ? parseInt(raw, 10) : NaN;
+      if (Number.isFinite(n) && n >= SIDEBAR_MIN && n <= SIDEBAR_MAX) return n;
+    } catch {}
+    return SIDEBAR_DEFAULT;
+  });
+  const [dragging, setDragging] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 1024px)');
+    const update = () => setIsDesktop(mq.matches);
+    update();
+    mq.addEventListener?.('change', update);
+    return () => mq.removeEventListener?.('change', update);
+  }, []);
+
+  useEffect(() => {
+    if (!dragging) return undefined;
+    const onMove = (e) => {
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      if (clientX == null) return;
+      const next = Math.min(SIDEBAR_MAX, Math.max(SIDEBAR_MIN, Math.round(clientX)));
+      setWidth(next);
+    };
+    const onUp = () => setDragging(false);
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+    window.addEventListener('touchmove', onMove, { passive: false });
+    window.addEventListener('touchend', onUp);
+    document.body.style.userSelect = 'none';
+    document.body.style.cursor = 'col-resize';
+    return () => {
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+      window.removeEventListener('touchmove', onMove);
+      window.removeEventListener('touchend', onUp);
+      document.body.style.userSelect = '';
+      document.body.style.cursor = '';
+    };
+  }, [dragging]);
+
+  useEffect(() => {
+    try { localStorage.setItem('cb-sidebar-w', String(width)); } catch {}
+  }, [width]);
+
+  // Close the QA dialog if the user resizes the window so the anchor
+  // position doesn't become stale.
+  useEffect(() => {
+    if (!qaDialog) return undefined;
+    const onResize = () => setQaDialog(null);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, [qaDialog]);
+
+  const openQa = (moduleId) => {
+    const el = triggerRefs.current[moduleId];
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    setQaDialog({ moduleId, rect: { top: rect.top, right: rect.right, left: rect.left, bottom: rect.bottom } });
+  };
 
   const state = conversations?.state;
   const globalList = state
@@ -142,7 +241,10 @@ export default function Sidebar({
   };
 
   return (
-    <aside className="cb-sidebar">
+    <aside
+      className={'cb-sidebar' + (dragging ? ' is-dragging' : '')}
+      style={isDesktop ? { width: `${width}px` } : undefined}
+    >
       <div className="cb-sidebar-header">
         <div className="cb-sidebar-brand">
           <span className="cb-sidebar-brand-full">Command Bar</span>
@@ -171,24 +273,19 @@ export default function Sidebar({
                 </button>
                 {hasQuickActions && (
                   <button
+                    ref={(el) => { triggerRefs.current[m.id] = el; }}
                     type="button"
                     className="cb-sidebar-qa-trigger"
                     onClick={(e) => {
                       e.stopPropagation();
-                      setQaDialog((prev) => (prev === m.id ? null : m.id));
+                      if (qaDialog?.moduleId === m.id) setQaDialog(null);
+                      else openQa(m.id);
                     }}
                     aria-label={`Quick actions for ${m.label}`}
                     title="Quick actions"
                   >
                     <LayoutGrid size={11} strokeWidth={1.75} />
                   </button>
-                )}
-                {qaDialog === m.id && (
-                  <QuickActionsDialog
-                    moduleId={m.id}
-                    onItemClick={onOpenQuickAction}
-                    onClose={() => setQaDialog(null)}
-                  />
                 )}
               </div>
             );
@@ -227,7 +324,7 @@ export default function Sidebar({
                     strokeWidth={1.75}
                     className="cb-sidebar-chat-icon"
                   />
-                  <div style={{ flex: 1, minWidth: 0 }}>
+                  <div className="cb-sidebar-chat-body">
                     <span className="cb-sidebar-chat-title">{s.title}</span>
                     <span className="cb-sidebar-chat-cat">
                       {MODULE_LABEL[s.moduleId] || s.moduleId}
@@ -273,6 +370,29 @@ export default function Sidebar({
           MF
         </button>
       </div>
+
+      {isDesktop && (
+        <button
+          type="button"
+          className="cb-sidebar-resizer"
+          onMouseDown={(e) => {
+            e.preventDefault();
+            setDragging(true);
+          }}
+          onTouchStart={() => setDragging(true)}
+          aria-label="Resize sidebar"
+          title="Drag to resize"
+        />
+      )}
+
+      {qaDialog && (
+        <QuickActionsDialog
+          moduleId={qaDialog.moduleId}
+          anchorRect={qaDialog.rect}
+          onItemClick={onOpenQuickAction}
+          onClose={() => setQaDialog(null)}
+        />
+      )}
     </aside>
   );
 }
