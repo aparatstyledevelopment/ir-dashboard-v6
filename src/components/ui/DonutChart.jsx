@@ -134,7 +134,7 @@ export default function DonutChart({
         }}
       >
         {data.map((d, i) => {
-          const color = d.color || GRAY_SCALE[i % GRAY_SCALE.length];
+          const color = d.color || CHART_PALETTE[i % CHART_PALETTE.length];
           const isHighlight = d.key === highlightKey;
           return (
             <li

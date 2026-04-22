@@ -26,7 +26,17 @@ export default function DataTable({ columns, rows }) {
                   color: 'var(--text-tertiary)',
                   fontSize: '11px',
                   padding: '8px 10px',
-                  borderBottom: '1px solid var(--border)',
+                  // Keep column names visible while the user scrolls
+                  // through a long table. Sticks to the top of the
+                  // nearest scrolling ancestor (conversation body,
+                  // artifacts pane body, source-data inner, …). A
+                  // solid background + box-shadow divider stops rows
+                  // from bleeding through under the header.
+                  position: 'sticky',
+                  top: 0,
+                  zIndex: 2,
+                  background: 'var(--bg)',
+                  boxShadow: 'inset 0 -1px 0 var(--border)',
                   whiteSpace: 'nowrap',
                   width: col.width,
                 }}
