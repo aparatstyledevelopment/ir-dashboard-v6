@@ -41,6 +41,17 @@ export function useArtifacts() {
     setState((prev) => ({ ...prev, stack: [] }));
   }, []);
 
+  // Pop entries off the stack until it's exactly `n` items long. Used to
+  // exit a full-screen QA flow while preserving any artifacts that were
+  // already open in the side pane before the flow started.
+  const truncateStack = useCallback((n) => {
+    const target = Math.max(0, n);
+    setState((prev) => {
+      if (prev.stack.length <= target) return prev;
+      return { ...prev, stack: prev.stack.slice(0, target) };
+    });
+  }, []);
+
   const setWidth = useCallback((w) => {
     setState((prev) => ({
       ...prev,
@@ -53,6 +64,7 @@ export function useArtifacts() {
     openArtifact,
     closeArtifact,
     closeAll,
+    truncateStack,
     setWidth,
   };
 }

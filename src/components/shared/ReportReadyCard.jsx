@@ -1,8 +1,16 @@
 import { FileText, ExternalLink } from 'lucide-react';
 import { getReport } from '../../data/reports';
 import { useArtifactsContext } from '../../hooks/useArtifacts';
+import Chip from '../ui/Chip';
 
-export default function ReportReadyCard({ reportId }) {
+const FOLLOW_UPS = [
+  { id: 'share-ceo', label: 'Draft message to the CEO' },
+  { id: 'share-board', label: 'Draft summary for the board' },
+  { id: 'share-ir', label: 'Share with the IR team' },
+  { id: 'share-peer', label: 'Email to regional sales lead' },
+];
+
+export default function ReportReadyCard({ reportId, onFollowUp }) {
   const report = getReport(reportId);
   const artifacts = useArtifactsContext();
 
@@ -45,6 +53,15 @@ export default function ReportReadyCard({ reportId }) {
           Open report
         </span>
       </button>
+      {onFollowUp && (
+        <div className="cb-chip-group" style={{ marginTop: '4px' }}>
+          {FOLLOW_UPS.map((f) => (
+            <Chip key={f.id} onClick={() => onFollowUp(f)}>
+              {f.label}
+            </Chip>
+          ))}
+        </div>
+      )}
     </article>
   );
 }

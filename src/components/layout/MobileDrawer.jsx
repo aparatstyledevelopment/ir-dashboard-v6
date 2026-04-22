@@ -174,7 +174,8 @@ export default function MobileDrawer({
           </button>
         </div>
 
-        <nav style={{ padding: '8px 0', flexShrink: 0, overflowY: 'auto' }}>
+        <div className="cb-mobile-drawer-scroll" style={{ flex: 1, minHeight: 0, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+        <nav style={{ padding: '8px 0', flexShrink: 0 }}>
           {MODULES.map((m) => {
             const Icon = ICON_MAP[m.icon] || LayoutDashboard;
             const isActive = activeModule === m.id;
@@ -231,8 +232,7 @@ export default function MobileDrawer({
         {isModuleWithConversation && (
           <div
             style={{
-              flex: 1,
-              minHeight: 0,
+              flexShrink: 0,
               borderTop: '1px solid var(--border)',
               display: 'flex',
               flexDirection: 'column',
@@ -256,7 +256,7 @@ export default function MobileDrawer({
                 No recent chats yet. Ask something to start.
               </div>
             ) : (
-              <div style={{ flex: 1, overflowY: 'auto' }}>
+              <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
                 {populated.slice(0, 20).map((s) => (
                   <div
                     key={s.id}
@@ -299,6 +299,7 @@ export default function MobileDrawer({
             )}
           </div>
         )}
+        </div>
 
         <div
           style={{

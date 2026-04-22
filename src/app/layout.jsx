@@ -18,11 +18,15 @@ import useHistoryBack from '../hooks/useHistoryBack';
 // Full-screen page wrapper for quick-action items. Uses the same
 // ArtifactView renderer as the artifacts pane, but takes over the
 // whole main content area instead of sharing it as a side pane.
-function QaScreenPage({ artifacts, onExit }) {
+// `entryDepth` is the stack length BEFORE the QA flow started — back
+// navigation should only pop inside the QA flow; reaching the entry
+// depth exits the full-screen page entirely (and the remaining items,
+// e.g. a report the user already had open, reappear in the side pane).
+function QaScreenPage({ artifacts, entryDepth, onExit }) {
   const { item, stack } = artifacts.state;
-  const canGoBack = stack.length > 1;
+  const canGoBackInsideQa = stack.length > entryDepth + 1;
   const handleBack = () => {
-    if (canGoBack) artifacts.closeArtifact();
+    if (canGoBackInsideQa) artifacts.closeArtifact();
     else onExit();
   };
   if (!item) {
@@ -75,6 +79,7 @@ export default function RootLayout() {
   const [toast, setToast] = useState(null);
   const [activeModule, setActiveModule] = useState('dashboard');
   const [page, setPage] = useState(null);
+  const [qaEntryDepth, setQaEntryDepth] = useState(0);
   const conversations = useConversations();
   const artifacts = useArtifacts();
 
@@ -89,8 +94,13 @@ export default function RootLayout() {
 
   const goBack = () => setPage(null);
 
+  // Exit the full-screen QA flow. Pop any artifacts pushed during the
+  // flow (screen, investor detail, etc.) back down to the depth that
+  // was present when the flow started — that way anything the user
+  // had open before (e.g. a generated report) reappears in the side
+  // pane beside the chat.
   const exitQaScreen = () => {
-    artifacts.closeAll();
+    artifacts.truncateStack(qaEntryDepth);
     setPage(null);
   };
 
@@ -100,11 +110,10 @@ export default function RootLayout() {
   });
 
   const handleOpenQuickAction = (screen) => {
-    // Quick-action items open as a full-screen page (like settings /
-    // notifications / profile) instead of appearing in the side
-    // artifacts pane. We still reuse the artifacts state/stack so
-    // sub-navigation (e.g. clicking an investor link) works via the
-    // existing push/pop API.
+    // Capture the current stack depth BEFORE we push the QA item.
+    // React batches state updates, but this read reflects the stack
+    // as of the current render, which is what we want.
+    setQaEntryDepth(artifacts.state.stack.length);
     artifacts.openArtifact({ type: 'screen', payload: { screen } });
     setPage('qa-screen');
   };
@@ -157,7 +166,7 @@ export default function RootLayout() {
                 onItemClick={(screen) => handleOpenQuickAction(screen)}
               />
             ) : page === 'qa-screen' ? (
-              <QaScreenPage artifacts={artifacts} onExit={exitQaScreen} />
+              <QaScreenPage artifacts={artifacts} entryDepth={qaEntryDepth} onExit={exitQaScreen} />
             ) : (
               <Outlet
                 context={{

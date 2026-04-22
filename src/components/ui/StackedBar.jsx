@@ -1,6 +1,14 @@
 // Horizontal stacked bar — composition visualization where each segment
-// represents a portion of the whole. Uses grayscale palette.
-const GRAY_SCALE = ['#111111', '#3B3B3B', '#666666', '#8E8E8E', '#B4B4B4', '#D6D6D6'];
+// represents a portion of the whole. Colors come from the chart palette
+// (CSS variables), so they swap with the settings toggle.
+const CHART_PALETTE = [
+  'var(--chart-1)',
+  'var(--chart-2)',
+  'var(--chart-3)',
+  'var(--chart-4)',
+  'var(--chart-5)',
+  'var(--chart-6)',
+];
 
 export default function StackedBar({
   data,
@@ -43,7 +51,7 @@ export default function StackedBar({
       >
         {data.map((d, i) => {
           const pct = (d.value / sum) * 100;
-          const color = d.color || GRAY_SCALE[i % GRAY_SCALE.length];
+          const color = d.color || CHART_PALETTE[i % CHART_PALETTE.length];
           return (
             <div
               key={d.key || i}
@@ -51,19 +59,9 @@ export default function StackedBar({
               style={{
                 width: `${pct}%`,
                 background: color,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: i < 2 ? '#fff' : '#000',
-                fontSize: '10px',
-                fontWeight: 500,
-                letterSpacing: '-0.01em',
                 overflow: 'hidden',
-                whiteSpace: 'nowrap',
               }}
-            >
-              {pct >= 6 ? valueFormatter(d.value) : ''}
-            </div>
+            />
           );
         })}
       </div>
@@ -81,7 +79,7 @@ export default function StackedBar({
         }}
       >
         {data.map((d, i) => {
-          const color = d.color || GRAY_SCALE[i % GRAY_SCALE.length];
+          const color = d.color || CHART_PALETTE[i % CHART_PALETTE.length];
           return (
             <li
               key={d.key || i}

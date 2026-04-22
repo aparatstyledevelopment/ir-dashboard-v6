@@ -14,6 +14,25 @@
   --bar-track: #F0F0F0;
   --positive: #137333;
   --negative: #b3261e;
+  /* Default chart palette: grayscale (original). Body class
+   * `.cb-charts-pastel` switches every chart to a pastel palette
+   * without touching any other UI chrome. Red/green signalling
+   * (--positive, --negative) is untouched in both modes. */
+  --chart-1: #111111;
+  --chart-2: #3B3B3B;
+  --chart-3: #666666;
+  --chart-4: #8E8E8E;
+  --chart-5: #B4B4B4;
+  --chart-6: #D6D6D6;
+}
+body.cb-charts-pastel {
+  --bar-fill: #8BA5DB;
+  --chart-1: #8BA5DB;
+  --chart-2: #8FD4B8;
+  --chart-3: #E8A97A;
+  --chart-4: #C9A4DB;
+  --chart-5: #E3C068;
+  --chart-6: #E396A3;
 }
 
 * {
@@ -845,6 +864,20 @@ textarea {
   flex: 1;
   overflow-y: auto;
   min-height: 0;
+  /* Hide the scroll thumb — the sidebar is narrow; the scrollbar looks
+   * heavy there. Still scrollable via wheel / touch. */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.cb-sidebar-scroll::-webkit-scrollbar {
+  display: none;
+}
+.cb-mobile-drawer-scroll {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.cb-mobile-drawer-scroll::-webkit-scrollbar {
+  display: none;
 }
 
 .cb-sidebar-nav {
@@ -2000,6 +2033,42 @@ textarea {
   letter-spacing: 0;
   white-space: pre-wrap;
   overflow-x: auto;
+}
+
+/* Syntax-highlighted SQL tokens — pastel palette so code is easy on
+ * the eyes without looking "coded". */
+.cb-sql-code {
+  font-family: 'JetBrains Mono', 'Menlo', 'SFMono-Regular', monospace;
+  white-space: pre-wrap;
+  tab-size: 2;
+}
+.cb-sql-keyword {
+  color: #8E6FCC;
+  font-weight: 600;
+}
+.cb-sql-func {
+  color: #5F95D0;
+  font-weight: 500;
+}
+.cb-sql-string {
+  color: #4BA887;
+}
+.cb-sql-number {
+  color: #D48B47;
+  font-variant-numeric: tabular-nums;
+}
+.cb-sql-comment {
+  color: #B0B0B0;
+  font-style: italic;
+}
+.cb-sql-op {
+  color: #C47799;
+}
+.cb-sql-punct {
+  color: #7A7A7A;
+}
+.cb-sql-ident {
+  color: var(--text-primary);
 }
 /* When only query exists (no description), give it full border-radius */
 .cb-evidence-desc + .cb-evidence-query {

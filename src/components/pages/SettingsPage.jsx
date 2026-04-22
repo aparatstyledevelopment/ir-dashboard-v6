@@ -72,6 +72,55 @@ function SizePicker() {
   );
 }
 
+function ChartPaletteToggle() {
+  const [pastel, setPastel] = useState(() =>
+    typeof document !== 'undefined' &&
+    document.body.classList.contains('cb-charts-pastel')
+  );
+
+  const apply = (next) => {
+    if (next) document.body.classList.add('cb-charts-pastel');
+    else document.body.classList.remove('cb-charts-pastel');
+    setPastel(next);
+    try { localStorage.setItem('cb-charts', next ? 'pastel' : 'mono'); } catch {}
+  };
+
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={pastel}
+      onClick={() => apply(!pastel)}
+      style={{
+        width: '36px',
+        height: '20px',
+        borderRadius: '999px',
+        border: '1px solid var(--border)',
+        background: pastel ? 'var(--surface-dark)' : 'var(--bg)',
+        padding: 0,
+        position: 'relative',
+        cursor: 'pointer',
+        flexShrink: 0,
+        transition: 'background 160ms ease, border-color 160ms ease',
+      }}
+    >
+      <span
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          top: '2px',
+          left: pastel ? '18px' : '2px',
+          width: '14px',
+          height: '14px',
+          borderRadius: '50%',
+          background: pastel ? 'var(--surface-dark-text)' : 'var(--text-tertiary)',
+          transition: 'left 160ms ease, background 160ms ease',
+        }}
+      />
+    </button>
+  );
+}
+
 export default function SettingsPage({ onBack }) {
   return (
     <main style={{ flex: 1, overflowY: 'auto', background: 'var(--bg)' }}>
@@ -97,6 +146,9 @@ export default function SettingsPage({ onBack }) {
           <h2 className="cb-settings-section-title">Display</h2>
           <SettingRow icon={Maximize2} label="Interface size" sub="Adjusts text and UI element sizes">
             <SizePicker />
+          </SettingRow>
+          <SettingRow icon={Palette} label="Colorful charts" sub="Toggle pastel palette for briefing and report charts">
+            <ChartPaletteToggle />
           </SettingRow>
           <SettingRow icon={Palette} label="Theme" value="Light" sub="Appearance mode" />
           <SettingRow icon={Globe} label="Language" value="English" sub="Display language" />
