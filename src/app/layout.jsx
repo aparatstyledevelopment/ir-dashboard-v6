@@ -68,7 +68,7 @@ export default function RootLayout() {
             onOpenNotifications={() => setPage('notifications')}
             onSearch={(q) => showToast(`Search: "${q}" — full search coming soon.`)}
           />
-          <div style={{ flex: 1, display: 'flex', minHeight: 0 }}>
+          <div style={{ flex: 1, display: 'flex', minHeight: 0, overflow: 'hidden' }}>
             {page === 'settings' ? (
               <SettingsPage onBack={goBack} />
             ) : page === 'profile' ? (

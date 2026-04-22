@@ -211,6 +211,8 @@ export default function DashboardPage() {
         flex: 1,
         display: 'flex',
         minHeight: 0,
+        minWidth: 0,
+        overflow: 'hidden',
         background: 'var(--bg)',
       }}
     >

@@ -137,8 +137,12 @@ textarea {
 }
 
 .conversation-scroll {
-  scrollbar-gutter: stable both-edges;
   overflow-x: hidden;
+}
+@media (min-width: 640px) {
+  .conversation-scroll {
+    scrollbar-gutter: stable both-edges;
+  }
 }
 
 .cb-input-gutter {
@@ -1814,14 +1818,11 @@ textarea {
  * and is hidden where the chat box sits. */
 .cb-chat-overlay {
   position: absolute;
-  left: 4px;
-  right: 4px;
+  left: 0;
+  right: 0;
   bottom: 0;
   background: var(--bg);
-  /* No padding-top on purpose. The chat box pill sits flush against the
-   * clip line so conversation content disappears exactly at the top edge
-   * of the pill, not into empty white space above it. */
-  padding: 0 16px 16px;
+  padding: 0 10px 12px;
   display: flex;
   justify-content: center;
   pointer-events: none;
@@ -1829,18 +1830,9 @@ textarea {
 .cb-chat-overlay > * {
   pointer-events: auto;
 }
-/* Desktop: 760px pill (conversation is 720px → 20px wider on each side). */
 .cb-chat-overlay-inner {
   width: 100%;
   max-width: 760px;
-}
-/* Mobile: chat box stretches almost edge-to-edge. */
-@media (max-width: 639px) {
-  .cb-chat-overlay {
-    left: 0;
-    right: 0;
-    padding: 0 6px 12px;
-  }
 }
 
 .cb-chat-input-wrap {

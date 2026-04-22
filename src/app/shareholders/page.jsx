@@ -164,7 +164,7 @@ export default function ShareholdersPage() {
   };
 
   return (
-    <main style={{ flex: 1, display: 'flex', minHeight: 0, background: 'var(--bg)' }}>
+    <main style={{ flex: 1, display: 'flex', minHeight: 0, minWidth: 0, overflow: 'hidden', background: 'var(--bg)' }}>
       <QuickActionsPanel
         title="Shareholders quick actions"
         subtitle="Jump to a key view"
