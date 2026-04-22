@@ -10,6 +10,7 @@ import NotificationsPage from '../components/pages/NotificationsPage';
 import Toast from '../components/ui/Toast';
 import { useConversations } from '../hooks/useConversations';
 import { useArtifacts, ArtifactsProvider } from '../hooks/useArtifacts';
+import useHistoryBack from '../hooks/useHistoryBack';
 
 export default function RootLayout() {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -28,6 +29,9 @@ export default function RootLayout() {
   };
 
   const goBack = () => setPage(null);
+
+  // Native back button closes sub-pages (settings, profile, notifications).
+  useHistoryBack(!!page, goBack);
 
   return (
     <ArtifactsProvider value={artifacts}>

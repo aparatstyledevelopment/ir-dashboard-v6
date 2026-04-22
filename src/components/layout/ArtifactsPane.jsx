@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { X, ChevronRight, PanelRightClose, PanelRightOpen } from 'lucide-react';
+import { X, ChevronRight, ChevronLeft, PanelRightClose, PanelRightOpen } from 'lucide-react';
 import ArtifactView from '../artifacts/ArtifactView';
+import useHistoryBack from '../../hooks/useHistoryBack';
 
 function QuickActionList({ actions, title, subtitle }) {
   return (
@@ -41,7 +42,7 @@ function QuickActionList({ actions, title, subtitle }) {
 
 export default function ArtifactsPane({ artifacts }) {
   const { state, closeArtifact, setWidth, togglePane } = artifacts;
-  const { paneVisible, item, width, quickActions, quickActionsTitle, quickActionsSub } = state;
+  const { paneVisible, item, stack, width, quickActions, quickActionsTitle, quickActionsSub } = state;
   const paneRef = useRef(null);
   const bodyRef = useRef(null);
   const dragStartRef = useRef(null);
@@ -66,19 +67,8 @@ export default function ArtifactsPane({ artifacts }) {
     return () => window.removeEventListener('keydown', onKey);
   }, [item, closeArtifact]);
 
-  // Mobile: push a history entry when an artifact opens so the browser
-  // back button closes the pane instead of navigating away.
-  useEffect(() => {
-    if (!isMobile || !item) return undefined;
-    window.history.pushState({ artifact: true }, '');
-    const onPopState = () => {
-      closeArtifact();
-    };
-    window.addEventListener('popstate', onPopState);
-    return () => {
-      window.removeEventListener('popstate', onPopState);
-    };
-  }, [isMobile, item, closeArtifact]);
+  // Mobile: browser back closes the current artifact level.
+  useHistoryBack(isMobile && !!item, closeArtifact);
 
   useEffect(() => {
     if (!dragging) return undefined;
@@ -107,7 +97,6 @@ export default function ArtifactsPane({ artifacts }) {
     };
   }, [dragging, setWidth]);
 
-  // Track scroll position on the artifact body to add shadow to close btn.
   useEffect(() => {
     const el = bodyRef.current;
     if (!el) return undefined;
@@ -117,11 +106,8 @@ export default function ArtifactsPane({ artifacts }) {
     return () => el.removeEventListener('scroll', onScroll);
   });
 
-  // Desktop: always render, visibility controlled by paneVisible.
-  // Mobile: only render when an actual artifact item is open.
   if (isMobile && !item) return null;
   if (!isMobile && !paneVisible) {
-    // Show a small re-open tab on the right edge.
     return (
       <button
         type="button"
@@ -136,6 +122,7 @@ export default function ArtifactsPane({ artifacts }) {
   }
 
   const showingQuickActions = !item && quickActions.length > 0;
+  const hasBackStack = stack.length > 1;
 
   return (
     <aside
@@ -174,10 +161,14 @@ export default function ArtifactsPane({ artifacts }) {
           (bodyScrolled ? ' is-scrolled' : '')
         }
         onClick={item ? closeArtifact : togglePane}
-        aria-label={item ? 'Back to quick actions' : 'Collapse panel'}
-        title={item ? 'Back' : 'Collapse'}
+        aria-label={
+          hasBackStack ? 'Back' : item ? 'Close' : 'Collapse panel'
+        }
+        title={hasBackStack ? 'Back' : item ? 'Close' : 'Collapse'}
       >
-        {item ? (
+        {hasBackStack ? (
+          <ChevronLeft size={18} strokeWidth={1.75} />
+        ) : item ? (
           <X size={16} strokeWidth={1.75} />
         ) : (
           <PanelRightOpen size={16} strokeWidth={1.5} />

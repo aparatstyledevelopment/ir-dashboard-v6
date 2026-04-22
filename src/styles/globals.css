@@ -207,7 +207,7 @@ textarea {
   padding: 0;
 }
 .cb-share-btn svg {
-  transform: translateX(0.5px);
+  transform: translateX(-0.5px);
 }
 .cb-share-btn:hover {
   border-color: var(--text-primary);

@@ -1,12 +1,14 @@
 import { useRef, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
+import useHistoryBack from '../../hooks/useHistoryBack';
 
-// A swipe-to-dismiss bottom sheet rendered via portal.
-// Drag the handle or the sheet body downward to close.
 export default function BottomSheet({ open, onClose, children }) {
   const sheetRef = useRef(null);
   const startY = useRef(null);
   const [dragOffset, setDragOffset] = useState(0);
+
+  // Native back button closes the sheet instead of leaving the app.
+  useHistoryBack(open, onClose);
 
   const handleTouchStart = useCallback((e) => {
     startY.current = e.touches[0].clientY;
