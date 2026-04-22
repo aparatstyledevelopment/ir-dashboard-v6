@@ -52,7 +52,10 @@ export default function TargetingBriefing() {
         </div>
         <div className="cb-briefing-chart">
           <div className="cb-briefing-chart-title">Top AI scores</div>
-          <BarChart items={TOP_SCORES} maxLabelWidth={80} height={22} />
+          <BarChart
+            data={TOP_SCORES}
+            valueFormatter={(v) => `${v}/100`}
+          />
         </div>
         <div className="cb-briefing-chart">
           <div className="cb-briefing-chart-title">Avg fit score</div>
