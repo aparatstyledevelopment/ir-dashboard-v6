@@ -110,6 +110,10 @@ export default function MorningBriefing() {
         <div className="cb-briefing-charts">
           <div className="cb-briefing-chart">
             <div className="cb-briefing-chart-title">Price (30d)</div>
+            <p className="cb-briefing-chart-desc">
+              Daily closing prices over the last 30 trading days. A steady
+              climb here usually tracks positive momentum and broadening demand.
+            </p>
             <Sparkline
               data={PRICE_HISTORY}
               width="100%"
@@ -122,10 +126,19 @@ export default function MorningBriefing() {
           </div>
           <div className="cb-briefing-chart">
             <div className="cb-briefing-chart-title">Top 5 holders</div>
+            <p className="cb-briefing-chart-desc">
+              The five largest owners by share of capital. Concentration risk
+              becomes the story when the top two together exceed 40%.
+            </p>
             <BarChart data={TOP_5_HOLDERS} valueFormatter={(v) => formatPct(v, 2)} />
           </div>
           <div className="cb-briefing-chart">
             <div className="cb-briefing-chart-title">Ownership by type</div>
+            <p className="cb-briefing-chart-desc">
+              Split of the register by investor category — individuals, funds,
+              strategic, pension/insurance, banks. A balanced mix is typically
+              healthier than single-type dominance.
+            </p>
             <DonutChart
               data={OWNER_TYPE}
               size={120}
@@ -135,6 +148,11 @@ export default function MorningBriefing() {
           </div>
           <div className="cb-briefing-chart">
             <div className="cb-briefing-chart-title">Geography</div>
+            <p className="cb-briefing-chart-desc">
+              Share of capital held by investor country. Heavy domestic
+              concentration caps international interest but shields against
+              foreign outflows.
+            </p>
             <DonutChart
               data={GEO_SPLIT}
               size={120}
@@ -144,6 +162,11 @@ export default function MorningBriefing() {
           </div>
           <div className="cb-briefing-chart">
             <div className="cb-briefing-chart-title">Owner count (12mo)</div>
+            <p className="cb-briefing-chart-desc">
+              Total identified owners over the past twelve months. Steady
+              growth usually reflects broadening retail interest rather than
+              one-off institutional moves.
+            </p>
             <Sparkline
               data={OWNER_TREND}
               width="100%"
@@ -156,6 +179,10 @@ export default function MorningBriefing() {
           </div>
           <div className="cb-briefing-chart">
             <div className="cb-briefing-chart-title">Short interest trend</div>
+            <p className="cb-briefing-chart-desc">
+              Short position as a percentage of free float, sampled quarterly.
+              A declining ratio is a constructive signal for sentiment.
+            </p>
             <BarChart data={SHORT_TREND} valueFormatter={(v) => formatPct(v, 1)} />
           </div>
         </div>
