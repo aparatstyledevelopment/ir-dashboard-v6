@@ -139,7 +139,12 @@ export default function ConversationShell({
             flexDirection: 'column',
             gap: isEmpty ? '18px' : '20px',
             minWidth: 0,
-            overflow: 'hidden',
+            // `clip` clips visible overflow (wide cards can't escape
+            // the 720px column) without establishing a scroll
+            // container, so `position: sticky` inside descendant
+            // tables anchors to the outer conversation-scroll and
+            // column headers stay visible while the user scrolls.
+            overflow: 'clip',
             ...(isEmpty ? { minHeight: '100%' } : {}),
           }}
         >

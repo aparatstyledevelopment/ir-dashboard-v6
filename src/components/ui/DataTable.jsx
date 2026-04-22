@@ -1,22 +1,13 @@
-export default function DataTable({ columns, rows, maxHeight = 'calc(60vh / var(--cb-zoom, 1))' }) {
+export default function DataTable({ columns, rows }) {
   return (
-    // The table gets its OWN y-scroll box (not just overflow-x) so that
-    // sticky <th> cells have a proper scroll ancestor. Previously the
-    // wrapper had only `overflow-x: auto`; the spec forced overflow-y
-    // to `auto` as well, which meant sticky tried to anchor to a box
-    // that never actually y-scrolled — so the header either stayed put
-    // with the rows or bubbled up to the conversation scroll and ended
-    // up behind the top bar. A capped max-height here keeps long
-    // tables self-contained so the column header slides against the
-    // visible top of the table as the user scrolls the rows.
-    <div
-      className="w-full"
-      style={{
-        overflow: 'auto',
-        maxHeight,
-        position: 'relative',
-      }}
-    >
+    // No wrapper-level overflow here by design. `position: sticky` on the
+    // <th> cells below needs a scrolling ancestor; the nearest real one
+    // is the outer conversation / artifacts / evidence scroll. Wrapping
+    // the table in its own scroll box would (a) steal focus from that
+    // outer scroll and create the nested-scroll feel, and (b) in
+    // overflow:auto containers that don't actually need to scroll, the
+    // sticky header never "unsticks" — so header-following breaks.
+    <div className="w-full">
       <table
         className="w-full tabular"
         style={{
