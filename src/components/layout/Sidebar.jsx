@@ -1,3 +1,4 @@
+import { useState, useRef, useEffect } from 'react';
 import {
   LayoutDashboard,
   Users,
@@ -11,11 +12,13 @@ import {
   Calculator,
   FileText,
   Settings,
-  Plus,
   MessageSquare,
   X,
+  LayoutGrid,
+  ChevronRight,
 } from 'lucide-react';
 import { MODULES } from '../../data/modules';
+import { QUICK_ACTIONS } from '../../data/quickActions';
 
 const ICON_MAP = {
   LayoutDashboard,
@@ -31,16 +34,10 @@ const ICON_MAP = {
   FileText,
 };
 
-const MODULE_TAG = {
-  dashboard: 'D',
-  shareholders: 'S',
-  targeting: 'T',
-};
-
-const MODULE_ID_FOR_SESSION = {
-  dashboard: 'dashboard',
-  shareholders: 'shareholders',
-  targeting: 'targeting',
+const MODULE_LABEL = {
+  dashboard: 'Dashboard',
+  shareholders: 'Shareholders',
+  targeting: 'Targeting',
 };
 
 function formatRelative(ts) {
@@ -54,13 +51,63 @@ function formatRelative(ts) {
   return `${d}d`;
 }
 
+function QuickActionsDialog({ moduleId, onItemClick, onClose }) {
+  const ref = useRef(null);
+  const config = QUICK_ACTIONS[moduleId];
+
+  useEffect(() => {
+    const onClickOut = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) onClose();
+    };
+    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('mousedown', onClickOut);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onClickOut);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [onClose]);
+
+  if (!config) return null;
+
+  return (
+    <div ref={ref} className="cb-sidebar-qa-dialog">
+      <div className="cb-sidebar-qa-dialog-head">{config.title}</div>
+      {config.items.map((item) => {
+        const Icon = item.icon;
+        return (
+          <button
+            key={item.id}
+            type="button"
+            className="cb-sidebar-qa-dialog-item"
+            onClick={() => {
+              onItemClick?.(item.screen);
+              onClose();
+            }}
+          >
+            {Icon && <Icon size={13} strokeWidth={1.75} style={{ color: 'var(--text-tertiary)', flexShrink: 0 }} />}
+            <span style={{ flex: 1, minWidth: 0 }}>
+              <span className="cb-sidebar-qa-dialog-label">{item.label}</span>
+              <span className="cb-sidebar-qa-dialog-sub">{item.sub}</span>
+            </span>
+            <ChevronRight size={11} strokeWidth={1.75} style={{ color: 'var(--text-tertiary)', flexShrink: 0 }} />
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function Sidebar({
   conversations,
   activeModule,
   onSwitchModule,
   onOpenSettings,
   onOpenProfile,
+  onOpenQuickAction,
 }) {
+  const [qaDialog, setQaDialog] = useState(null);
+
   const state = conversations?.state;
   const globalList = state
     ? state.sessionOrder
@@ -79,22 +126,11 @@ export default function Sidebar({
     (s) => s.messageCount > 0 || s.title !== 'New chat'
   );
 
-  const isModuleWithConversation =
-    activeModule === 'dashboard' ||
-    activeModule === 'shareholders' ||
-    activeModule === 'targeting';
-
-  const handleNewChat = () => {
-    if (!conversations) return;
-    conversations.goToStaging(activeModule);
-  };
-
   const handleSwitchSession = (s) => {
     if (!conversations) return;
     conversations.switchSession(s.id);
     if (s.moduleId !== activeModule) {
       onSwitchModule?.(s.moduleId);
-      // Re-set activeByModule since onSwitchModule calls goToStaging
       setTimeout(() => conversations.switchSession(s.id), 0);
     }
   };
@@ -115,27 +151,50 @@ export default function Sidebar({
         <div className="cb-sidebar-monitor">Monitor</div>
       </div>
 
-      <nav className="cb-sidebar-nav">
-        {MODULES.map((m) => {
-          const Icon = ICON_MAP[m.icon] || LayoutDashboard;
-          const isActive = activeModule === m.id;
-          return (
-            <button
-              key={m.id}
-              type="button"
-              title={m.label}
-              className={'cb-sidebar-link' + (isActive ? ' is-active' : '')}
-              onClick={() => onSwitchModule?.(m.id)}
-            >
-              <Icon size={15} strokeWidth={1.75} />
-              <span className="cb-sidebar-label">{m.label}</span>
-              {!m.active && <span className="cb-soon-badge">Soon</span>}
-            </button>
-          );
-        })}
-      </nav>
+      <div className="cb-sidebar-scroll">
+        <nav className="cb-sidebar-nav">
+          {MODULES.map((m) => {
+            const Icon = ICON_MAP[m.icon] || LayoutDashboard;
+            const isActive = activeModule === m.id;
+            const hasQuickActions = Boolean(QUICK_ACTIONS[m.id]);
+            return (
+              <div key={m.id} className="cb-sidebar-link-row">
+                <button
+                  type="button"
+                  title={m.label}
+                  className={'cb-sidebar-link' + (isActive ? ' is-active' : '')}
+                  onClick={() => onSwitchModule?.(m.id)}
+                >
+                  <Icon size={15} strokeWidth={1.75} />
+                  <span className="cb-sidebar-label">{m.label}</span>
+                  {!m.active && <span className="cb-soon-badge">Soon</span>}
+                </button>
+                {hasQuickActions && (
+                  <button
+                    type="button"
+                    className="cb-sidebar-qa-trigger"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setQaDialog((prev) => (prev === m.id ? null : m.id));
+                    }}
+                    aria-label={`Quick actions for ${m.label}`}
+                    title="Quick actions"
+                  >
+                    <LayoutGrid size={11} strokeWidth={1.75} />
+                  </button>
+                )}
+                {qaDialog === m.id && (
+                  <QuickActionsDialog
+                    moduleId={m.id}
+                    onItemClick={onOpenQuickAction}
+                    onClose={() => setQaDialog(null)}
+                  />
+                )}
+              </div>
+            );
+          })}
+        </nav>
 
-      {isModuleWithConversation && (
         <div className="cb-sidebar-chats">
           <div className="cb-sidebar-chats-header">
             <span>Recent chats</span>
@@ -168,7 +227,12 @@ export default function Sidebar({
                     strokeWidth={1.75}
                     className="cb-sidebar-chat-icon"
                   />
-                  <span className="cb-sidebar-chat-title">{s.title}</span>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <span className="cb-sidebar-chat-title">{s.title}</span>
+                    <span className="cb-sidebar-chat-cat">
+                      {MODULE_LABEL[s.moduleId] || s.moduleId}
+                    </span>
+                  </div>
                   <span className="cb-sidebar-chat-time">
                     {formatRelative(s.createdAt)}
                   </span>
@@ -186,7 +250,7 @@ export default function Sidebar({
             </div>
           )}
         </div>
-      )}
+      </div>
 
       <div className="cb-sidebar-footer">
         <button

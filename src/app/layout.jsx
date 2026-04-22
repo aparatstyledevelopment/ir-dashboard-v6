@@ -7,6 +7,7 @@ import ArtifactsPane from '../components/layout/ArtifactsPane';
 import SettingsPage from '../components/pages/SettingsPage';
 import ProfilePage from '../components/pages/ProfilePage';
 import NotificationsPage from '../components/pages/NotificationsPage';
+import QuickActionsPage from '../components/pages/QuickActionsPage';
 import Toast from '../components/ui/Toast';
 import { useConversations } from '../hooks/useConversations';
 import { useArtifacts, ArtifactsProvider } from '../hooks/useArtifacts';
@@ -30,8 +31,11 @@ export default function RootLayout() {
 
   const goBack = () => setPage(null);
 
-  // Native back button closes sub-pages (settings, profile, notifications).
   useHistoryBack(!!page, goBack);
+
+  const handleOpenQuickAction = (screen) => {
+    artifacts.openArtifact({ type: 'screen', payload: { screen } });
+  };
 
   return (
     <ArtifactsProvider value={artifacts}>
@@ -48,6 +52,7 @@ export default function RootLayout() {
           onSwitchModule={switchModule}
           onOpenSettings={() => setPage('settings')}
           onOpenProfile={() => setPage('profile')}
+          onOpenQuickAction={handleOpenQuickAction}
         />
         <MobileDrawer
           open={drawerOpen}
@@ -79,6 +84,15 @@ export default function RootLayout() {
               <ProfilePage onBack={goBack} />
             ) : page === 'notifications' ? (
               <NotificationsPage onBack={goBack} />
+            ) : page === 'quickactions' ? (
+              <QuickActionsPage
+                activeModule={activeModule}
+                onBack={goBack}
+                onItemClick={(screen) => {
+                  setPage(null);
+                  handleOpenQuickAction(screen);
+                }}
+              />
             ) : (
               <Outlet
                 context={{

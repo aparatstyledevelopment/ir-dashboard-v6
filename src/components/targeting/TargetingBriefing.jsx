@@ -1,21 +1,74 @@
 import BriefingCard from '../shared/BriefingCard';
+import DonutChart from '../ui/DonutChart';
+import BarChart from '../ui/BarChart';
+import ProgressRing from '../ui/ProgressRing';
+import StackedBar from '../ui/StackedBar';
 import { TARGETS_SUMMARY } from '../../data/targets';
+
+const PRIORITY_SPLIT = [
+  { key: 'hot', label: 'Hot', value: TARGETS_SUMMARY.hot },
+  { key: 'warm', label: 'Warm', value: TARGETS_SUMMARY.warm },
+  { key: 'cold', label: 'Cold', value: TARGETS_SUMMARY.cold },
+];
+
+const TOP_SCORES = [
+  { label: 'Polar Capital', value: 92 },
+  { label: 'Allianz GI', value: 88 },
+  { label: 'Fidelity Intl', value: 86 },
+  { label: 'Columbia Thr.', value: 84 },
+  { label: 'Impax AM', value: 82 },
+];
+
+const OUTREACH_STATUS = [
+  { key: 'met', label: 'Met this quarter', value: 3 },
+  { key: 'warm', label: 'Warm intro avail.', value: 4 },
+  { key: 'never', label: 'Never contacted', value: 5 },
+  { key: 'cold', label: 'No pathway yet', value: 3 },
+];
 
 export default function TargetingBriefing() {
   const teaser = (
-    <p style={{ margin: 0 }}>
-      <span className="cb-num">{TARGETS_SUMMARY.total}</span> candidate targets
-      · <span className="cb-pos">{TARGETS_SUMMARY.hot} Hot</span> /{' '}
-      <span className="cb-num">{TARGETS_SUMMARY.warm} Warm</span> /{' '}
-      <span style={{ color: 'var(--text-tertiary)' }}>
-        {TARGETS_SUMMARY.cold} Cold
-      </span>{' '}
-      · Avg score <span className="cb-num">{TARGETS_SUMMARY.avgScore}/100</span>{' '}
-      · <span className="cb-num">47</span> peer-holder gaps (
-      <span className="cb-num">18</span> multi-peer) ·{' '}
-      <span className="cb-pos">+2 wins</span> in Q1 ·{' '}
-      <span className="cb-num">9</span> open roadshow slots.
-    </p>
+    <>
+      <p style={{ margin: '0 0 16px' }}>
+        <span className="cb-num">{TARGETS_SUMMARY.total}</span> candidate targets
+        · <span className="cb-pos">{TARGETS_SUMMARY.hot} Hot</span> /{' '}
+        <span className="cb-num">{TARGETS_SUMMARY.warm} Warm</span> /{' '}
+        <span style={{ color: 'var(--text-tertiary)' }}>
+          {TARGETS_SUMMARY.cold} Cold
+        </span>{' '}
+        · Avg score <span className="cb-num">{TARGETS_SUMMARY.avgScore}/100</span>{' '}
+        · <span className="cb-pos">+2 wins</span> in Q1 ·{' '}
+        <span className="cb-num">9</span> open roadshow slots.
+      </p>
+      <div className="cb-briefing-charts">
+        <div className="cb-briefing-chart">
+          <div className="cb-briefing-chart-title">Priority split</div>
+          <DonutChart
+            data={PRIORITY_SPLIT}
+            size={80}
+            centerValue={String(TARGETS_SUMMARY.total)}
+            centerLabel="targets"
+          />
+        </div>
+        <div className="cb-briefing-chart">
+          <div className="cb-briefing-chart-title">Top AI scores</div>
+          <BarChart items={TOP_SCORES} maxLabelWidth={80} height={22} />
+        </div>
+        <div className="cb-briefing-chart">
+          <div className="cb-briefing-chart-title">Avg fit score</div>
+          <ProgressRing
+            value={TARGETS_SUMMARY.avgScore}
+            max={100}
+            size={80}
+            label={`${TARGETS_SUMMARY.avgScore}/100`}
+          />
+        </div>
+        <div className="cb-briefing-chart">
+          <div className="cb-briefing-chart-title">Outreach status</div>
+          <StackedBar data={OUTREACH_STATUS} />
+        </div>
+      </div>
+    </>
   );
 
   return (
@@ -28,71 +81,39 @@ export default function TargetingBriefing() {
         { label: 'Hot', value: String(TARGETS_SUMMARY.hot) },
         { label: 'Warm', value: String(TARGETS_SUMMARY.warm) },
         { label: 'Avg score', value: `${TARGETS_SUMMARY.avgScore}/100` },
-        { label: 'Peer gaps', value: '47' },
       ]}
     >
       <section>
-        <h3 className="cb-section-head">Pipeline Snapshot</h3>
+        <h3 className="cb-section-head">Pipeline</h3>
         <p style={{ margin: 0 }}>
-          The AI targeting engine has identified{' '}
-          <span className="cb-num">{TARGETS_SUMMARY.total}</span> candidate
-          investors not currently holding INTEG B.{' '}
+          <span className="cb-num">{TARGETS_SUMMARY.total}</span> candidates.{' '}
           <span className="cb-pos">{TARGETS_SUMMARY.hot} hot</span>,{' '}
-          <span className="cb-num">{TARGETS_SUMMARY.warm} warm</span>, and{' '}
-          <span style={{ color: 'var(--text-tertiary)' }}>
-            {TARGETS_SUMMARY.cold} cold
-          </span>
-          . Average AI fit score is{' '}
-          <span className="cb-num">{TARGETS_SUMMARY.avgScore}/100</span>.
+          <span className="cb-num">{TARGETS_SUMMARY.warm} warm</span>,{' '}
+          <span style={{ color: 'var(--text-tertiary)' }}>{TARGETS_SUMMARY.cold} cold</span>.
+          Avg score <span className="cb-num">{TARGETS_SUMMARY.avgScore}/100</span>.
         </p>
       </section>
-
       <section>
-        <h3 className="cb-section-head">Top Opportunities</h3>
+        <h3 className="cb-section-head">Top Targets</h3>
         <p style={{ margin: 0 }}>
-          The highest-scoring target this week is{' '}
-          <span className="cb-strong">Polar Capital Healthcare</span>{' '}
-          (<span className="cb-num">92/100</span>) — a UK healthcare-dedicated
-          strategy that already holds 3 of our 5 closest peers.{' '}
-          <span className="cb-strong">Allianz GI European Equity</span>{' '}
-          (<span className="cb-num">88</span>) and{' '}
-          <span className="cb-strong">Fidelity International Small Cap</span>{' '}
-          (<span className="cb-num">86</span>) round out the top 3.
+          <span className="cb-strong">Polar Capital</span> (92),{' '}
+          <span className="cb-strong">Allianz GI</span> (88),{' '}
+          <span className="cb-strong">Fidelity Intl</span> (86).
         </p>
       </section>
-
-      <section>
-        <h3 className="cb-section-head">Peer Gaps</h3>
-        <p style={{ margin: 0 }}>
-          Our closest peers (BONESUPPORT, Medistim, OssDsign) have{' '}
-          <span className="cb-num">47</span> combined institutional holders
-          that are NOT on our register. <span className="cb-num">18</span> of
-          them hold 2 or more of our peers simultaneously — these are the
-          prime targets for a "peer gap" outreach campaign.
-        </p>
-      </section>
-
       <section>
         <h3 className="cb-section-head">Recent Wins</h3>
         <p style={{ margin: 0 }}>
-          <span className="cb-pos">+2</span> new institutional holders entered
-          the register in Q1:{' '}
-          <span className="cb-strong">Aberdeen Standard Investments</span>{' '}
-          (<span className="cb-num">0.52%</span>) and{' '}
-          <span className="cb-strong">Goldman Sachs AM</span>{' '}
-          (<span className="cb-num">0.24%</span>). Both were on the
-          prioritized target list in the previous quarter.
+          <span className="cb-pos">+2</span> new institutional holders in Q1:{' '}
+          <span className="cb-strong">Aberdeen</span> (0.52%) and{' '}
+          <span className="cb-strong">Goldman Sachs AM</span> (0.24%).
         </p>
       </section>
-
       <section>
-        <h3 className="cb-section-head">Roadshow Capacity</h3>
+        <h3 className="cb-section-head">Roadshow</h3>
         <p style={{ margin: 0 }}>
-          The spring roadshow has <span className="cb-num">19</span> slots
-          booked across Stockholm, Copenhagen, and London. There are{' '}
-          <span className="cb-num">6</span> open slots in London and{' '}
-          <span className="cb-num">3</span> in Stockholm that could be filled
-          from the hot target list.
+          19 slots booked · <span className="cb-num">9</span> open across London
+          and Stockholm.
         </p>
       </section>
     </BriefingCard>

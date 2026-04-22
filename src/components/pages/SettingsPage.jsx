@@ -1,6 +1,7 @@
-import { ArrowLeft, User, Bell as BellIcon, Shield, Globe, Palette } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { ArrowLeft, User, Bell as BellIcon, Shield, Globe, Palette, Maximize2 } from 'lucide-react';
 
-function SettingRow({ icon: Icon, label, value, sub }) {
+function SettingRow({ icon: Icon, label, value, sub, children }) {
   return (
     <div className="cb-settings-row">
       <div className="cb-settings-row-icon">
@@ -10,9 +11,63 @@ function SettingRow({ icon: Icon, label, value, sub }) {
         <div style={{ fontSize: '12.5px', fontWeight: 500, color: 'var(--text-primary)' }}>{label}</div>
         {sub && <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', marginTop: '2px' }}>{sub}</div>}
       </div>
-      {value && (
-        <span style={{ fontSize: '11.5px', color: 'var(--text-secondary)', flexShrink: 0 }}>{value}</span>
+      {children || (
+        value && (
+          <span style={{ fontSize: '11.5px', color: 'var(--text-secondary)', flexShrink: 0 }}>{value}</span>
+        )
       )}
+    </div>
+  );
+}
+
+const SIZE_OPTIONS = [
+  { key: '', label: 'Small' },
+  { key: 'cb-size-medium', label: 'Medium' },
+  { key: 'cb-size-large', label: 'Large' },
+];
+
+function SizePicker() {
+  const [active, setActive] = useState(() => {
+    if (document.body.classList.contains('cb-size-large')) return 'cb-size-large';
+    if (document.body.classList.contains('cb-size-medium')) return 'cb-size-medium';
+    return '';
+  });
+
+  const apply = (cls) => {
+    document.body.classList.remove('cb-size-medium', 'cb-size-large');
+    if (cls) document.body.classList.add(cls);
+    setActive(cls);
+    try { localStorage.setItem('cb-size', cls); } catch {}
+  };
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('cb-size');
+      if (saved) apply(saved);
+    } catch {}
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  return (
+    <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
+      {SIZE_OPTIONS.map((o) => (
+        <button
+          key={o.key}
+          type="button"
+          onClick={() => apply(o.key)}
+          style={{
+            padding: '4px 10px',
+            borderRadius: '999px',
+            border: active === o.key ? '1.5px solid var(--text-primary)' : '1px solid var(--border)',
+            background: active === o.key ? 'var(--surface-dark)' : 'var(--bg)',
+            color: active === o.key ? 'var(--surface-dark-text)' : 'var(--text-secondary)',
+            fontSize: '11px',
+            fontWeight: active === o.key ? 600 : 400,
+            cursor: 'pointer',
+          }}
+        >
+          {o.label}
+        </button>
+      ))}
     </div>
   );
 }
@@ -39,9 +94,16 @@ export default function SettingsPage({ onBack }) {
         </p>
 
         <section className="cb-settings-section">
-          <h2 className="cb-settings-section-title">General</h2>
-          <SettingRow icon={Globe} label="Language" value="English" sub="Display language for the interface" />
+          <h2 className="cb-settings-section-title">Display</h2>
+          <SettingRow icon={Maximize2} label="Interface size" sub="Adjusts text and UI element sizes">
+            <SizePicker />
+          </SettingRow>
           <SettingRow icon={Palette} label="Theme" value="Light" sub="Appearance mode" />
+          <SettingRow icon={Globe} label="Language" value="English" sub="Display language" />
+        </section>
+
+        <section className="cb-settings-section">
+          <h2 className="cb-settings-section-title">Notifications</h2>
           <SettingRow icon={BellIcon} label="Email notifications" value="On" sub="Weekly digest and alerts" />
         </section>
 

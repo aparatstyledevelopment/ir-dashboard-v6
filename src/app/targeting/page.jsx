@@ -1,6 +1,4 @@
-import { useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import { Target, GitCompare } from 'lucide-react';
 import { useModuleConversation } from '../../hooks/useConversations';
 import { createChatSubmitHandler } from '../../utils/slashCommands';
 import { resolveAttachedShares } from '../../utils/resolveShare';
@@ -9,6 +7,7 @@ import ConversationShell from '../../components/conversation/ConversationShell';
 import { renderAnyResponse } from '../../components/conversation/renderResponse';
 import QuickActionsPanel from '../../components/layout/QuickActionsPanel';
 import ChatInput from '../../components/dashboard/ChatInput';
+import { QUICK_ACTIONS } from '../../data/quickActions';
 import TargetingBriefing from '../../components/targeting/TargetingBriefing';
 import TargetingChips from '../../components/targeting/TargetingChips';
 import { getCatalogEntry } from '../../data/responseCatalog';
@@ -66,30 +65,11 @@ export default function TargetingPage() {
   const openScreen = (screen) =>
     artifacts.openArtifact({ type: 'screen', payload: { screen } });
 
-  const quickActions = [
-    {
-      id: 'qa.tgt.screener',
-      icon: Target,
-      label: 'Target screener',
-      sub: 'All AI-prioritized candidates',
-      onClick: () => openScreen('targeting-screener'),
-    },
-    {
-      id: 'qa.tgt.compare',
-      icon: GitCompare,
-      label: 'Compare owners',
-      sub: 'Peer holder overlap matrix',
-      onClick: () => openScreen('targeting-compare-owners'),
-    },
-  ];
-
-  useEffect(() => {
-    artifacts.setQuickActions(
-      quickActions,
-      'Targeting quick actions',
-      'Jump to a key view'
-    );
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  const qa = QUICK_ACTIONS.targeting;
+  const quickActions = qa.items.map((item) => ({
+    ...item,
+    onClick: () => openScreen(item.screen),
+  }));
 
   const handleReport = () => {
     const shares = resolveAttachedShares(attachments, messages);

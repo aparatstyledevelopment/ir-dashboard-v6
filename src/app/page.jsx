@@ -1,12 +1,4 @@
-import { useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import {
-  Users,
-  ArrowDownUp,
-  Lock,
-  Target,
-  Mail,
-} from 'lucide-react';
 import { useModuleConversation } from '../hooks/useConversations';
 import { createChatSubmitHandler } from '../utils/slashCommands';
 import { resolveAttachedShares } from '../utils/resolveShare';
@@ -18,6 +10,7 @@ import {
 } from '../components/conversation/renderResponse';
 import QuickActionsPanel from '../components/layout/QuickActionsPanel';
 import ChatInput from '../components/dashboard/ChatInput';
+import { QUICK_ACTIONS } from '../data/quickActions';
 import MorningBriefing from '../components/dashboard/MorningBriefing';
 import SmartChips from '../components/dashboard/SmartChips';
 import { getCatalogEntry } from '../data/responseCatalog';
@@ -75,51 +68,11 @@ export default function DashboardPage() {
   const openScreen = (screen) =>
     artifacts.openArtifact({ type: 'screen', payload: { screen } });
 
-  const quickActions = [
-    {
-      id: 'qa.dash.owners',
-      icon: Users,
-      label: 'All shareholders',
-      sub: '3,498 identified holders',
-      onClick: () => openScreen('shareholders-owners'),
-    },
-    {
-      id: 'qa.dash.contacts',
-      icon: Mail,
-      label: 'All contacts',
-      sub: 'IR CRM database',
-      onClick: () => openScreen('crm-people'),
-    },
-    {
-      id: 'qa.dash.transactions',
-      icon: ArrowDownUp,
-      label: 'Daily transactions',
-      sub: 'Register flow (T+2)',
-      onClick: () => openScreen('shareholders-daily-transactions'),
-    },
-    {
-      id: 'qa.dash.lockups',
-      icon: Lock,
-      label: 'Lock-up agreements',
-      sub: 'Active lock-ups & expiry',
-      onClick: () => openScreen('shareholders-lockups'),
-    },
-    {
-      id: 'qa.dash.targets',
-      icon: Target,
-      label: 'Targeting screener',
-      sub: 'AI-prioritized prospects',
-      onClick: () => openScreen('targeting-screener'),
-    },
-  ];
-
-  useEffect(() => {
-    artifacts.setQuickActions(
-      quickActions,
-      'Dashboard quick actions',
-      'Jump to a key view'
-    );
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  const qa = QUICK_ACTIONS.dashboard;
+  const quickActions = qa.items.map((item) => ({
+    ...item,
+    onClick: () => openScreen(item.screen),
+  }));
 
   const handleReport = () => {
     const shares = resolveAttachedShares(attachments, messages);
