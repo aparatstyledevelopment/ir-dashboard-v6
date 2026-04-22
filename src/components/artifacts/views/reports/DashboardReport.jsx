@@ -6,11 +6,11 @@ import { formatPct } from '../../../../utils/formatters';
 const PRICE_HISTORY = [14.80, 15.10, 14.95, 15.30, 15.55, 15.38, 15.60, 15.85, 15.70, 16.05, 16.16];
 const OWNER_TREND = [3374, 3389, 3401, 3412, 3424, 3438, 3451, 3460, 3470, 3478, 3489, 3498];
 const TOP_5_HOLDERS = [
-  { label: 'Richard Brännemark', value: 23.19 },
-  { label: 'Aviva Perfusion AS', value: 21.13 },
-  { label: 'Nordea Funds', value: 3.45 },
-  { label: 'SEB Life', value: 2.87 },
-  { label: 'Al Rajhi Capital', value: 1.98 },
+  { label: 'Richard Brännemark', value: 23.19, color: 'var(--chart-1)' },
+  { label: 'Aviva Perfusion AS', value: 21.13, color: 'var(--chart-2)' },
+  { label: 'Nordea Funds', value: 3.45, color: 'var(--chart-3)' },
+  { label: 'SEB Life', value: 2.87, color: 'var(--chart-4)' },
+  { label: 'Al Rajhi Capital', value: 1.98, color: 'var(--chart-5)' },
 ];
 const OWNER_TYPE = [
   { key: 'ind', label: 'Individual', value: 32.4 },
@@ -20,10 +20,10 @@ const OWNER_TYPE = [
   { key: 'bank', label: 'Banks', value: 6.1 },
 ];
 const SHORT_TREND = [
-  { label: '6 months ago', value: 3.2 },
-  { label: '3 months ago', value: 2.8 },
-  { label: '1 month ago', value: 2.3 },
-  { label: 'Today', value: 2.1 },
+  { label: '6 months ago', value: 3.2, color: 'var(--chart-5)' },
+  { label: '3 months ago', value: 2.8, color: 'var(--chart-3)' },
+  { label: '1 month ago', value: 2.3, color: 'var(--chart-1)' },
+  { label: 'Today', value: 2.1, color: 'var(--positive)' },
 ];
 
 export default function DashboardReport() {
@@ -78,7 +78,7 @@ export default function DashboardReport() {
             viewWidth={600}
             height={80}
             strokeWidth={1.8}
-            color="var(--text-primary)"
+            color="var(--positive)"
             fill
           />
           <figcaption>

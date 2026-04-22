@@ -9,11 +9,11 @@ const PRICE_HISTORY = [14.80, 15.10, 14.95, 15.30, 15.55, 15.38, 15.60, 15.85, 1
 const OWNER_TREND = [3374, 3389, 3401, 3412, 3424, 3438, 3451, 3460, 3470, 3478, 3489, 3498];
 
 const TOP_5_HOLDERS = [
-  { label: 'R. Brännemark', value: 23.19 },
-  { label: 'Aviva Perfusion', value: 21.13 },
-  { label: 'Nordea Funds', value: 3.45 },
-  { label: 'SEB Life', value: 2.87 },
-  { label: 'Al Rajhi', value: 1.98 },
+  { label: 'R. Brännemark', value: 23.19, color: 'var(--chart-1)' },
+  { label: 'Aviva Perfusion', value: 21.13, color: 'var(--chart-2)' },
+  { label: 'Nordea Funds', value: 3.45, color: 'var(--chart-3)' },
+  { label: 'SEB Life', value: 2.87, color: 'var(--chart-4)' },
+  { label: 'Al Rajhi', value: 1.98, color: 'var(--chart-5)' },
 ];
 
 const OWNER_TYPE = [
@@ -32,10 +32,12 @@ const GEO_SPLIT = [
 ];
 
 const SHORT_TREND = [
-  { label: '6mo ago', value: 3.2 },
-  { label: '3mo ago', value: 2.8 },
-  { label: '1mo ago', value: 2.3 },
-  { label: 'Now', value: 2.1 },
+  // Shorter short-interest = better. Progress bars tinted green so the
+  // "getting better" read is immediate.
+  { label: '6mo ago', value: 3.2, color: 'var(--chart-5)' },
+  { label: '3mo ago', value: 2.8, color: 'var(--chart-3)' },
+  { label: '1mo ago', value: 2.3, color: 'var(--chart-1)' },
+  { label: 'Now', value: 2.1, color: 'var(--positive)' },
 ];
 
 export default function MorningBriefing() {
@@ -120,7 +122,7 @@ export default function MorningBriefing() {
               viewWidth={400}
               height={60}
               strokeWidth={1.5}
-              color="var(--text-primary)"
+              color="var(--positive)"
               fill
             />
           </div>

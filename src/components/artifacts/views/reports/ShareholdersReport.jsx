@@ -20,8 +20,8 @@ const TYPE_BREAKDOWN = [
   { key: 'bank', label: 'Banks', value: 6.1 },
 ];
 const NET_FLOW = [
-  { label: 'Holders who added', value: 5 },
-  { label: 'Holders who trimmed', value: 4 },
+  { label: 'Holders who added', value: 5, color: 'var(--positive)' },
+  { label: 'Holders who trimmed', value: 4, color: 'var(--negative)' },
 ];
 const TOP_MOVERS = [
   { name: 'Aviva Perfusion AS', change: -21204, note: 'Continued measured trim — 4th consecutive month.' },
