@@ -1,6 +1,7 @@
 import ChipGroup from '../ui/ChipGroup';
 
 export const SH_TOP_CHIPS = [
+  { id: 'create-report', label: 'Create report', kind: 'report', reportId: 'shareholders' },
   { id: 'sh.register', label: 'Show full register', responseType: 'sh.register' },
   { id: 'sh.trend', label: 'Owner trend (12 months)', responseType: 'sh.trend' },
   { id: 'sh.geo', label: 'Geographic breakdown', responseType: 'sh.geo' },

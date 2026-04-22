@@ -1,6 +1,7 @@
 import ChipGroup from '../ui/ChipGroup';
 
 export const TGT_TOP_CHIPS = [
+  { id: 'create-report', label: 'Create report', kind: 'report', reportId: 'targeting' },
   {
     id: 'tgt.priority',
     label: 'Show prioritized targets',

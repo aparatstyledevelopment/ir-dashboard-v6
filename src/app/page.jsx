@@ -57,6 +57,7 @@ export default function DashboardPage() {
     sendCatalogQuery,
     sendTextQuery,
     sendBulkResponses,
+    sendReportQuery,
     clearActiveSession,
     createSession,
     isChipSpent,
@@ -106,6 +107,10 @@ export default function DashboardPage() {
   void DASHBOARD_L1_TYPES;
 
   const handleChipSelect = (chip) => {
+    if (chip.kind === 'report') {
+      sendReportQuery(chip.reportId, chip.id, chip.label);
+      return;
+    }
     sendChipQuery(chip.id, chip.responseType, chip.label);
   };
 
