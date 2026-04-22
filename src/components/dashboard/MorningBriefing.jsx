@@ -4,7 +4,7 @@ import BarChart from '../ui/BarChart';
 import Sparkline from '../ui/Sparkline';
 import StackedBar from '../ui/StackedBar';
 import ProgressRing from '../ui/ProgressRing';
-import { dayName } from '../../utils/formatters';
+import { dayName, formatPct } from '../../utils/formatters';
 
 const PRICE_HISTORY = [14.80, 15.10, 14.95, 15.30, 15.55, 15.38, 15.60, 15.85, 15.70, 16.05, 16.16];
 
@@ -71,7 +71,7 @@ export default function MorningBriefing() {
         </div>
         <div className="cb-briefing-chart">
           <div className="cb-briefing-chart-title">Top 5 holders</div>
-          <BarChart items={TOP_5_HOLDERS} maxLabelWidth={90} height={22} />
+          <BarChart data={TOP_5_HOLDERS} valueFormatter={(v) => formatPct(v, 2)} />
         </div>
         <div className="cb-briefing-chart">
           <div className="cb-briefing-chart-title">Ownership by type</div>
@@ -105,7 +105,7 @@ export default function MorningBriefing() {
         </div>
         <div className="cb-briefing-chart">
           <div className="cb-briefing-chart-title">Short interest trend</div>
-          <BarChart items={SHORT_TREND} maxLabelWidth={60} height={22} />
+          <BarChart data={SHORT_TREND} valueFormatter={(v) => formatPct(v, 1)} />
         </div>
       </div>
     </>

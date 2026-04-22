@@ -3,6 +3,7 @@ import DonutChart from '../ui/DonutChart';
 import BarChart from '../ui/BarChart';
 import Sparkline from '../ui/Sparkline';
 import StackedBar from '../ui/StackedBar';
+import { formatNumber } from '../../utils/formatters';
 
 const OWNER_TREND = [3374, 3389, 3401, 3412, 3424, 3438, 3451, 3460, 3470, 3478, 3489, 3498];
 
@@ -66,7 +67,11 @@ export default function ShareholdersBriefing() {
         </div>
         <div className="cb-briefing-chart">
           <div className="cb-briefing-chart-title">30d net flow</div>
-          <BarChart items={NET_FLOW} maxLabelWidth={72} height={22} />
+          <BarChart
+            data={NET_FLOW}
+            baseline="zero"
+            valueFormatter={(v) => `${formatNumber(v)} holders`}
+          />
         </div>
       </div>
     </>
