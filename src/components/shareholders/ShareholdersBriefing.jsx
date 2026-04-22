@@ -94,6 +94,10 @@ export default function ShareholdersBriefing() {
         <div className="cb-briefing-charts">
           <div className="cb-briefing-chart">
             <div className="cb-briefing-chart-title">Owner count (12mo)</div>
+            <p className="cb-briefing-chart-desc">
+              Identified owners tracked month by month across the past year.
+              Sustained growth points to continued new-investor interest.
+            </p>
             <Sparkline
               data={OWNER_TREND}
               width="100%"
@@ -106,6 +110,10 @@ export default function ShareholdersBriefing() {
           </div>
           <div className="cb-briefing-chart">
             <div className="cb-briefing-chart-title">Geography</div>
+            <p className="cb-briefing-chart-desc">
+              Capital held by country of the registered owner. Sweden dominates
+              at 68%; the foreign share ticked down 1.3pp recently.
+            </p>
             <DonutChart
               data={GEO_BREAKDOWN}
               size={120}
@@ -115,10 +123,18 @@ export default function ShareholdersBriefing() {
           </div>
           <div className="cb-briefing-chart">
             <div className="cb-briefing-chart-title">By investor type</div>
+            <p className="cb-briefing-chart-desc">
+              Breakdown of the register by investor category as a share of
+              total capital — who actually owns the company.
+            </p>
             <StackedBar data={TYPE_BREAKDOWN} />
           </div>
           <div className="cb-briefing-chart">
             <div className="cb-briefing-chart-title">30d net flow</div>
+            <p className="cb-briefing-chart-desc">
+              Number of holders who increased vs. reduced their position in
+              the last 30 days. Net buyers currently outnumber sellers.
+            </p>
             <BarChart
               data={NET_FLOW}
               baseline="zero"

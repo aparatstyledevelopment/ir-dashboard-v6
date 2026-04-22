@@ -85,7 +85,7 @@ function QuickActionsDialog({ moduleId, anchorRect, onItemClick, onClose }) {
   if (!config || !anchorRect) return null;
 
   const DIALOG_W = 240;
-  const GAP = 8;
+  const GAP = 20;
   const vw = window.innerWidth;
   const vh = window.innerHeight;
   let left = anchorRect.right + GAP;
@@ -208,6 +208,12 @@ export default function Sidebar({
   };
 
   const state = conversations?.state;
+  // The left-border "active" indicator is shown on at most ONE row at a
+  // time across the whole sidebar: either a nav tab OR a recent chat,
+  // never both. A chat row is active only when it's the active session
+  // for the CURRENT module. When the current module is in staging
+  // (no active session), the nav tab takes the indicator instead.
+  const activeSessionId = state?.activeByModule?.[activeModule] || null;
   const globalList = state
     ? state.sessionOrder
         .map((id) => state.sessions[id])
@@ -218,7 +224,7 @@ export default function Sidebar({
           moduleId: s.moduleId,
           createdAt: s.createdAt,
           messageCount: s.messages.length,
-          isActive: state.activeByModule[s.moduleId] === s.id,
+          isActive: s.moduleId === activeModule && activeSessionId === s.id,
         }))
     : [];
   const populated = globalList.filter(
@@ -257,7 +263,11 @@ export default function Sidebar({
         <nav className="cb-sidebar-nav">
           {MODULES.map((m) => {
             const Icon = ICON_MAP[m.icon] || LayoutDashboard;
-            const isActive = activeModule === m.id;
+            // Nav tab only takes the active indicator when its module is
+            // the current one AND that module is in staging (no active
+            // chat). Once a chat is active, the chat row owns the border.
+            const isActive =
+              activeModule === m.id && !activeSessionId;
             const hasQuickActions = Boolean(QUICK_ACTIONS[m.id]);
             return (
               <div key={m.id} className="cb-sidebar-link-row">

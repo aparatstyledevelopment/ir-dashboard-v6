@@ -92,6 +92,10 @@ export default function TargetingBriefing() {
         <div className="cb-briefing-charts">
           <div className="cb-briefing-chart">
             <div className="cb-briefing-chart-title">Priority split</div>
+            <p className="cb-briefing-chart-desc">
+              Candidates bucketed by outreach priority — Hot, Warm, Cold —
+              based on the AI fit score and mandate alignment.
+            </p>
             <DonutChart
               data={PRIORITY_SPLIT}
               size={120}
@@ -101,6 +105,10 @@ export default function TargetingBriefing() {
           </div>
           <div className="cb-briefing-chart">
             <div className="cb-briefing-chart-title">Top AI scores</div>
+            <p className="cb-briefing-chart-desc">
+              The five highest-scoring prospects. The AI score combines fit,
+              liquidity, peer holdings, and stated investment mandate.
+            </p>
             <BarChart
               data={TOP_SCORES}
               valueFormatter={(v) => `${v}/100`}
@@ -116,6 +124,13 @@ export default function TargetingBriefing() {
             >
               Avg fit score
             </div>
+            <p
+              className="cb-briefing-chart-desc"
+              style={{ alignSelf: 'flex-start' }}
+            >
+              Average AI fit score across every candidate prospect. A reading
+              above 80 indicates an unusually strong pipeline.
+            </p>
             <ProgressRing
               value={TARGETS_SUMMARY.avgScore}
               max={100}
@@ -125,6 +140,10 @@ export default function TargetingBriefing() {
           </div>
           <div className="cb-briefing-chart">
             <div className="cb-briefing-chart-title">Outreach status</div>
+            <p className="cb-briefing-chart-desc">
+              Pipeline status split: met this quarter, warm intro available,
+              never contacted, and no pathway yet identified.
+            </p>
             <StackedBar data={OUTREACH_STATUS} />
           </div>
         </div>

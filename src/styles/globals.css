@@ -26,7 +26,7 @@ body,
   height: 100%;
   margin: 0;
   padding: 0;
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 body {
@@ -38,17 +38,29 @@ body {
   letter-spacing: -0.01em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  --cb-zoom: 1;
 }
 
 /* Interface size uses CSS zoom so every pixel measurement — fonts,
  * padding, icons, borders, charts, fixed overlays — scales together
- * without re-laying out or breaking relative positions. Mirrors what
- * Chrome's Ctrl+Plus zoom does. */
+ * without re-laying out or breaking relative positions. The root app
+ * container compensates its own width/height by `1 / --cb-zoom` so
+ * zoomed content still fits the viewport exactly (no page scroll). */
 body.cb-size-medium {
+  --cb-zoom: 1.12;
   zoom: 1.12;
 }
 body.cb-size-large {
+  --cb-zoom: 1.25;
   zoom: 1.25;
+}
+
+.cb-app-root {
+  display: flex;
+  height: calc(100dvh / var(--cb-zoom));
+  width: calc(100vw / var(--cb-zoom));
+  background: var(--bg);
+  overflow: hidden;
 }
 
 button {
@@ -1891,6 +1903,13 @@ textarea {
   color: var(--text-tertiary);
   letter-spacing: 0.02em;
   text-transform: uppercase;
+}
+.cb-briefing-chart-desc {
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  letter-spacing: -0.01em;
+  margin: 0;
 }
 
 /* Pane variant of the list screen inner padding (tighter top so the close
