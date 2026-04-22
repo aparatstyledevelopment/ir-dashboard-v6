@@ -2472,3 +2472,102 @@ textarea {
   flex-direction: column;
   gap: 3px;
 }
+
+/* ----- DataTable: stretched dividers, stuck-state decoration ----- */
+
+/* The wrapper pulls its horizontal edges past the card's 16 px padding
+ * so the thead divider (and, in stuck mode, the rectangular border)
+ * reaches the card's side walls. First/last cell padding puts the
+ * content back inside the card. */
+.cb-table-wrap {
+  width: auto;
+  margin: 0 -16px;
+  position: relative;
+}
+/* 1 px sentinel at the very top of the wrapper. When it scrolls out of
+ * the scroll ancestor's viewport, DataTable toggles `.is-stuck`. */
+.cb-table-sentinel {
+  height: 1px;
+  width: 0;
+  pointer-events: none;
+}
+
+.cb-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  letter-spacing: -0.01em;
+  table-layout: auto;
+}
+
+.cb-th {
+  font-weight: 500;
+  color: var(--text-tertiary);
+  font-size: 11px;
+  padding: 8px 10px;
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--bg);
+  /* Bottom divider: painted inside the cell via box-shadow so that
+   * when the thead is stuck this divider travels with it. Because
+   * every <th> carries the same bottom line, the result reads as a
+   * single continuous divider that runs from one card edge to the
+   * other (the wrapper's negative margin puts the first and last
+   * cell flush with those edges). */
+  box-shadow: inset 0 -1px 0 var(--border);
+}
+.cb-th.is-first { padding-left: 16px; }
+.cb-th.is-last  { padding-right: 16px; }
+
+/* Stuck state — header cells have scrolled up to the top of their
+ * scroll ancestor. Give them a top line too, plus a subtle drop
+ * shadow below so the header floats clearly above the row body. */
+.cb-table-wrap.is-stuck .cb-th {
+  box-shadow:
+    inset 0 1px 0 var(--border),
+    inset 0 -1px 0 var(--border),
+    0 2px 6px rgba(0, 0, 0, 0.04);
+}
+/* Side borders close the rectangle: a vertical line on the outside of
+ * the first and last cell. Inset means the line is painted inside the
+ * cell edge, so it stays flush with the wrapper's outer edges. */
+.cb-table-wrap.is-stuck .cb-th.is-first {
+  box-shadow:
+    inset 0 1px 0 var(--border),
+    inset 0 -1px 0 var(--border),
+    inset 1px 0 0 var(--border),
+    0 2px 6px rgba(0, 0, 0, 0.04);
+}
+.cb-table-wrap.is-stuck .cb-th.is-last {
+  box-shadow:
+    inset 0 1px 0 var(--border),
+    inset 0 -1px 0 var(--border),
+    inset -1px 0 0 var(--border),
+    0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.cb-td {
+  padding: 9px 10px;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border);
+}
+.cb-td.is-first { padding-left: 16px; }
+.cb-td.is-last  { padding-right: 16px; }
+.cb-td.is-lastrow { border-bottom: none; }
+
+/* Mobile: wide tables should pan horizontally inside the card instead
+ * of being truncated. Scroll thumb is hidden — touch/pointer drag or
+ * trackpad wheel still scroll as expected. On this width sticky won't
+ * anchor to the conversation scroll any more (an overflow:auto
+ * container creates a scroll container for sticky), but the card is
+ * short enough on a phone that the tradeoff is worth it. */
+@media (max-width: 640px) {
+  .cb-table-wrap {
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .cb-table-wrap::-webkit-scrollbar { display: none; }
+}
