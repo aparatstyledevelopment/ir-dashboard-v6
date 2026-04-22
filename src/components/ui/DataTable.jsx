@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 
 // `getScrollParent` — walks up the DOM to find the nearest ancestor with
 // a scrolling box. Sticky headers anchor to this element, so it's also
-// the element we listen to for the "stuck" state transition.
+// the element we watch for the stuck-state transition.
 function getScrollParent(el) {
   let p = el?.parentElement;
   while (p) {
@@ -15,13 +15,12 @@ function getScrollParent(el) {
 }
 
 export default function DataTable({ columns, rows }) {
-  const theadRef = useRef(null);
   const sentinelRef = useRef(null);
   const [stuck, setStuck] = useState(false);
 
   // Detect when the thead has floated up to the top of its scroll
   // ancestor so we can toggle a `.is-stuck` class and apply the
-  // full-border + subtle-shadow treatment only in that state.
+  // full-rectangle border + subtle drop-shadow only in that state.
   useEffect(() => {
     const sentinel = sentinelRef.current;
     if (!sentinel) return undefined;
@@ -51,13 +50,22 @@ export default function DataTable({ columns, rows }) {
     // tables pan side-to-side without dragging the whole conversation.
     <div className={'cb-table-wrap' + (stuck ? ' is-stuck' : '')}>
       <div ref={sentinelRef} className="cb-table-sentinel" />
-      <table className="cb-table tabular">
+      <table
+        className="cb-table tabular"
+        style={{
+          width: '100%',
+          borderCollapse: 'collapse',
+          fontSize: '12px',
+          letterSpacing: '-0.01em',
+          tableLayout: 'auto',
+        }}
+      >
         <colgroup>
           {columns.map((col, i) => (
             <col key={i} style={col.width ? { width: col.width } : undefined} />
           ))}
         </colgroup>
-        <thead ref={theadRef}>
+        <thead>
           <tr>
             {columns.map((col, i) => (
               <th
@@ -69,6 +77,19 @@ export default function DataTable({ columns, rows }) {
                 }
                 style={{
                   textAlign: col.align || 'left',
+                  fontWeight: 500,
+                  color: 'var(--text-tertiary)',
+                  fontSize: '11px',
+                  padding: i === 0
+                    ? '8px 10px 8px 16px'
+                    : i === lastIdx
+                    ? '8px 16px 8px 10px'
+                    : '8px 10px',
+                  position: 'sticky',
+                  top: 0,
+                  zIndex: 2,
+                  background: 'var(--bg)',
+                  whiteSpace: 'nowrap',
                   width: col.width,
                 }}
               >
@@ -83,14 +104,16 @@ export default function DataTable({ columns, rows }) {
               {columns.map((col, ci) => (
                 <td
                   key={ci}
-                  className={
-                    'cb-td' +
-                    (ci === 0 ? ' is-first' : '') +
-                    (ci === lastIdx ? ' is-last' : '') +
-                    (ri === rows.length - 1 ? ' is-lastrow' : '')
-                  }
                   style={{
                     textAlign: col.align || 'left',
+                    padding: ci === 0
+                      ? '9px 10px 9px 16px'
+                      : ci === lastIdx
+                      ? '9px 16px 9px 10px'
+                      : '9px 10px',
+                    borderBottom:
+                      ri === rows.length - 1 ? 'none' : '1px solid var(--border)',
+                    color: 'var(--text-primary)',
                     fontWeight: col.weight || 400,
                     whiteSpace: col.nowrap ? 'nowrap' : 'normal',
                   }}
