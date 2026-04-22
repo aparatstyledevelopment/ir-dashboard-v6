@@ -100,7 +100,7 @@ export default function OwnerTrendCard({
           viewWidth={640}
           height={68}
           strokeWidth={1.75}
-          color="var(--text-primary)"
+          color="var(--positive)"
           fill
         />
         <div

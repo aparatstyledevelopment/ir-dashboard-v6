@@ -10,11 +10,11 @@ const PRIORITY_SPLIT = [
   { key: 'cold', label: 'Cold', value: TARGETS_SUMMARY.cold },
 ];
 const TOP_SCORES = [
-  { label: 'Polar Capital', value: 92 },
-  { label: 'Allianz GI', value: 88 },
-  { label: 'Fidelity International', value: 86 },
-  { label: 'Columbia Threadneedle', value: 84 },
-  { label: 'Impax Asset Management', value: 82 },
+  { label: 'Polar Capital', value: 92, color: 'var(--chart-1)' },
+  { label: 'Allianz GI', value: 88, color: 'var(--chart-2)' },
+  { label: 'Fidelity International', value: 86, color: 'var(--chart-3)' },
+  { label: 'Columbia Threadneedle', value: 84, color: 'var(--chart-4)' },
+  { label: 'Impax Asset Management', value: 82, color: 'var(--chart-5)' },
 ];
 const OUTREACH_STATUS = [
   { key: 'met', label: 'Met this quarter', value: 3 },

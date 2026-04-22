@@ -24,8 +24,11 @@ const TYPE_BREAKDOWN = [
 ];
 
 const NET_FLOW = [
-  { label: 'Buyers (+)', value: 5 },
-  { label: 'Sellers (−)', value: 4 },
+  // Net flow is inherently directional: buyers = positive, sellers =
+  // negative. The chart reads faster when those bars inherit the app's
+  // reserved green/red semantics.
+  { label: 'Buyers (+)', value: 5, color: 'var(--positive)' },
+  { label: 'Sellers (−)', value: 4, color: 'var(--negative)' },
 ];
 
 export default function ShareholdersBriefing() {

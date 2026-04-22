@@ -18,7 +18,7 @@ export default function Sparkline({
   viewWidth,
   height = 16,
   strokeWidth = 1.5,
-  color = 'var(--text-tertiary)',
+  color = 'var(--chart-1)',
   fill = false,
 }) {
   const vw = viewWidth != null ? viewWidth : typeof width === 'number' ? width : 640;

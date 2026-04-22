@@ -87,7 +87,7 @@ export default function BarChart({
                 style={{
                   width: `${pct}%`,
                   height: '100%',
-                  background: 'var(--bar-fill)',
+                  background: d.color || 'var(--bar-fill)',
                 }}
               />
             </div>
