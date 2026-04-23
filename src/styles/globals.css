@@ -2503,29 +2503,14 @@ textarea {
 }
 
 /* Stuck state — header cells have scrolled up to the top of their
- * scroll ancestor. Add a top line, keep the bottom line, and drop a
- * very subtle outer shadow so the header reads as a floating band. */
+ * scroll ancestor. Add a top line, keep the bottom line, drop a
+ * very subtle outer shadow so the header reads as a floating band.
+ * We deliberately do NOT add left/right borders — the header row
+ * shows only top and bottom lines in both states. */
 .cb-table-wrap.is-stuck .cb-th {
   box-shadow:
     inset 0 1px 0 var(--border),
     inset 0 -1px 0 var(--border),
-    0 2px 6px rgba(0, 0, 0, 0.04);
-}
-/* Side borders close the rectangle: a vertical line on the outer edge
- * of the first and last cell. Inset keeps the line flush with the
- * wrapper's outer edges. */
-.cb-table-wrap.is-stuck .cb-th.is-first {
-  box-shadow:
-    inset 0 1px 0 var(--border),
-    inset 0 -1px 0 var(--border),
-    inset 1px 0 0 var(--border),
-    0 2px 6px rgba(0, 0, 0, 0.04);
-}
-.cb-table-wrap.is-stuck .cb-th.is-last {
-  box-shadow:
-    inset 0 1px 0 var(--border),
-    inset 0 -1px 0 var(--border),
-    inset -1px 0 0 var(--border),
     0 2px 6px rgba(0, 0, 0, 0.04);
 }
 
