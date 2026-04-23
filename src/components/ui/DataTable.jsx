@@ -72,7 +72,18 @@ export default function DataTable({ columns, rows }) {
             <col key={i} style={col.width ? { width: col.width } : undefined} />
           ))}
         </colgroup>
-        <thead>
+        {/* Sticky is applied on BOTH <thead> and each <th>. Firefox
+            handles sticky on <thead> natively; Chrome 91+ requires
+            sticky on individual <th> cells (which we also set).
+            Together this works across every engine. */}
+        <thead
+          style={{
+            position: 'sticky',
+            top: 0,
+            zIndex: 2,
+            background: 'var(--bg)',
+          }}
+        >
           <tr>
             {columns.map((col, i) => (
               <th

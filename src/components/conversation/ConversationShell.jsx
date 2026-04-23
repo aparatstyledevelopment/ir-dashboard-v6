@@ -127,7 +127,14 @@ export default function ConversationShell({
         style={{
           flex: 1,
           overflowY: 'auto',
-          padding: `24px 16px ${overlayHeight + 24}px`,
+          // Horizontal + bottom padding only. The top breathing room
+          // is pushed onto the inner wrapper as `padding-top` so that
+          // sticky `<th>` elements with `top: 0` inside descendant
+          // tables land flush with conversation-scroll's top edge
+          // (i.e. directly below the TopBar), instead of sticking
+          // inside the scroll container's padding-top and appearing
+          // below a gap.
+          padding: `0 16px ${overlayHeight + 24}px`,
         }}
       >
         <div
@@ -135,6 +142,7 @@ export default function ConversationShell({
           style={{
             maxWidth: '720px',
             margin: '0 auto',
+            paddingTop: '24px',
             display: 'flex',
             flexDirection: 'column',
             gap: isEmpty ? '18px' : '20px',
