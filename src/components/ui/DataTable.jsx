@@ -54,7 +54,14 @@ export default function DataTable({ columns, rows }) {
         className="cb-table tabular"
         style={{
           width: '100%',
-          borderCollapse: 'collapse',
+          // `separate` + 0 border-spacing is used instead of `collapse`
+          // because Chromium has a long-running bug where sticky <th>
+          // fails inside a table whose border model is collapsed: the
+          // header doesn't pin, it just scrolls away. With separate
+          // borders sticky works as expected. Visually identical here
+          // because we only draw borders as box-shadows anyway.
+          borderCollapse: 'separate',
+          borderSpacing: 0,
           fontSize: '12px',
           letterSpacing: '-0.01em',
           tableLayout: 'auto',
