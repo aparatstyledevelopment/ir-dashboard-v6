@@ -5,9 +5,9 @@ import { formatCurrencyEUR } from '../../../utils/formatters';
 import { buildShareContent } from '../../../utils/shareContent';
 
 const SHARE = buildShareContent({
-  title: 'Liquidity Analysis — INTEG B vs Peers',
+  title: 'Liquidity Analysis — EXMPL vs Peers',
   narrative:
-    "INTEG B's average daily turnover of €18,400 ranks 4th among its 5-company peer group. Spread has widened 12 basis points month-over-month.",
+    "EXMPL's average daily turnover of €18,400 ranks 4th among its 5-company peer group. Spread has widened 12 basis points month-over-month.",
   columns: [
     { header: 'Company', key: 'name' },
     { header: 'Ticker', key: 'ticker' },
@@ -35,7 +35,7 @@ export default function LiquidityComparisonCard({
 
   return (
     <ResponseCard
-      title="Liquidity Analysis — INTEG B vs Peers"
+      title="Liquidity Analysis — EXMPL vs Peers"
       followUps={[
         { id: 'l2.liquidity.spread', label: 'Show spread analysis' },
         { id: 'l2.liquidity.volume-trend', label: 'Monthly volume trend' },
@@ -73,10 +73,10 @@ export default function LiquidityComparisonCard({
           letterSpacing: '-0.01em',
         }}
       >
-        INTEG B's average daily turnover of €18,400 ranks 4th among its 5-company peer group.
+        EXMPL's average daily turnover of €18,400 ranks 4th among its 5-company peer group.
         Spread has widened 12 basis points month-over-month.
       </p>
-      <BarChart data={data} highlightKey="INTEG B" valueFormatter={formatCurrencyEUR} />
+      <BarChart data={data} highlightKey="EXMPL" valueFormatter={formatCurrencyEUR} />
       <div
         className="tabular"
         style={{

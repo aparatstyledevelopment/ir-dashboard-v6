@@ -31,9 +31,9 @@ export default function DashboardReport() {
     <article className="cb-report">
       <header className="cb-report-head">
         <div className="cb-report-kicker">Weekly IR Briefing · Prepared 15 min ago</div>
-        <h1 className="cb-report-title">INTEG B — Where the week lands</h1>
+        <h1 className="cb-report-title">EXMPL — Where the week lands</h1>
         <p className="cb-report-lede">
-          Integrum AB closed the week at <strong>16.16 SEK</strong>, a{' '}
+          Example.com Inc. closed the week at <strong>16.16 SEK</strong>, a{' '}
           <span className="cb-pos">5.07%</span> session gain and fresh 3-month
           high. The register keeps adding owners on a steady slope, short
           interest continues its two-year glide path lower, and the next
@@ -214,7 +214,7 @@ export default function DashboardReport() {
       </section>
 
       <footer className="cb-report-footer">
-        <div>Prepared by Command Bar · Monitor module · INTEG B</div>
+        <div>Prepared by Command Bar · Monitor module · EXMPL</div>
         <div>All figures as of last register sync. Mock data for demo.</div>
       </footer>
     </article>

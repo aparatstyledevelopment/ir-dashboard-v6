@@ -14,7 +14,7 @@ export default function CompareOwnersView() {
     <ListScreen
       inArtifact
       title="Compare owners"
-      subtitle="Peer overlap matrix — which funds own which peers, including INTEG B. ✓ marks ownership."
+      subtitle="Peer overlap matrix — which funds own which peers, including EXMPL. ✓ marks ownership."
       searchFields={[]}
     >
       <div
@@ -54,8 +54,8 @@ export default function CompareOwnersView() {
                   style={{
                     ...cellBase,
                     color:
-                      p === 'INTEG B' ? 'var(--text-primary)' : 'var(--text-tertiary)',
-                    fontWeight: p === 'INTEG B' ? 600 : 500,
+                      p === 'EXMPL' ? 'var(--text-primary)' : 'var(--text-tertiary)',
+                    fontWeight: p === 'EXMPL' ? 600 : 500,
                     fontSize: '11px',
                     padding: '10px 14px',
                   }}
@@ -111,7 +111,7 @@ export default function CompareOwnersView() {
         }}
       >
         Rows are institutional holders · columns are the 5 closest medtech peers including
-        us · the 4 non-INTEG-B columns surface "peer gap" candidates we don't yet hold.
+        us · the 4 non-EXMPL columns surface "peer gap" candidates we don't yet hold.
       </p>
     </ListScreen>
   );

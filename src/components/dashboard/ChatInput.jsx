@@ -137,9 +137,9 @@ export default function ChatInput({
             placeholder={
               hasAttachments
                 ? 'Ask about the selected cards…'
-                : 'Ask anything about Integrum…'
+                : 'Ask anything about Example.com…'
             }
-            aria-label="Ask anything about Integrum"
+            aria-label="Ask anything about Example.com"
             className="cb-chat-input"
           />
           <button

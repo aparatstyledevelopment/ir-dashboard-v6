@@ -13,7 +13,7 @@ const SHORT_TREND = [
 const SHARE = buildShareContent({
   title: 'Short Interest Overview',
   narrative:
-    'Short interest in INTEG B currently stands at 2.1% of capital, down from 2.8% three months ago. One disclosed short holder remains on the register: Marshall Wace LLP at 0.62%.',
+    'Short interest in EXMPL currently stands at 2.1% of capital, down from 2.8% three months ago. One disclosed short holder remains on the register: Marshall Wace LLP at 0.62%.',
   columns: [
     { header: 'When', key: 'when' },
     { header: 'Short %', key: 'value' },
@@ -69,7 +69,7 @@ export default function ShortInterestCard({
           letterSpacing: '-0.01em',
         }}
       >
-        Short interest in INTEG B currently stands at{' '}
+        Short interest in EXMPL currently stands at{' '}
         <span className="cb-num">2.1%</span> of capital,{' '}
         <span className="cb-pos">down from 2.8% three months ago</span>. One
         disclosed short holder remains on the register:{' '}

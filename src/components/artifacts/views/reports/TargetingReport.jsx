@@ -40,7 +40,7 @@ const PRIORITY_NOTES = [
     name: 'Fidelity Intl — Nordic Equities',
     score: 86,
     rationale:
-      'Held INTEG B in 2022, exited on portfolio manager change. New PM joined Q4; worth a re-engagement.',
+      'Held EXMPL in 2022, exited on portfolio manager change. New PM joined Q4; worth a re-engagement.',
   },
 ];
 
@@ -215,7 +215,7 @@ export default function TargetingReport() {
       </section>
 
       <footer className="cb-report-footer">
-        <div>Prepared by Command Bar · Targeting module · INTEG B</div>
+        <div>Prepared by Command Bar · Targeting module · EXMPL</div>
         <div>Peer-register and filings sync current to 8 minutes ago. Mock data.</div>
       </footer>
     </article>

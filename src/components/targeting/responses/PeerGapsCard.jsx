@@ -8,7 +8,7 @@ import { buildShareContent } from '../../../utils/shareContent';
 const SHARE = buildShareContent({
   title: 'Peer Holders — Gap Analysis',
   narrative:
-    '47 institutional holders own at least one of our 5 closest peers but not INTEG B. 18 of them hold 2 or more peers — highest-conversion candidates.',
+    '47 institutional holders own at least one of our 5 closest peers but not EXMPL. 18 of them hold 2 or more peers — highest-conversion candidates.',
   columns: [
     { header: 'Peer', key: 'peer' },
     { header: 'Holder', key: 'holder' },
@@ -101,7 +101,7 @@ export default function PeerGapsCard({
         }}
       >
         <span className="cb-num">47</span> institutional holders own at least
-        one of our 5 closest peers but not INTEG B.{' '}
+        one of our 5 closest peers but not EXMPL.{' '}
         <span className="cb-num">18</span> of them hold{' '}
         <span className="cb-strong">2 or more peers</span> — highest-conversion
         candidates for peer-gap outreach. Showing top 5 below.

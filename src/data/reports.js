@@ -5,7 +5,7 @@ export const REPORTS = {
   dashboard: {
     id: 'dashboard',
     module: 'dashboard',
-    title: 'INTEG B — Weekly IR Briefing',
+    title: 'EXMPL — Weekly IR Briefing',
     subject: 'the dashboard briefing',
     fileName: 'integ-b-weekly-briefing.pdf',
     sections: 6,
@@ -15,7 +15,7 @@ export const REPORTS = {
   shareholders: {
     id: 'shareholders',
     module: 'shareholders',
-    title: 'INTEG B — Shareholder Register Deep Dive',
+    title: 'EXMPL — Shareholder Register Deep Dive',
     subject: 'the shareholder register',
     fileName: 'integ-b-shareholder-register.pdf',
     sections: 6,
@@ -25,7 +25,7 @@ export const REPORTS = {
   targeting: {
     id: 'targeting',
     module: 'targeting',
-    title: 'INTEG B — Targeting Pipeline Report',
+    title: 'EXMPL — Targeting Pipeline Report',
     subject: 'the targeting pipeline',
     fileName: 'integ-b-targeting-pipeline.pdf',
     sections: 6,
