@@ -139,12 +139,15 @@ export default function ConversationShell({
             flexDirection: 'column',
             gap: isEmpty ? '18px' : '20px',
             minWidth: 0,
-            // `clip` clips visible overflow (wide cards can't escape
-            // the 720px column) without establishing a scroll
-            // container, so `position: sticky` inside descendant
-            // tables anchors to the outer conversation-scroll and
-            // column headers stay visible while the user scrolls.
-            overflow: 'clip',
+            // No overflow setting here by design. Any non-visible
+            // value (hidden, clip) would make this element a sticky
+            // positioning container (for hidden, a scroll container;
+            // for clip, still a clipping box that some browsers treat
+            // as an anchor), which pins sticky <th> elements inside
+            // child tables to a non-scrolling box. We need sticky to
+            // bubble all the way up to `.conversation-scroll` so the
+            // column header stays visible while the user scrolls the
+            // whole conversation.
             ...(isEmpty ? { minHeight: '100%' } : {}),
           }}
         >
