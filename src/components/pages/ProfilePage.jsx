@@ -47,7 +47,7 @@ export default function ProfilePage({ onBack }) {
             Account
           </h2>
           <InfoRow label="Email" value="marcus.forsberg@integrum.se" />
-          <InfoRow label="Organization" value="Integrum AB" />
+          <InfoRow label="Organization" value="Example.com Inc." />
           <InfoRow label="Role" value="Admin" />
           <InfoRow label="Last login" value="Today, 08:42" />
         </section>

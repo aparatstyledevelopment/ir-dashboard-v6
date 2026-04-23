@@ -9,9 +9,9 @@ const LO_ROWS = TARGETS.filter(
 );
 
 const SHARE = buildShareContent({
-  title: 'Long-only Funds Missing INTEG B',
+  title: 'Long-only Funds Missing EXMPL',
   narrative:
-    'Long-only funds that are a strong fit and not currently holding INTEG B. Sorted by AI fit score.',
+    'Long-only funds that are a strong fit and not currently holding EXMPL. Sorted by AI fit score.',
   columns: [
     { header: 'Fund', key: 'name' },
     { header: 'Manager', key: 'firm' },
@@ -68,7 +68,7 @@ export default function LongOnlyMissingCard({
 
   return (
     <ResponseCard
-      title="Long-only Funds Missing INTEG B"
+      title="Long-only Funds Missing EXMPL"
       followUps={[
         { id: 'l2.tgt.lo.esg', label: 'ESG-aligned only' },
         { id: 'l2.tgt.lo.nordic', label: 'Nordic mandates only' },
@@ -107,7 +107,7 @@ export default function LongOnlyMissingCard({
         }}
       >
         <span className="cb-num">{rows.length}</span> long-only funds that are
-        a strong fit and not currently holding INTEG B. Sorted by AI fit score.
+        a strong fit and not currently holding EXMPL. Sorted by AI fit score.
       </p>
       <DataTable columns={columns} rows={rows} />
     </ResponseCard>

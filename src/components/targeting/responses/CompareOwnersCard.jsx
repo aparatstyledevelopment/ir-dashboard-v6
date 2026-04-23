@@ -11,9 +11,9 @@ const OVERLAP_ROWS = PEER_OVERLAP.funds.map((f) => {
 });
 
 const SHARE = buildShareContent({
-  title: 'Compare Owners — INTEG B vs 4 Peers',
+  title: 'Compare Owners — EXMPL vs 4 Peers',
   narrative:
-    'Overlap matrix across INTEG B and our 4 closest peers. Cells mark ownership of each fund across each peer.',
+    'Overlap matrix across EXMPL and our 4 closest peers. Cells mark ownership of each fund across each peer.',
   columns: [
     { header: 'Fund', key: 'Fund' },
     ...PEER_OVERLAP.peers.map((p) => ({ header: p, key: p })),
@@ -31,10 +31,10 @@ export default function CompareOwnersCard({
 }) {
   return (
     <ResponseCard
-      title="Compare Owners — INTEG B vs 4 Peers"
+      title="Compare Owners — EXMPL vs 4 Peers"
       followUps={[
         { id: 'l2.tgt.cmp.overlap', label: 'Show overlap percentage' },
-        { id: 'l2.tgt.cmp.unique', label: 'Unique to INTEG B' },
+        { id: 'l2.tgt.cmp.unique', label: 'Unique to EXMPL' },
         { id: 'l2.tgt.cmp.gap', label: 'Shared by 3+ peers, not us' },
       ]}
       expansionChips={[
@@ -69,7 +69,7 @@ export default function CompareOwnersCard({
           letterSpacing: '-0.01em',
         }}
       >
-        Overlap matrix across INTEG B and our 4 closest peers. Rows are shared
+        Overlap matrix across EXMPL and our 4 closest peers. Rows are shared
         institutional holders; ✓ marks ownership.
       </p>
       <div style={{ overflowX: 'auto' }}>
@@ -101,9 +101,9 @@ export default function CompareOwnersCard({
                   key={p}
                   style={{
                     textAlign: 'center',
-                    fontWeight: p === 'INTEG B' ? 600 : 500,
+                    fontWeight: p === 'EXMPL' ? 600 : 500,
                     color:
-                      p === 'INTEG B'
+                      p === 'EXMPL'
                         ? 'var(--text-primary)'
                         : 'var(--text-tertiary)',
                     fontSize: '11px',

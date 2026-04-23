@@ -26,7 +26,7 @@ function generateHistory(current, trend) {
 const PROFILES = {
   'richard-brannemark': {
     role: 'CEO & Founder',
-    bio: 'Founder and CEO of Integrum AB. Co-developed the OPRA implant technology that defines the company\u2019s commercial portfolio. Largest single holder by both capital and votes.',
+    bio: 'Founder and CEO of Example.com Inc.. Co-developed the OPRA implant technology that defines the company\u2019s commercial portfolio. Largest single holder by both capital and votes.',
     tags: ['Insider', 'Founder', 'Long-term'],
     location: 'Gothenburg, Sweden',
     aum: null,
@@ -39,7 +39,7 @@ const PROFILES = {
   },
   'aviva-perfusion-as': {
     role: 'Strategic Investor',
-    bio: 'Norwegian medtech holding company with concentrated positions in orthopedic and reconstructive specialists across the Nordics. Acquired its INTEG B stake in 2019.',
+    bio: 'Norwegian medtech holding company with concentrated positions in orthopedic and reconstructive specialists across the Nordics. Acquired its EXMPL stake in 2019.',
     tags: ['Strategic', 'Long-term', 'Reducing'],
     location: 'Oslo, Norway',
     aum: '€840M',
@@ -53,7 +53,7 @@ const PROFILES = {
   },
   'nordea-investment-funds': {
     role: 'Asset Manager',
-    bio: 'Asset management arm of Nordea Bank, the largest financial services group in the Nordics. Runs broad Nordic small-cap and healthcare strategies that hold INTEG B.',
+    bio: 'Asset management arm of Nordea Bank, the largest financial services group in the Nordics. Runs broad Nordic small-cap and healthcare strategies that hold EXMPL.',
     tags: ['Institutional', 'Active', 'Buying'],
     location: 'Stockholm, Sweden',
     aum: '€280B',
@@ -91,7 +91,7 @@ const PROFILES = {
   },
   'al-rajhi-capital': {
     role: 'Asset Manager',
-    bio: 'Investment arm of Al Rajhi Bank, one of the largest Sharia-compliant financial institutions globally. Holds INTEG B in its Global Healthcare strategy.',
+    bio: 'Investment arm of Al Rajhi Bank, one of the largest Sharia-compliant financial institutions globally. Holds EXMPL in its Global Healthcare strategy.',
     tags: ['Institutional', 'Sharia', 'Reducing'],
     location: 'Riyadh, Saudi Arabia',
     aum: '$15B',
@@ -113,7 +113,7 @@ const PROFILES = {
       { date: '2026-03-28', type: 'Acquisition', shares: 12000, price: 15.75 },
     ],
     notes:
-      'Holds INTEG B in the Swedish Equity bucket. ESG team commented positively on the lifecycle assessment work in our 2025 sustainability report.',
+      'Holds EXMPL in the Swedish Equity bucket. ESG team commented positively on the lifecycle assessment work in our 2025 sustainability report.',
   },
   'danske-bank-as': {
     role: 'Asset Manager',
@@ -127,7 +127,7 @@ const PROFILES = {
   },
   'invesco-ltd': {
     role: 'Asset Manager',
-    bio: 'Global independent investment manager. Holds INTEG B across several thematic small-cap funds, primarily its International Discovery strategy.',
+    bio: 'Global independent investment manager. Holds EXMPL across several thematic small-cap funds, primarily its International Discovery strategy.',
     tags: ['Institutional', 'Active', 'Buying'],
     location: 'Atlanta, USA',
     aum: '$1.6T',
@@ -207,7 +207,7 @@ const PROFILES = {
   },
   'vanguard-group': {
     role: 'Asset Manager',
-    bio: 'World\u2019s largest mutual fund and ETF provider. Holds INTEG B passively via index strategies tracking the FTSE Global Small Cap index.',
+    bio: 'World\u2019s largest mutual fund and ETF provider. Holds EXMPL passively via index strategies tracking the FTSE Global Small Cap index.',
     tags: ['Institutional', 'Passive', 'Index'],
     location: 'Valley Forge, USA',
     aum: '$9.3T',
@@ -227,7 +227,7 @@ const PROFILES = {
   },
   'erik-lundstrom': {
     role: 'Board Member',
-    bio: 'Independent board member of Integrum AB since 2021. Background in surgical robotics and medical device commercialization.',
+    bio: 'Independent board member of Example.com Inc. since 2021. Background in surgical robotics and medical device commercialization.',
     tags: ['Insider', 'Board', 'Buying'],
     location: 'Stockholm, Sweden',
     aum: null,
@@ -251,7 +251,7 @@ const PROFILES = {
   },
   'nordnet-pensionsforsakring': {
     role: 'Pension Provider',
-    bio: 'Insurance arm of Nordnet, the Nordic digital broker. Holds INTEG B on behalf of unit-linked retirement clients.',
+    bio: 'Insurance arm of Nordnet, the Nordic digital broker. Holds EXMPL on behalf of unit-linked retirement clients.',
     tags: ['Pension', 'Passive'],
     location: 'Stockholm, Sweden',
     aum: '€18B',
@@ -271,7 +271,7 @@ const PROFILES = {
   },
   'goldman-sachs-am': {
     role: 'Asset Manager',
-    bio: 'Asset management division of Goldman Sachs. INTEG B sits within its International Equity Insights small-cap product.',
+    bio: 'Asset management division of Goldman Sachs. EXMPL sits within its International Equity Insights small-cap product.',
     tags: ['Institutional', 'Quant', 'Buying'],
     location: 'New York, USA',
     aum: '$2.7T',
@@ -293,7 +293,7 @@ const PROFILES = {
   },
   'avanza-pension': {
     role: 'Pension Provider',
-    bio: 'Insurance arm of Avanza, the Nordic retail brokerage platform. Holds INTEG B on behalf of unit-linked retirement clients.',
+    bio: 'Insurance arm of Avanza, the Nordic retail brokerage platform. Holds EXMPL on behalf of unit-linked retirement clients.',
     tags: ['Pension', 'Passive', 'Buying'],
     location: 'Stockholm, Sweden',
     aum: '€22B',
@@ -303,7 +303,7 @@ const PROFILES = {
   },
   'state-street-global-advisors': {
     role: 'Asset Manager',
-    bio: 'World\u2019s third-largest asset manager and operator of the SPDR ETF family. Holds INTEG B passively in its World Small Cap index funds.',
+    bio: 'World\u2019s third-largest asset manager and operator of the SPDR ETF family. Holds EXMPL passively in its World Small Cap index funds.',
     tags: ['Institutional', 'Passive', 'Index'],
     location: 'Boston, USA',
     aum: '$4.1T',

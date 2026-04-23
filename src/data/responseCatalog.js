@@ -28,7 +28,7 @@ export const RESPONSE_CATALOG = {
     narrative:
       'Showing all 25 disclosed holders, ranked by capital. The top 25 control 54.2% of capital with the remainder split across 3,473 smaller positions.',
     query:
-      'SELECT rank, name, capital_pct, type\nFROM shareholders\nWHERE disclosed = true\n  AND ticker = \'INTEG B\'\nORDER BY capital_pct DESC\nLIMIT 25;',
+      'SELECT rank, name, capital_pct, type\nFROM shareholders\nWHERE disclosed = true\n  AND ticker = \'EXMPL\'\nORDER BY capital_pct DESC\nLIMIT 25;',
     body: {
       type: 'table',
       mode: 'holders-with-link',
@@ -70,7 +70,7 @@ export const RESPONSE_CATALOG = {
     narrative:
       'Filtering to non-Swedish holders shows 4 active positions with changes in the past 30 days. The largest non-Swedish positions are concentrated in Norway (Aviva) and the US (Invesco).',
     query:
-      'SELECT name, country, delta_shares, delta_capital_pct\nFROM register_changes\nWHERE event_date >= CURRENT_DATE - INTERVAL \'30 days\'\n  AND country != \'SE\'   -- exclude domestic holders\n  AND ticker = \'INTEG B\'\nORDER BY ABS(delta_capital_pct) DESC;',
+      'SELECT name, country, delta_shares, delta_capital_pct\nFROM register_changes\nWHERE event_date >= CURRENT_DATE - INTERVAL \'30 days\'\n  AND country != \'SE\'   -- exclude domestic holders\n  AND ticker = \'EXMPL\'\nORDER BY ABS(delta_capital_pct) DESC;',
     body: {
       type: 'table',
       mode: 'changes-with-link',
@@ -148,7 +148,7 @@ export const RESPONSE_CATALOG = {
   'l2.liquidity.spread': {
     title: 'Spread Analysis',
     narrative:
-      "INTEG B's average quoted spread is 38 basis points — nearly twice the 5-company peer median of 21 bps. Spread has widened 12 bps month-over-month as volume dropped in the post-Q4 quiet period.",
+      "EXMPL's average quoted spread is 38 basis points — nearly twice the 5-company peer median of 21 bps. Spread has widened 12 bps month-over-month as volume dropped in the post-Q4 quiet period.",
     body: {
       type: 'ring',
       value: 38,
@@ -304,14 +304,14 @@ export const RESPONSE_CATALOG = {
   'l2.short.peers': {
     title: 'Peer Short Comparison',
     narrative:
-      'Among 5 Nordic medtech peers, INTEG B has the second-lowest short interest. The sector average sits at 3.1% of float.',
+      'Among 5 Nordic medtech peers, EXMPL has the second-lowest short interest. The sector average sits at 3.1% of float.',
     body: {
       type: 'bars',
       data: [
         { key: 'qkc', label: 'QuickCool', value: 5.4 },
         { key: 'ossb', label: 'OssDsign', value: 3.8 },
         { key: 'mdd', label: 'Medistim', value: 2.6 },
-        { key: 'integ', label: 'Integrum', value: 2.1 },
+        { key: 'integ', label: 'Example.com', value: 2.1 },
         { key: 'bonex', label: 'BONESUPPORT', value: 1.7 },
       ],
       highlightKey: 'integ',
@@ -918,7 +918,7 @@ Object.assign(RESPONSE_CATALOG, {
   'l2.tgt.gap.multi': {
     title: 'Holders of 2+ Peers — Prime Targets',
     narrative:
-      'Holders that own 2 or more of our closest peers without holding INTEG B. These are the highest-conversion peer-gap candidates because they already believe in the thesis — they just haven\'t found us yet.',
+      'Holders that own 2 or more of our closest peers without holding EXMPL. These are the highest-conversion peer-gap candidates because they already believe in the thesis — they just haven\'t found us yet.',
     body: {
       type: 'table',
       mode: 'plain',
@@ -968,7 +968,7 @@ Object.assign(RESPONSE_CATALOG, {
   },
 
   'l2.tgt.cmp.unique': {
-    title: 'Unique to INTEG B',
+    title: 'Unique to EXMPL',
     narrative:
       'Holders that appear in our register but NOT in any peer register — 6 institutional positions representing 8.2% of capital. These are our "distinctive" holders and worth nurturing as a differentiated story.',
     body: {
@@ -991,7 +991,7 @@ Object.assign(RESPONSE_CATALOG, {
   'l2.tgt.cmp.gap': {
     title: 'Shared by 3+ Peers, Not Us',
     narrative:
-      '4 holders own at least 3 of our 4 closest peers but not INTEG B. These are the most glaring gaps and should be the top priority for peer-gap outreach.',
+      '4 holders own at least 3 of our 4 closest peers but not EXMPL. These are the most glaring gaps and should be the top priority for peer-gap outreach.',
     body: {
       type: 'list',
       items: [
@@ -1009,7 +1009,7 @@ Object.assign(RESPONSE_CATALOG, {
   'l2.tgt.lo.esg': {
     title: 'ESG-Aligned Long-Only Targets',
     narrative:
-      '3 ESG-tilted long-only funds match our sustainability narrative and are not currently holding INTEG B. All 3 have a demonstrated appetite for small-cap medtech.',
+      '3 ESG-tilted long-only funds match our sustainability narrative and are not currently holding EXMPL. All 3 have a demonstrated appetite for small-cap medtech.',
     body: {
       type: 'list',
       items: [
@@ -1024,7 +1024,7 @@ Object.assign(RESPONSE_CATALOG, {
   'l2.tgt.lo.nordic': {
     title: 'Nordic Long-Only Mandates',
     narrative:
-      '4 Nordic long-only funds have structural underweight in Swedish medtech and no current position in INTEG B. Highest fit: Skagen and Evli.',
+      '4 Nordic long-only funds have structural underweight in Swedish medtech and no current position in EXMPL. Highest fit: Skagen and Evli.',
     body: {
       type: 'list',
       items: [
@@ -1040,7 +1040,7 @@ Object.assign(RESPONSE_CATALOG, {
   'l2.tgt.lo.global': {
     title: 'Global Small-Cap Mandates',
     narrative:
-      '5 global small-cap mandates are a structural fit for INTEG B. Largest by AUM: Allianz GI Europe (€48B) and T. Rowe Price International Discovery ($12B).',
+      '5 global small-cap mandates are a structural fit for EXMPL. Largest by AUM: Allianz GI Europe (€48B) and T. Rowe Price International Discovery ($12B).',
     body: {
       type: 'list',
       items: [

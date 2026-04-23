@@ -1,4 +1,4 @@
-// Targeting — candidate investors not currently holding INTEG B, scored by
+// Targeting — candidate investors not currently holding EXMPL, scored by
 // fit, with a short rationale and the peers they already own. Fully mock data.
 export const TARGETS = [
   {
@@ -109,7 +109,7 @@ export const TARGETS = [
     priority: 'Warm',
     score: 74,
     rationale:
-      'Already holds INTEG B via a separate strategy; room to grow this mandate significantly.',
+      'Already holds EXMPL via a separate strategy; room to grow this mandate significantly.',
     peersHolding: ['OssDsign', 'BONESUPPORT'],
     contactStatus: 'Recent intro',
   },
@@ -230,41 +230,41 @@ export const PEER_GAPS = [
     holder: 'Janus Henderson Horizon',
     holdingPct: 3.2,
     country: 'GB',
-    status: 'Not holding INTEG B',
+    status: 'Not holding EXMPL',
   },
   {
     peer: 'BONESUPPORT',
     holder: 'Fidelity Global Small Cap',
     holdingPct: 2.1,
     country: 'US',
-    status: 'Not holding INTEG B',
+    status: 'Not holding EXMPL',
   },
   {
     peer: 'Medistim',
     holder: 'Storebrand Vekst',
     holdingPct: 1.8,
     country: 'NO',
-    status: 'Not holding INTEG B',
+    status: 'Not holding EXMPL',
   },
   {
     peer: 'Medistim',
     holder: 'Allianz GI European Equity',
     holdingPct: 1.4,
     country: 'DE',
-    status: 'Not holding INTEG B',
+    status: 'Not holding EXMPL',
   },
   {
     peer: 'OssDsign',
     holder: 'Polar Capital Healthcare',
     holdingPct: 4.1,
     country: 'GB',
-    status: 'Not holding INTEG B',
+    status: 'Not holding EXMPL',
   },
 ];
 
 // Compare owners: side-by-side of our top 5 peers and their funds overlap
 export const PEER_OVERLAP = {
-  peers: ['INTEG B', 'BONESUPPORT', 'Medistim', 'OssDsign', 'QuickCool'],
+  peers: ['EXMPL', 'BONESUPPORT', 'Medistim', 'OssDsign', 'QuickCool'],
   funds: [
     { name: 'Nordea Investment Funds', holds: [true, true, false, true, false] },
     { name: 'Handelsbanken Fonder', holds: [true, true, true, false, false] },

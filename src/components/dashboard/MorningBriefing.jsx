@@ -45,7 +45,7 @@ export default function MorningBriefing() {
 
   const teaser = (
     <p style={{ margin: 0 }}>
-      <span className="cb-strong">INTEG B</span>{' '}
+      <span className="cb-strong">EXMPL</span>{' '}
       <span className="cb-pos">▲ 5.07%</span> at{' '}
       <span className="cb-num">16.16 SEK</span>. Owners:{' '}
       <span className="cb-num">3,498</span>{' '}
@@ -72,7 +72,7 @@ export default function MorningBriefing() {
       <section>
         <h3 className="cb-section-head">Stock &amp; Trading</h3>
         <p style={{ margin: 0 }}>
-          <span className="cb-strong">INTEG B</span> opened at{' '}
+          <span className="cb-strong">EXMPL</span> opened at{' '}
           <span className="cb-num">15.38 SEK</span> and is currently trading at{' '}
           <span className="cb-num">16.16 SEK</span>,{' '}
           <span className="cb-pos">▲ 5.07%</span> on the session. Average daily

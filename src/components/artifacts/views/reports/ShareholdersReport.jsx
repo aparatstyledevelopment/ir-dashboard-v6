@@ -36,7 +36,7 @@ export default function ShareholdersReport() {
     <article className="cb-report">
       <header className="cb-report-head">
         <div className="cb-report-kicker">Shareholder register deep dive · 12 min ago</div>
-        <h1 className="cb-report-title">Who owns INTEG B — and who just changed their mind</h1>
+        <h1 className="cb-report-title">Who owns EXMPL — and who just changed their mind</h1>
         <p className="cb-report-lede">
           The register tells a clearer story than the price. Owner count is
           up, the long tail is growing faster than the top of the book, and
@@ -214,7 +214,7 @@ export default function ShareholdersReport() {
       </section>
 
       <footer className="cb-report-footer">
-        <div>Prepared by Command Bar · Shareholders module · INTEG B</div>
+        <div>Prepared by Command Bar · Shareholders module · EXMPL</div>
         <div>Register pulled from the most recent Euroclear sync. Mock data.</div>
       </footer>
     </article>

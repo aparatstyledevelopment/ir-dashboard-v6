@@ -307,10 +307,10 @@ export function openCardPdf(share) {
   });
   const body = `
     <h1 class="doc-title">${escapeHtml(share.title || 'Card export')}</h1>
-    <p class="doc-subtitle">Integrum AB · INTEG B · Exported ${escapeHtml(now)}</p>
+    <p class="doc-subtitle">Example.com Inc. · EXMPL · Exported ${escapeHtml(now)}</p>
     ${cardHtml(share)}
     <div class="doc-footer">
-      Generated from Command Bar (Monitor) · Integrum AB (INTEG B) ·
+      Generated from Command Bar (Monitor) · Example.com Inc. (EXMPL) ·
       Nasdaq First North Stockholm
     </div>
   `;
@@ -328,12 +328,12 @@ export function openReportPdf(shares, reportTitle = 'IR Report') {
   const sections = shares.map((s, i) => cardHtml(s, i)).join('');
   const body = `
     <h1 class="doc-title">${escapeHtml(reportTitle)}</h1>
-    <p class="doc-subtitle">Integrum AB · INTEG B · ${shares.length} cards · ${escapeHtml(
+    <p class="doc-subtitle">Example.com Inc. · EXMPL · ${shares.length} cards · ${escapeHtml(
     now
   )}</p>
     ${sections}
     <div class="doc-footer">
-      Generated from Command Bar (Monitor) · Integrum AB (INTEG B) ·
+      Generated from Command Bar (Monitor) · Example.com Inc. (EXMPL) ·
       Nasdaq First North Stockholm
     </div>
   `;

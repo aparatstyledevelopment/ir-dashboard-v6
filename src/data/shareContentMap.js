@@ -121,13 +121,13 @@ export const SHARE_MAP = {
     rows: TOP_HOLDERS,
   }),
   liquidity: buildShareContent({
-    title: 'Liquidity Analysis — INTEG B vs Peers',
+    title: 'Liquidity Analysis — EXMPL vs Peers',
     narrative:
-      "INTEG B's average daily turnover of €18,400 ranks 4th among its 5-company peer group. Spread has widened 12 basis points month-over-month.",
+      "EXMPL's average daily turnover of €18,400 ranks 4th among its 5-company peer group. Spread has widened 12 basis points month-over-month.",
     sourceDescription:
-      'Compares INTEG B\'s trading liquidity against its peer group. Retrieves average daily turnover in EUR, trade count, and volume-weighted average price for each company in the peer set.',
+      'Compares EXMPL\'s trading liquidity against its peer group. Retrieves average daily turnover in EUR, trade count, and volume-weighted average price for each company in the peer set.',
     sourceQuery:
-      'SELECT name, ticker, avg_daily_turnover_eur, avg_trades_per_day, vwap, currency\nFROM liquidity_metrics\nWHERE ticker IN (SELECT ticker FROM peer_group WHERE anchor = \'INTEG B\');',
+      'SELECT name, ticker, avg_daily_turnover_eur, avg_trades_per_day, vwap, currency\nFROM liquidity_metrics\nWHERE ticker IN (SELECT ticker FROM peer_group WHERE anchor = \'EXMPL\');',
     columns: [
       { header: 'Company', key: 'name' },
       { header: 'Ticker', key: 'ticker' },
@@ -160,11 +160,11 @@ export const SHARE_MAP = {
   short: buildShareContent({
     title: 'Short Interest Overview',
     narrative:
-      'Short interest in INTEG B currently stands at 2.1% of capital, down from 2.8% three months ago. One disclosed short holder remains on the register: Marshall Wace LLP at 0.62%.',
+      'Short interest in EXMPL currently stands at 2.1% of capital, down from 2.8% three months ago. One disclosed short holder remains on the register: Marshall Wace LLP at 0.62%.',
     sourceDescription:
-      'Fetches the short interest trend for INTEG B over recent periods, showing how the percentage of capital held short has changed over time.',
+      'Fetches the short interest trend for EXMPL over recent periods, showing how the percentage of capital held short has changed over time.',
     sourceQuery:
-      'SELECT period_label AS "when", short_pct AS value\nFROM short_interest_trend\nWHERE ticker = \'INTEG B\'\nORDER BY period_index ASC;',
+      'SELECT period_label AS "when", short_pct AS value\nFROM short_interest_trend\nWHERE ticker = \'EXMPL\'\nORDER BY period_index ASC;',
     columns: [
       { header: 'When', key: 'when' },
       { header: 'Short %', key: 'value' },
@@ -298,9 +298,9 @@ export const SHARE_MAP = {
     narrative:
       '15 AI-prioritized targets — 6 hot, 6 warm, 3 cold. Polar Capital Healthcare leads with a 92/100 fit score — already holds 3 of our closest peers.',
     sourceDescription:
-      'Retrieves all investor candidates who do not currently hold INTEG B, ranked by the AI fit score. Includes firm details, AUM, priority tier, and a short rationale for each.',
+      'Retrieves all investor candidates who do not currently hold EXMPL, ranked by the AI fit score. Includes firm details, AUM, priority tier, and a short rationale for each.',
     sourceQuery:
-      'SELECT name, firm, type, country, aum, priority, ai_score AS score, rationale\nFROM investor_candidates\nWHERE holds_ticker = \'INTEG B\' = false\nORDER BY ai_score DESC\nLIMIT 25;',
+      'SELECT name, firm, type, country, aum, priority, ai_score AS score, rationale\nFROM investor_candidates\nWHERE holds_ticker = \'EXMPL\' = false\nORDER BY ai_score DESC\nLIMIT 25;',
     columns: [
       { header: 'Name', key: 'name' },
       { header: 'Firm', key: 'firm' },
@@ -333,11 +333,11 @@ export const SHARE_MAP = {
   'tgt.peergaps': buildShareContent({
     title: 'Peer Holders — Gap Analysis',
     narrative:
-      '5 institutional holders from our peer-gap dataset own at least one of our closest peers but not INTEG B. These are the highest-conversion candidates for IR outreach.',
+      '5 institutional holders from our peer-gap dataset own at least one of our closest peers but not EXMPL. These are the highest-conversion candidates for IR outreach.',
     sourceDescription:
-      'Identifies institutional holders who own at least one company in our peer group but are absent from the INTEG B register. These are "gap" candidates — investors familiar with the sector who haven\'t yet discovered us.',
+      'Identifies institutional holders who own at least one company in our peer group but are absent from the EXMPL register. These are "gap" candidates — investors familiar with the sector who haven\'t yet discovered us.',
     sourceQuery:
-      'SELECT peer_ticker AS peer, holder, country, holding_pct, status\nFROM peer_holdings\nWHERE peer_ticker IN (SELECT ticker FROM peer_group WHERE anchor = \'INTEG B\')\n  AND holder NOT IN (SELECT name FROM shareholders WHERE ticker = \'INTEG B\')\nORDER BY holding_pct DESC;',
+      'SELECT peer_ticker AS peer, holder, country, holding_pct, status\nFROM peer_holdings\nWHERE peer_ticker IN (SELECT ticker FROM peer_group WHERE anchor = \'EXMPL\')\n  AND holder NOT IN (SELECT name FROM shareholders WHERE ticker = \'EXMPL\')\nORDER BY holding_pct DESC;',
     columns: [
       { header: 'Peer', key: 'peer' },
       { header: 'Holder', key: 'holder' },
@@ -348,9 +348,9 @@ export const SHARE_MAP = {
     rows: PEER_GAPS,
   }),
   'tgt.compare': buildShareContent({
-    title: 'Compare Owners — INTEG B vs 4 Peers',
+    title: 'Compare Owners — EXMPL vs 4 Peers',
     narrative:
-      'Overlap matrix across INTEG B and our 4 closest peers. Cells mark ownership of each fund across each peer.',
+      'Overlap matrix across EXMPL and our 4 closest peers. Cells mark ownership of each fund across each peer.',
     sourceDescription:
       'Builds a pivot table showing which institutional funds hold which companies in our peer group. Each cell indicates whether a fund owns that peer, revealing overlap and gap patterns.',
     sourceQuery:
@@ -362,13 +362,13 @@ export const SHARE_MAP = {
     rows: OVERLAP_ROWS,
   }),
   'tgt.longonly': buildShareContent({
-    title: 'Long-only Funds Missing INTEG B',
+    title: 'Long-only Funds Missing EXMPL',
     narrative:
-      'Long-only funds that are a strong fit and not currently holding INTEG B. Sorted by AI fit score.',
+      'Long-only funds that are a strong fit and not currently holding EXMPL. Sorted by AI fit score.',
     sourceDescription:
-      'Filters the candidate universe to long-only fund strategies that don\'t currently hold INTEG B and aren\'t rated cold, ranked by AI fit score. These are the most natural buyers for an IR outreach campaign.',
+      'Filters the candidate universe to long-only fund strategies that don\'t currently hold EXMPL and aren\'t rated cold, ranked by AI fit score. These are the most natural buyers for an IR outreach campaign.',
     sourceQuery:
-      'SELECT name, firm AS manager, country, aum, ai_score AS score, priority\nFROM investor_candidates\nWHERE fund_style = \'Long-only\'\n  AND holds_ticker = \'INTEG B\' = false\n  AND priority != \'Cold\'\nORDER BY ai_score DESC;',
+      'SELECT name, firm AS manager, country, aum, ai_score AS score, priority\nFROM investor_candidates\nWHERE fund_style = \'Long-only\'\n  AND holds_ticker = \'EXMPL\' = false\n  AND priority != \'Cold\'\nORDER BY ai_score DESC;',
     columns: [
       { header: 'Fund', key: 'name' },
       { header: 'Manager', key: 'firm' },

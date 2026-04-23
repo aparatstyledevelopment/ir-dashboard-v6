@@ -2,7 +2,7 @@ import { ArrowLeft, TrendingUp, Users, FileText, Bell, AlertTriangle } from 'luc
 
 const NOTIFICATIONS = [
   { id: 1, icon: Users, title: 'Nordea increased position', body: 'Nordea Investment Funds acquired 45,000 shares (+0.15% capital). Register updated.', time: '2h ago', unread: true },
-  { id: 2, icon: TrendingUp, title: 'INTEG B crossed SEK 16.00', body: 'Share price hit 16.05 SEK — highest in 3 months. Volume 42% above average.', time: '4h ago', unread: true },
+  { id: 2, icon: TrendingUp, title: 'EXMPL crossed SEK 16.00', body: 'Share price hit 16.05 SEK — highest in 3 months. Volume 42% above average.', time: '4h ago', unread: true },
   { id: 3, icon: AlertTriangle, title: 'Aviva continued selling', body: 'Aviva Perfusion AS disposed 13,004 shares. Total reduction this quarter: −29,204 shares.', time: '1d ago', unread: false },
   { id: 4, icon: FileText, title: 'Q1 report reminder', body: 'Q1 2026 earnings call is in 17 days (May 8). Draft press release due in 10 days.', time: '2d ago', unread: false },
   { id: 5, icon: Bell, title: 'Roadshow slot confirmed', body: '1-on-1 with Polar Capital Healthcare confirmed for May 20 in London.', time: '3d ago', unread: false },

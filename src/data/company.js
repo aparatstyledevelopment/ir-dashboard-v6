@@ -1,6 +1,6 @@
 export const COMPANY = {
-  name: 'Integrum AB',
-  ticker: 'INTEG B',
+  name: 'Example.com Inc.',
+  ticker: 'EXMPL',
   exchange: 'Nasdaq First North Stockholm',
   price: 16.16,
   change: +5.07,
